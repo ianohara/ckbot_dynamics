@@ -60,13 +60,51 @@ namespace ckbot
                       oc::ODESolver::StateType& sdot,
                       ckbot::chain_rate& ch_r);
 
+    /**** Distance Metric classes for use with RRT planner ****/
+    /* Euclidean Distance (vel and pos) */
+    class EuclDistGoalState : public ob::GoalState
+    {
+        public:
+            EuclDistGoalState(const ob::SpaceInformationPtr &si, ckbot::chain &chain);
+            double distanceGoal(const ob::State *s) const;
+
+        private:
+            const ob::SpaceInformationPtr &si;
+            ckbot::chain &ch;
+    };
+
+    /* End effector location */
     class EndLocGoalState : public ob::GoalState
     {
         public:
-            EndLocGoalState(const ob::SpaceInformationPtr &si, int num_links);
+            EndLocGoalState(const ob::SpaceInformationPtr &si,
+                            ckbot::chain &chain,
+                            double x,
+                            double y,
+                            double z);
             double distanceGoal(const ob::State *s) const;
+
         private:
-            int num_links_;
+            const ob::SpaceInformationPtr &si;
+            ckbot::chain &ch;
+            double x_; /* Desired x, y, and z of end effector */
+            double y_;
+            double z_;
+    };
+
+    /**** Projection classes for use with KPIECE planner ****/
+    class EndLocAndAngVelProj : public ob::ProjectionEvaluator
+    {
+        public:
+            EndLocAndAngVelProj(const ob::SpaceInformationPtr &si,
+                                const ob::StateSpacePtr &space,
+                                ckbot::chain &chain);
+            unsigned int getDimension(void) const;
+            void project(const ob::State *state, ob::EuclideanProjection &proj) const;
+        private:
+            const ob::SpaceInformationPtr &si;
+            ckbot::chain &ch;
+            const ob::StateSpacePtr &sp;
     };
 };
 

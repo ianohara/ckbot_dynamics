@@ -56,14 +56,19 @@ main(int ac, char* av[])
         po::options_description desc("Usage:");
         desc.add_options()
           ("help", "Prints this help message...")
+
           ("dir", po::value<std::string>(&sets.sim_dir))
+
           ("time",
             po::value<float>(&sets.max_sol_time),
             "Length of time to simulate for.")
+
           ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
+
           ("angle",
             po::value<double>(&sets.custom_angle),
             "Initial angle of each module (ie: ignore those specified in sim.txt)")
+
           ("rate",
             po::value<double>(&sets.custom_rate)->default_value(0.0),
             "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
@@ -71,6 +76,10 @@ main(int ac, char* av[])
           ("torque",
            po::value<double>(&sets.torque)->default_value(0.0),
            "Constant torque to apply to all joints")
+
+          ("dt",
+           po::value<double>(&sets.dt)->default_value(0.01),
+           "Time step for simulator")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -191,25 +200,26 @@ main(int ac, char* av[])
     std::vector<double> s0(2*num_modules);
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
-
-    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
-    {
-        for (int i=0; i < num_modules; i++)
-        {
-            s0[i] = sets.custom_angle;
-        }
-        std::cout << "Using a custom initial joint angle for the modules ("
-                  << sets.custom_angle << ")." << std::endl;
-    }
-    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
-    {
-        for (int i=0; i < num_modules; i++)
-        {
-            s0[num_modules+i] = sets.custom_rate;
-        }
-        std::cout << "Using a custom initial joint rate for modules ("
-                  << sets.custom_rate << ")." << std::endl;
-    }
+//DEBUG
+//DEBUG    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
+//DEBUG    {
+//DEBUG        for (int i=0; i < num_modules; i++)
+//DEBUG        {
+//DEBUG            s0[i] = sets.custom_angle;
+//DEBUG        }
+//DEBUG        std::cout << "Using a custom initial joint angle for the modules ("
+//DEBUG                  << sets.custom_angle << ")." << std::endl;
+//DEBUG    }
+//DEBUG    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
+//DEBUG    {
+//DEBUG        for (int i=0; i < num_modules; i++)
+//DEBUG        {
+//DEBUG            s0[num_modules+i] = sets.custom_rate;
+//DEBUG        }
+//DEBUG        std::cout << "Using a custom initial joint rate for modules ("
+//DEBUG                  << sets.custom_rate << ")." << std::endl;
+//DEBUG    }
+//DEBUG
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
      * arrays of dictionaries. The outer array contains
@@ -217,29 +227,29 @@ main(int ac, char* av[])
      * array contains dictionaries with "time", "state",
      * and "energy" entries.
      */
+
     Json::Value verifications(Json::arrayValue);
     /* First off, we want to verify that with 0 torques and no damping, 
      * system energy is constant
      */
     {
-        /* Make the zero torque vector */
+        /* Make the constant torque vector */
         std::vector<double> T(num_modules);
-        std::fill(T.begin(), T.end(), sets.torque);
+        std::fill(T.begin(), T.end(), 0.0); // DEBUG.  Making this only set the first.
+        T[0] = sets.torque;
+        double tstart = 0.0; // DEBUG/TODO: Make this command line or json file setting.
+        double tend = 0.1; // DEBUG/TODO: Make this command line or json file setting.
 
-        ckbot::odeConstTorque chain_integrator(rate_machine_p->get_chain(), T);
+        ckbot::odePulseTorque chain_integrator(rate_machine_p->get_chain(), T, tstart, tend);
 
         ckbot::chain& ch = chain_integrator.get_chain();
-        /* Make sure dampings are all zero */
-        for (int i=0; i < ch.num_links(); i++)
-        {
-            ch.get_link(i).set_damping(0.0);
-        }
+        std::cout << ch.describe_self() << std::endl;
 
         std::vector<double> s_cur(s0);
 
         Json::Value this_ver(Json::arrayValue);
         ode::runge_kutta4< std::vector< double > > stepper;
-        const double dt = 0.01;
+        const double dt = sets.dt;
         const double sim_time = sets.max_sol_time;
         for (double t = 0.0; t < sim_time; t += dt)
         {
@@ -267,37 +277,8 @@ main(int ac, char* av[])
                 ke += ke_cur;
                 double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
                 pe += pe_cur;
-                /* DEBUG */
-                std::cout << "Link " << j << " Summary: " << std::endl;
-                std::cout << "    q=" << m.get_q() << std::endl;
-                std::cout << "    qd=" << m.get_qd() << std::endl;
-                std::cout << "  KE subparts: " << std::endl << "    Rot= " << ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j)) << std::endl << "    Lin= " << (0.5)*m.get_mass()*(cur_vel.dot(cur_vel)) << std::endl;
-                std::cout << "    PE=" << pe_cur << std::endl;
-                std::cout << "   Omega = ";
-                util::flat_print(omega_j);
-                std::cout << "   V = ";
-                util::flat_print(cur_vel);
-                std::cout << "   r = ";
-                util::flat_print(ch.get_link_r_cm(j));
-                std::cout << "    I = " << m.get_I_cm() << std::endl;
-                std::cout << "    m = " << m.get_mass() << std::endl;
-                /* END DEBUG */
-                /* DEBUG 
-                Eigen::Vector3d cur_r = ch.get_link_r_cm(j);
-                std::cout << " r_cm = " << std::endl;
-                std::cout << cur_r << std::endl;
-                std::cout << " angular Vel: " << std::endl << omega_j << std::endl; 
-                std::cout << " v_cm = " << std::endl << cur_vel << std::endl;
-                std::cout << " R=" << std::endl << ch.get_current_R(j) << std::endl;
-                END DEBUG */
-                //std::cout << "Link " << j << "Q=" << m.get_q() << std::endl << " Vec: " << ch.get_link_r_cm(j) << std::endl;
-                //std::cout << "Link " << j << " Rot Mat: " << std::endl << ch.get_current_R(j) << std::endl;
             }
 
-            //std::cout << "Energy: " << ke+pe << "ke: " << ke << " pe: " << pe << std::endl;
-           /* std::cout << "TOTALS: " << std::endl;
-            std::cout << "    KE_tot=" << ke << std::endl;
-            std::cout << "    PE_tot=" << pe << std::endl; */
             this_step["ke"] = ke;
             this_step["pe"] = pe;
             this_step["energy"] = ke+pe;

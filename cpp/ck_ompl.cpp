@@ -17,6 +17,7 @@
 */
 
 #include<iostream>
+#include<cmath>
 
 /*
  * This code implements the functions needed by differential (control) planners
@@ -32,6 +33,8 @@
 
 namespace oc = ompl::control;
 namespace ob = ompl::base;
+
+#include <Eigen/Dense>
 
 #include"ckbot.hpp"
 #include"ck_ompl.hpp"
@@ -50,8 +53,6 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        out_file << " Attempting to fill chain link "
-                 << link << " of " << num_modules << std::endl;
         if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
         {
             return boost::shared_ptr<ckbot::CK_ompl>();
@@ -59,9 +60,10 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     }
     /* Again, never explictly freed.  Let the program run till death! */
     ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
-    /* Chain rate store a reference to a chain, so this is right memory-wise (right?)
-     * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
-     * isn't passed as a copy, but instead as a reference.  Think that's right... 
+    /* Chain rate store a reference to a chain, so this is right memory-wise
+     * (right?) de-ref pointer, rate_machine looks for a reference so the
+     * dereferenced chain isn't passed as a copy, but instead as a reference.
+     * Think that's right...
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p(new ckbot::CK_ompl(*ch));
     return rate_machine_p;
@@ -87,10 +89,21 @@ bool
 ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
 {
     /*
-    if (! (si->satisfiesBounds(s))) {
-        return false;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    int num_links = c.num_links();
+    int slen = 2*num_links;
+    for (int i = 0; i < slen; i++)
+    {
+        std::cout << sVals[i] << ", ";
     }
-    */
+    std::cout << std::endl;
+
+     END DEBUG
+     */
+
+    if (! (si->satisfiesBounds(s))) {
+       return false;
+    }
 
     if (world)
     {
@@ -147,21 +160,115 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
-/* Goal metric code below here.  TODO: Incomplete right now */
+ckbot::EuclDistGoalState::EuclDistGoalState(const ob::SpaceInformationPtr &si,
+                                            ckbot::chain &chain) :
+    ob::GoalState(si), /* Parent Constructor */
+    ch(chain),
+    si(si)
+{
+}
+
+/* Distance metric classes */
+double
+ckbot::EuclDistGoalState::distanceGoal(const ob::State *s) const
+{
+    const double *gVals = state_->as<ob::RealVectorStateSpace::StateType>()->values;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    double sumSqrs = 0;
+    for (int i = 0; i < 2*num_links; i++)
+    {
+        double diff = gVals[i] - sVals[i];
+        sumSqrs += diff*diff;
+    }
+    double dist = sqrt(sumSqrs);
+    return dist;
+}
+
 ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
-                                        int num_links) :
-            ob::GoalState(si),
-            num_links_(num_links)
+                                        ckbot::chain &chain,
+                                        double x,
+                                        double y,
+                                        double z) :
+            ob::GoalState(si), /* Parent contstructor */
+            ch(chain),
+            si(si),
+            x_(x),
+            y_(y),
+            z_(z)
 {
 }
 
 double
 ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
 {
-    const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
-    for (int i=0; i < num_links_; i++)
+    static double minDist = 100000000.0;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    int slen = 2*num_links;
+    std::vector<double> q(num_links);
+    std::vector<double> qd(num_links);
+    for (int i = 0; i < num_links; i++)
     {
-       ; 
+        q[i] = sVals[i];
+        qd[i] = sVals[num_links+i];
     }
-    return 0.0; /*TODO: This ain't right, mate. */
+    ch.propogate_angles_and_rates(q,qd);
+
+    Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
+    double dist = sqrt(pow((r_end[0] - x_),2) + pow((r_end[1]-y_),2) + pow((r_end[2]-z_),2));
+    if (dist < minDist) {
+        minDist = dist;
+        std::cout << "Found a new min end effector distance: " << minDist << std::endl;
+    }
+    return dist;
+
+}
+
+/**** KPIECE Projection classes ****/
+ckbot::EndLocAndAngVelProj::EndLocAndAngVelProj(const ob::SpaceInformationPtr &si,
+        const ob::StateSpacePtr &space,
+        ckbot::chain &chain) :
+    ob::ProjectionEvaluator(space),
+    si(si),
+    sp(space),
+    ch(chain)
+{
+}
+
+unsigned int
+ckbot::EndLocAndAngVelProj::getDimension(void) const
+{
+    return 4u;
+}
+
+void
+ckbot::EndLocAndAngVelProj::project(const ob::State *state,
+        ob::EuclideanProjection &proj) const
+{
+    const double *sVals = state->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    int slen = 2*num_links;
+    std::vector<double> q(num_links);
+    std::vector<double> qd(num_links);
+    for (int i = 0; i < num_links; i++)
+    {
+        q[i] = sVals[i];
+        qd[i] = sVals[num_links+i];
+    }
+    ch.propogate_angles_and_rates(q,qd);
+
+    double sumSqrVels = 0;
+    for (int i = 0; i < qd.size(); i++)
+    {
+        sumSqrVels += qd[i]*qd[i];
+
+    }
+    Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
+    //DEBUG std::cout << "End is at: " << r_end.transpose() << std::endl;
+    proj[0] = r_end[0];
+    proj[1] = r_end[1];
+    proj[2] = r_end[2];
+    proj[3] = sqrt(sumSqrVels);
+//DEBUG    std::cout << "Projection is: [" << proj[0] << ", " << proj[1] << ", " << proj[2] << ", " << proj[3] <<"]" << std::endl;
 }

@@ -902,6 +902,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
          *       both T[i] and C used here as they are will break things.
          */
         epsilon = T[i] + C - H*z;
+        //std::cout << "Module " << i << " applying torque " << T[i] << std::endl;
 
         mu = (1/D)*epsilon; /* 6DOF change: D will be a matrix, need to invert it */
         zp = z + G*epsilon;
