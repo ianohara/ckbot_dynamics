@@ -1,0 +1,24 @@
+function success = draw_arrow(start, stop)
+% ARGUMENTS
+%  start - 1x3 vector where the tail of the force arrow should be located
+%  stop  - 1x3 vector where the head of the arrow should be located
+% RETURNS
+%  success - 1 for success, 0 for failure
+% TODO
+%  * Add color support
+%
+
+success = 0;
+
+cone_fraction = 0.75; 
+
+arrow = stop-start;
+cone_start = start + arrow*cone_fraction;
+cone_len = arrow-cone_start;
+cone_dir = stop-start/norm(stop-start);
+
+coneplot(cone_start(1),cone_start(2),cone_start(3),cone_len(1), cone_len(2), cone_len(3),'nointerp');
+line([start(1) stop(1)], [start(2) stop(2)], [start(3) stop(3)],'LineWidth', 5, 'Color', 'k');
+
+success = 1;
+end
