@@ -15,10 +15,11 @@ props.head_len = props.width;
 props.mass = 1;
 props.joint_axis = [0;0;1];
 props.tail_len = props.width;
-props.tail_radius = props.tail_len/2;
+props.tail_width = props.width/2;
+props.tail_radius = props.tail_width/2;
 
 % Drawing Options
-props.transparency = 0.5;
+props.transparency = 0.6;
 props.face_color = 'k';
 props.edge_color = 'k';
 
@@ -30,6 +31,13 @@ props.edge_color = 'k';
 % HT2 - Head-Tail 2
 % Rotational axes are at 90deg angle
 %
+% HT_head_cap
+%  A UBar (head) at the end of a chain
+%
+% HT_tail_cap
+%  A Motor mount (tail) at the end of a chain
+%
+
 if (strcmp(type, 'HT1'))
     props.r_back = [0; 0; 0];
     props.r_forward = [props.head_len; 0; 0];
@@ -42,6 +50,18 @@ elseif (strcmp(type, 'HT2'))
     props.I_cm = eye(3);
     props.R_jts = rotX(-pi/2);
     props.draw_fun = @draw_head_tail_2;
+elseif (strcmp(type, 'HT_head_cap'))
+    props.r_back = [0;0;0];
+    props.r_forward = [0;0;0];
+    props.I_cm = eye(3);
+    props.R_jts = eye(3);
+    props.draw_fun = @draw_head_cap;
+elseif (strcmp(type, 'HT_tail_cap'))
+    props.r_back = [0;0;0];
+    props.r_forward = [0;0;0];
+    props.I_cm = eye(3);
+    props.R_jts = eye(3);
+    props.draw_fun = @draw_tail_cap;
 else
     error('Unknown body type: %s', type);
 end

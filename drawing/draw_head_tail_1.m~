@@ -10,19 +10,25 @@ function success = draw_head_tail_1(r_cg, R)
 %  success - 1 for success, 0 for failure
 %
 
-% Drawing options
-transparency = 0.5;
-face_color = 'k';
-edge_color = 'k';
+success = 0;
 
 % Rotation from definition coordinates to the correct coords (z-axis
 % through forward joint)
 R_correction = rotZ(pi/2)*rotX(pi/2);
 
+% Load the body parameters from our centralized source
+props = get_body_params('HT1');
+
 % geometric parameters
-s = 2;
-r_cg_ref = [s/4;0;0];
-rad_tail = 0.5;
+s = props.width;
+r_cg_ref = props.r_back;
+rad_tail = props.tail_radius;
+h_tail = props.tail_len;
+
+% Drawing options
+transparency = props.transparency;
+face_color = props.face_color;
+edge_color = props.edge_color;
 
 %%% Defines all of the verticies needed to define the patch polygons
 %   These are all in the body frame
@@ -31,7 +37,7 @@ rad_tail = 0.5;
 %   of mass location will likely change (while the geometry we wish to draw
 %   won't)
 verticies = [
-    s/2, s/2, s/3;    % 1
+    s/2,  s/2, s/3;    % 1
     -s/2, s/2, s/3;   % 2
     -s/2, -s/2, s/3;  % 3
     s/2, -s/2, s/3;   % 4
@@ -39,16 +45,16 @@ verticies = [
     s/2, 0, s/3;      % 6
     -s/2, 0, s/3;     % 7
     -s/2, -s/4, s/3;  % 8
-    s/4, -s/4, 2*s/3; % 9
-    s/4, 0, 2*s/3;    % 10
-    -s/4, 0, 2*s/3;   % 11
-    -s/4, -s/4, 2*s/3;% 12
-    rad_tail*cos(pi/4), -s/4, 2*s/3 + rad_tail*sin(pi/4); % 13
-    rad_tail*cos(pi/4), 0, 2*s/3 + rad_tail*sin(pi/4); % 14
-    0, 0, 2*s/3+rad_tail;     % 15
-    0, -s/4, 2*s/3+rad_tail;  % 16
-    rad_tail*cos(5*pi/4), 0, 2*s/3 - rad_tail*sin(5*pi/4); % 17
-    rad_tail*cos(5*pi/4), -s/4, 2*s/3 - rad_tail*sin(5*pi/4); % 18
+    s/4, -s/4, h_tail; % 9
+    s/4, 0, h_tail;    % 10
+    -s/4, 0, h_tail;   % 11
+    -s/4, -s/4, h_tail;% 12
+    rad_tail*cos(pi/4), -s/4, h_tail + rad_tail*sin(pi/4); % 13
+    rad_tail*cos(pi/4), 0, h_tail + rad_tail*sin(pi/4); % 14
+    0, 0, h_tail+rad_tail;     % 15
+    0, -s/4, h_tail+rad_tail;  % 16
+    rad_tail*cos(5*pi/4), 0, h_tail - rad_tail*sin(5*pi/4); % 17
+    rad_tail*cos(5*pi/4), -s/4, h_tail - rad_tail*sin(5*pi/4); % 18
     -s/2, -s/2, 0; % 19
     -s/2*cos(pi/4), -s/2, -s/2*sin(pi/4);  % 20
     0, -s/2, -s/2; % 21
@@ -86,4 +92,5 @@ head_tail_1_patch = patch('Vertices', verticies_inertial, 'Faces', patch_faces);
 set(head_tail_1_patch, 'FaceAlpha', transparency);
 set(head_tail_1_patch, 'FaceColor', face_color);
 set(head_tail_1_patch, 'EdgeColor', edge_color);
+success = 1;
 end

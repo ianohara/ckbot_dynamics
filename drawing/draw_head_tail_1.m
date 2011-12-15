@@ -24,6 +24,7 @@ s = props.width;
 r_cg_ref = props.r_back;
 rad_tail = props.tail_radius;
 h_tail = props.tail_len;
+w_tail = props.tail_width;
 
 % Drawing options
 transparency = props.transparency;
@@ -37,7 +38,7 @@ edge_color = props.edge_color;
 %   of mass location will likely change (while the geometry we wish to draw
 %   won't)
 verticies = [
-    s/2, s/2, s/3;    % 1
+    s/2,  s/2, s/3;    % 1
     -s/2, s/2, s/3;   % 2
     -s/2, -s/2, s/3;  % 3
     s/2, -s/2, s/3;   % 4
@@ -45,10 +46,10 @@ verticies = [
     s/2, 0, s/3;      % 6
     -s/2, 0, s/3;     % 7
     -s/2, -s/4, s/3;  % 8
-    s/4, -s/4, h_tail; % 9
-    s/4, 0, h_tail;    % 10
-    -s/4, 0, h_tail;   % 11
-    -s/4, -s/4, h_tail;% 12
+    w_tail/2, -s/4, h_tail; % 9
+    w_tail/2, 0, h_tail;    % 10
+    -w_tail/2, 0, h_tail;   % 11
+    -w_tail/2, -s/4, h_tail;% 12
     rad_tail*cos(pi/4), -s/4, h_tail + rad_tail*sin(pi/4); % 13
     rad_tail*cos(pi/4), 0, h_tail + rad_tail*sin(pi/4); % 14
     0, 0, h_tail+rad_tail;     % 15
@@ -65,10 +66,10 @@ verticies = [
     0, s/2, -s/2; % 26
     s/2*cos(5*pi/4), s/2, s/2*sin(5*pi/4); % 27
     -s/2, s/2, 0; % 28
-    -s/4, -s/4, s/3; %29
-    s/4, -s/4, s/3; % 30
-    -s/4, 0, s/3; % 31
-    s/4, 0, s/3; % 32
+    -w_tail/2, -s/4, s/3; %29
+    w_tail/2, -s/4, s/3; % 30
+    -w_tail/2, 0, s/3; % 31
+    w_tail/2, 0, s/3; % 32
     ];
 
 verticies_inertial = zeros(size(verticies,1), 3);
