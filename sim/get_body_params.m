@@ -58,7 +58,7 @@ elseif (strcmp(type, 'HT_head_cap'))
     props.draw_fun = @draw_head_cap;
 elseif (strcmp(type, 'HT_tail_cap'))
     props.r_back = [0;0;0];
-    props.r_forward = [0;0;0];
+    props.r_forward = [props.head_len; 0; 0];
     props.I_cm = eye(3);
     props.R_jts = eye(3);
     props.draw_fun = @draw_tail_cap;

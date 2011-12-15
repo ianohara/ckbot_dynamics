@@ -9,7 +9,7 @@ function success = draw_arrow(start, stop)
 %
 
 success = 0; 
-use_cone = 0;
+use_cone = 1;
 
 arrow = stop-start;
 if (norm(arrow) < eps)
@@ -17,13 +17,13 @@ if (norm(arrow) < eps)
     return;
 end
 if (use_cone)
-    cone_fraction = 0.75;
+    cone_fraction = 0.7;
     cone_start = start + arrow*cone_fraction;
-    cone_len = norm(arrow-cone_start);
+    cone_len = norm(stop-cone_start);
     cone_dir = (stop-start)/norm(stop-start);
     coneplot(cone_start(1),cone_start(2),cone_start(3),cone_len*cone_dir(1), cone_len*cone_dir(2), cone_len*cone_dir(3),'nointerp');
 end
-line([start(1) stop(1)], [start(2) stop(2)], [start(3) stop(3)],'LineWidth', 5, 'Color', 'k');
+line([start(1) stop(1)], [start(2) stop(2)], [start(3) stop(3)],'LineWidth', 3, 'Color', 'k');
 
 success = 1;
 end

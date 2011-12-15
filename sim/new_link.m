@@ -13,6 +13,7 @@ props = get_body_params(type);
 % Joint variables
 props.q = 0;
 props.qd = 0;
+props.init_rotation = eye(3);
 
 %%% Parse any ARGUMENTS %%%
 i = 1;
@@ -30,6 +31,12 @@ while (i<nargin)
             end
             props.qd = varargin{i+1};
             i=i+1;
+        case 'rotate'
+            if (i == nargin)
+                error('Must supply text field as argument following "rotate"');
+            end
+            props.init_rotation = varargin{i+1};
+            i=i+1;            
         otherwise
             fprintf('Unknown option: "%s"\n',varargin{i});
     end
@@ -52,5 +59,6 @@ link.I_cm = props.I_cm;
 link.R_jts = props.R_jts;
 link.m = props.mass;
 link.draw = props.draw_fun;
+link.init_rotation = props.init_rotation; % Only used for first link in chain
 
 end

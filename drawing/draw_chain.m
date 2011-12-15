@@ -9,7 +9,16 @@ function success = draw_chain(chain, varargin)
 success = 0;
 
 r_base = [0; 0; 0];  % First chain link starts at the origin
-R = eye(3);
+
+% Check if there's an initial link inertial rotation, otherwise use the
+% default.  Note that this means the 'init_rotation' field is ignored on
+% links that aren't the first in their chain.
+if (isfield(chain(1), 'init_rotation'))
+    R = chain(1).init_rotation; 
+else
+    R = eye(3);
+end
+
 for i = 1:length(chain)
     
     R = R*rotZ(chain(i).q)*chain(i).R_jts;  % From i's coordinates to inertial

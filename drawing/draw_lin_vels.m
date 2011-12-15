@@ -9,7 +9,11 @@ function success = draw_lin_vels(chain)
 
 vels = forward_kinematics(chain);
 
-R = eye(3);
+if (isfield(chain(1), 'init_rotation'))
+    R = chain(1).init_rotation;
+else
+    R = eye(3);
+end
 r_base = [0; 0; 0];
 
 for i=1:length(chain)

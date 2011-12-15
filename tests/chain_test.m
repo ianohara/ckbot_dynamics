@@ -11,17 +11,18 @@ function success = chain_test()
 success = 0;
 
 sets = {};
+sets.draw_geom = 0;
 sets.draw_vels = 1;
 sets.draw_geom_vecs = 1;
 
 chain1 = [
-    new_link('HT1', 'q',pi/2,  'qd',0);
+    new_link('HT_tail_cap', 'q',pi/2,  'qd',0,'rotate', rotX(-pi/2));
     new_link('HT2', 'q',-pi/4, 'qd',0);
     new_link('HT1', 'q', pi/12,'qd',.1);
     new_link('HT2', 'q',pi/6,  'qd',.1);
     new_link('HT1', 'q', pi/10,'qd',.1);
     new_link('HT1', 'q', pi/4, 'qd',.1);
-    new_link('HT2', 'q', pi/3, 'qd',.1);
+    new_link('HT_head_cap', 'q', pi/3, 'qd',.1);
     
 ];
 
@@ -48,13 +49,13 @@ chain3 = [
 ];
 
 chain4 = [
-    new_link('HT1', 'q',pi/2,  'qd',0);
+    new_link('HT_tail_cap', 'q',pi/2,  'qd',0);
     new_link('HT2', 'q',-pi/4, 'qd',0);
     new_link('HT1', 'q', pi/12,'qd',.1);
     new_link('HT2', 'q',pi/6,  'qd',.1);
     new_link('HT1', 'q', pi/10,'qd',.1);
     new_link('HT1', 'q', pi/4, 'qd',.1);
-    new_link('HT2', 'q', pi/3, 'qd',.1);
+    new_link('HT_head_cap', 'q', pi/3, 'qd',.1);
     
 ];
 
@@ -68,7 +69,9 @@ xlabel('X [m]','FontSize',14);
 ylabel('Y [m]','FontSize',14);
 zlabel('Z [m]','FontSize',14);
 view(45,45);
-draw_chain(chain1);
+if (sets.draw_geom)
+    draw_chain(chain1);
+end
 if (sets.draw_vels)
     draw_lin_vels(chain1);
 end
@@ -85,8 +88,9 @@ xlabel('X [m]','FontSize',14);
 ylabel('Y [m]','FontSize',14);
 zlabel('Z [m]','FontSize',14);
 view(45,45);
-draw_chain(chain2);
-
+if (sets.draw_geom)
+    draw_chain(chain2);
+end
 if (sets.draw_vels)
     draw_lin_vels(chain2);
 end
@@ -103,8 +107,9 @@ xlabel('X [m]','FontSize',14);
 ylabel('Y [m]','FontSize',14);
 zlabel('Z [m]','FontSize',14);
 view(45,45);
-draw_chain(chain3);
-
+if (sets.draw_geom)
+    draw_chain(chain3);
+end
 if (sets.draw_vels)
     draw_lin_vels(chain3);
 end
@@ -121,8 +126,9 @@ xlabel('X [m]','FontSize',14);
 ylabel('Y [m]','FontSize',14);
 zlabel('Z [m]','FontSize',14);
 view(45,45);
-draw_chain(chain4);
-
+if (sets.draw_geom)
+    draw_chain(chain4);
+end
 
 if (sets.draw_vels)
     draw_lin_vels(chain4);
