@@ -7,15 +7,15 @@ function vels = forward_kinematics(chain)
 % 
 % RETURNS
 %  vels - 3x3xN vector
-%    vels(1,:,N) = velocity of forward link end in link frame
-%    vels(2,:,N) = velocity of cm of link in link frame
-%    vels(3,:,N) = angular velocity of link in link frame
+%    vels(:,1,N) = velocity of forward link end in link frame
+%    vels(:,2,N) = velocity of cm of link in link frame
+%    vels(:,3,N) = angular velocity of link in link frame
 %
 
 
 N = length(chain);
 vels = zeros(3,3,N);
-vels(:,3,1) = [1;0;0];
+vels(:,3,1) = [0;0;chain(1).qd];
 for i = 2:N
     % Rotation from the previous link to this link's coordinates
     %  IE: transpose of going from this link to the previous
