@@ -81,6 +81,11 @@ patch_faces = [
  5,8,3,4,5,NaN,NaN;
  29,30,9,13,16,18,12;
  32,31,11,17,15,14,10;
+  32,10,9,30,32,NaN,NaN; % Tail cover 1
+ 10,14,13,9,10,NaN,NaN; % Tail Cover 2
+ 14,15,16,13,14,NaN,NaN; % Tail Cover 3
+ 15,17,18,16,15,NaN,NaN; % Tail cover 4
+ 17,11,12,18,17,NaN,NaN; % Tail cover 5
 ];
 
 

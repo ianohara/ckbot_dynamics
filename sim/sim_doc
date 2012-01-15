@@ -1,0 +1,34 @@
+Documentation for the 'sim' structure.
+  The 'sim' structure (sim) is used to store and track the physical setup of a particular serial chain of links, and the results of running a simulation on this chain of links.
+
+Fields:
+  1. chain - An array of link structures where sim.chain(1) is the base 
+       link and sim.chain(end) is the tip link. Note that 
+       size(sim.chain,1)=N gives the number of links in the serial chain
+  2. t - [num_t x 1] - Vector of time points of the simulation.  
+       size(sim.t,1) 
+  3. q - [N x num_t] - Joint angles of the N links 
+       (wrt the previous link)
+  4. qd - [N x num_t] - Joint velocities of the N links 
+       (wrt the previous link)
+  5. T - [N x num_t] - Joint Torques of the N links 
+       (wrt the previous link)
+  6. accel - [6*N x num_t] - Vectors corresponding to the spatial 
+       accelerations of the base-side joint location of each of the N 
+       modules.
+  7. p - [6*N x 6*N x num_t] - Block diagonal matrix with 6x6 entries 
+       for each of the N links' "articulated body spatial inertia"
+  8. z - [6*N x num_t] -  6x1 stacked vectors corresponding to the
+       "Articulated body correction force" at link's tip-side joint
+  9. s - Current simulation step ( 1 <= s <= num_t )
+  10. s_vars - Structure of the current step's needed 
+       intermediate variables
+          10a. G - [6N x 1] - P*Transpose(H)*inverse(D) - intermediate 
+               value calculated in the tip to base traverse that is 
+               needed in the base to tip traverse.
+          10b. mu - [N x 1] - Relative joint accel at each link's joint
+
+
+Notes: 
+  Each link's motor is located at its base-side joint
+  Knowledge of q, and qd is enough to plot the system's evolution over time.

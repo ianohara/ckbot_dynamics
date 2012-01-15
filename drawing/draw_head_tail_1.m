@@ -37,6 +37,8 @@ edge_color = props.edge_color;
 %   Then they're shifted to be wrt the center of mass, because the center
 %   of mass location will likely change (while the geometry we wish to draw
 %   won't)
+%
+% 
 verticies = [
     s/2,  s/2, s/3;    % 1
     -s/2, s/2, s/3;   % 2
@@ -86,6 +88,11 @@ patch_faces = [
  29,30,9,13,16,18,12;
  1,24,25,26,27,28,2;
  32,31,11,17,15,14,10;
+ 32,10,9,30,32,NaN,NaN; % Tail cover 1
+ 10,14,13,9,10,NaN,NaN; % Tail Cover 2
+ 14,15,16,13,14,NaN,NaN; % Tail Cover 3
+ 15,17,18,16,15,NaN,NaN; % Tail cover 4
+ 17,11,12,18,17,NaN,NaN; % Tail cover 5
 ];
 
 

@@ -1,4 +1,4 @@
-function success = chain_test()
+function chain = chain_test()
 % Create some simple chains, plot them, and run any tests
 % we can to check their validity
 %
@@ -6,10 +6,7 @@ function success = chain_test()
 %  None
 %
 % RETURNS
-%  Success - 1 if all tests pass, 0 if not
-
-success = 0;
-
+%  chain - returns the last chain made (or a chain made...)
 sets = {};
 sets.draw_geom = 1;
 sets.draw_vels = 1;
@@ -131,4 +128,6 @@ end
 % if (sets.draw_geom_vecs)
 %     draw_geom_vecs(chain4);
 % end
+
+chain = chain1;
 end
