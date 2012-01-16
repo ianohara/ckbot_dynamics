@@ -27,7 +27,7 @@ Fields:
                value calculated in the tip to base traverse that is 
                needed in the base to tip traverse.
           10b. mu - [N x 1] - Relative joint accel at each link's joint
-
+  11. qdd - [N x num_t] - joint accelerations of the N joints for each time step
 
 Notes: 
   Each link's motor is located at its base-side joint

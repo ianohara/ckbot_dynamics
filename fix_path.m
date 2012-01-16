@@ -7,10 +7,11 @@ for i = 1:length(ls)
    if (~ls(i).isdir) 
        continue;
    end
-   if (strcmp(ls(i).name, '.') || strcmp(ls(i).name, '..'))
+   % Ignore '.' '..' and any hidden files
+   if (strcmp(ls(i).name(1), '.')) 
        continue;
    end
-   addpath(ls(i).name);
+   addpath(strcat(pwd,'/',ls(i).name));
 end
 
 clear all
