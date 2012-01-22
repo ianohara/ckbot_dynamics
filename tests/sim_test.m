@@ -6,7 +6,7 @@
 %    -> Equiv to a pendulum
 
 chain_single = [
-    new_link('HT_tail_cap');
+    new_link('HT_tail_cap','rotate', rotX(pi/2));
     new_link('HT1');
     new_link('HT_head_cap');
     ];
@@ -17,7 +17,9 @@ t_sim = 2;    % Simulate for t_sim [s]
 num_s = 100;  % Use 100 timesteps
 
 torque_history = zeros(N,num_s);
-q0 = zeros(N,1);
+q0 = zeros(N,1); %pi/6*ones(N,1);
+q0(1,1) = 0;
+
 qd0 = zeros(N,1);
 
 qd0(1,1) = 1;

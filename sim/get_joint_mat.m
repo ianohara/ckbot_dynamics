@@ -19,6 +19,6 @@ function H = get_joint_mat(link)
 
 Hprev = [0;0;1]; % Only rotational freedom in this sytem
 Ht = link.R_jts'*Hprev;
-H = [0,0,0, Ht']; % Should be 1x6
+H = [Ht',0,0,0]; % Should be 1x6
 
 end

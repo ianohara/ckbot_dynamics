@@ -16,6 +16,8 @@ s = sim.s;
 alpha = zeros(6,1);  % The seed acceleration (ie: the base joint does not rotate
             % wrt the ground, so we use this to seed the base to tip
             % recursion)
+% g = -9.81;
+% alpha(3) = g;
 
 for i = 1:N
     cur = sim.chain(i);
@@ -31,7 +33,15 @@ for i = 1:N
     sim.qdd(i,s) = sim.s_vars.mu(i) - sim.s_vars.G(p_ind)'*alpha_p;
     
     H = get_joint_mat(cur);
-    alpha = alpha_p + H'*sim.qdd(i,s);     
+    alpha = alpha_p + H'*sim.qdd(i,s) + sim.s_vars.a(p_ind);     
+
+    if (exist('DEBUG_MSG') || exist('DEBUG_BASE_TIP'))
+       fprintf('----------- LINK %d ------------\n', i);
+       fprintf('Chain Description:\n (1=base, %d=tip)\n', N);
+       fprintf('Spatial acceleration at this link''s joint:\n');
+       print_vec(alpha);
+        
+    end
 end
 
 end

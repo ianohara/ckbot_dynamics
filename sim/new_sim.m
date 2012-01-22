@@ -43,7 +43,7 @@ for i = 1:2:nargin-1
        case 'qd0'
            qd0 = val;
        otherwise
-           error(sprintf('Unknown option: %s', opt));
+           error('Unknown option: %s', opt);
    end
 end
 
@@ -54,7 +54,7 @@ t = 0:dt:(t_sim-dt);
 sim.t = t';
 
 if (size(sim.t,1) ~= num_s)
-    error(sprintf('Number of time steps not matching requested number of steps (%d vs %d)', size(sim.t,1), num_s));
+    error('Number of time steps not matching requested number of steps (%d vs %d)', size(sim.t,1), num_s);
 end
 
 % Initialize all of the data structures since now we know how big they all
@@ -67,6 +67,7 @@ sim.z = NaN(6*N, num_s);
 sim.s_vars = {};
 sim.s_vars.G = NaN(6*N,1);
 sim.s_vars.mu = NaN(N,1);
+sim.s_vars.a = zeros(6*N,1);
 
 % Set the initial conditions
 if (size(q0,1) ~= N)
@@ -74,6 +75,11 @@ if (size(q0,1) ~= N)
 end
 if (size(qd0,1) ~= N)
     error('Initial joint velocity vector has a length that is not the same as the number of bodies in the chain.');
+end
+
+for i=1:N
+   sim.chain(i).q = q0(i);
+   sim.chain(i).qd = qd0(i);
 end
 
 sim.q(:,1) = q0;

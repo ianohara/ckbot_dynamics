@@ -18,7 +18,7 @@ if ((pos < 1) || (pos > size(chain,1)))
     throw('pos out of range.');
 end
 
-R = eye(3);
+R = chain(1).init_rotation;
 
 for i=1:pos
    R = R*rotZ(chain(i).q)*chain(i).R_jts;

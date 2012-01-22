@@ -10,14 +10,7 @@ success = 0;
 
 r_base = [0; 0; 0];  % First chain link starts at the origin
 
-% Check if there's an initial link inertial rotation, otherwise use the
-% default.  Note that this means the 'init_rotation' field is ignored on
-% links that aren't the first in their chain.
-if (isfield(chain(1), 'init_rotation'))
-    R = chain(1).init_rotation; 
-else
-    R = eye(3);
-end
+R = chain(1).init_rotation; 
 
 for i = 1:length(chain)
     
@@ -29,4 +22,5 @@ for i = 1:length(chain)
     r_base = r_cm + R*(chain(i).r_ip1);
     draw_triad(r_base, R, 1, 'myc');
 end
+success = 1;
 end
