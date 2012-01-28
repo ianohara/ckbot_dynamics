@@ -7,8 +7,7 @@ function s2 = rk4Step(s1, u, fh, dt)
 % a static control vector as input as well.
 %
 % by:
-%    Ian O'Hara, Uriah Baalke, Sebastian Mauchly, Alice Yurechko, and
-%    Emily Fisher
+%    Ian O'Hara
 %
 % Arguments:
 %   s1 = initial state [n x 1]

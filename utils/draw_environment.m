@@ -1,4 +1,4 @@
-function success = draw_environment(sim)
+function chain = draw_environment(sim,s)
 %
 % Takes a simulation structure and draws it for you.  By default,
 % this just draws the initial configuration, but options can
@@ -7,7 +7,8 @@ function success = draw_environment(sim)
 %
 % ARUMENTS:
 %  sim - simulation structure
-%  
+%  s - step of simulation to draw
+%
 % RETURNS:
 %  success - 1 if successful, 0 if not
 
@@ -17,6 +18,12 @@ sets.draw_vels = 1;
 sets.draw_geom_vecs = 1;
 
 chain = sim.chain;
+
+N = length(chain);
+for i=1:N
+   chain(i).q =  sim.q(i,s);
+   chain(i).qd = sim.qd(i,s);
+end
 
 close all;
 figure;

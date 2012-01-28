@@ -34,14 +34,14 @@ for i = 1:N
     
     H = get_joint_mat(cur);
     alpha = alpha_p + H'*sim.qdd(i,s) + sim.s_vars.a(p_ind);     
-
-    if (exist('DEBUG_MSG') || exist('DEBUG_BASE_TIP'))
-       fprintf('----------- LINK %d ------------\n', i);
-       fprintf('Chain Description:\n (1=base, %d=tip)\n', N);
-       fprintf('Spatial acceleration at this link''s joint:\n');
-       print_vec(alpha);
-        
-    end
+% 
+%     if (exist('DEBUG_MSG') || exist('DEBUG_BASE_TIP'))
+%        fprintf('----------- LINK %d ------------\n', i);
+%        fprintf('Chain Description:\n (1=base, %d=tip)\n', N);
+%        fprintf('Spatial acceleration at this link''s joint:\n');
+%        print_vec(alpha);
+%         
+%     end
 end
 
 end

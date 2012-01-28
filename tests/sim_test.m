@@ -4,21 +4,22 @@
 
 %% Single module (one fixed module, one module attached to the fixed module)
 %    -> Equiv to a pendulum
-
+clear all
+close all
 chain_single = [
-    new_link('HT_tail_cap','rotate', rotX(pi/2));
+    new_link('HT1','rotate', rotY(pi/2));
     new_link('HT1');
-    new_link('HT_head_cap');
+    %new_link('HT_head_cap');
     ];
 
 N = size(chain_single, 1);
 
 t_sim = 2;    % Simulate for t_sim [s]
-num_s = 100;  % Use 100 timesteps
+num_s = 1000;  % Use 100 timesteps
 
 torque_history = zeros(N,num_s);
 q0 = zeros(N,1); %pi/6*ones(N,1);
-q0(1,1) = 0;
+q0(2,1) = pi/60;
 
 qd0 = zeros(N,1);
 
@@ -28,7 +29,8 @@ sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
     'torques', torque_history, 'q0', q0, 'qd0', qd0);
 
 % Calculate the rate of change of state at these initial conditions
-sim = tip_base_step(sim);
-sim = base_tip_step(sim);
+for i=1:num_s
+    sim = step_sim(sim);
+end
 
 %% 

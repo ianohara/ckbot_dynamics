@@ -79,22 +79,22 @@ for i = N:-1:1
     sim.s_vars.G(p_ind) = G;
     sim.s_vars.mu(i) = mu;
     sim.s_vars.a(p_ind) = a;
-    if (exist('DEBUG_MSG') || exist('DEBUG_TIP_BASE'))
-        fprintf('--------- Link %d -----------\n', i)
-        fprintf('Chain Description:\n  (%d=tip, 1=base)\n', N);
-        fprintf('The correction force at this link''s joint is:\n');
-        print_vec(z);
-        fprintf('The correction force through to the next link is:\n');
-        print_vec(zp);
-        fprintf('The Joint matrix is:\n');
-        print_vec(H')
-        fprintf('The correction force going through the inbound joint is:\n');
-        epsilon
-        fprintf('G is:\n');
-        G
-        fprintf('D is:\n');
-        D
-    end
+%     if (exist('DEBUG_MSG') || exist('DEBUG_TIP_BASE'))
+%         fprintf('--------- Link %d -----------\n', i)
+%         fprintf('Chain Description:\n  (%d=tip, 1=base)\n', N);
+%         fprintf('The correction force at this link''s joint is:\n');
+%         print_vec(z);
+%         fprintf('The correction force through to the next link is:\n');
+%         print_vec(zp);
+%         fprintf('The Joint matrix is:\n');
+%         print_vec(H')
+%         fprintf('The correction force going through the inbound joint is:\n');
+%         epsilon
+%         fprintf('G is:\n');
+%         G
+%         fprintf('D is:\n');
+%         D
+%     end
 end
 
 end
