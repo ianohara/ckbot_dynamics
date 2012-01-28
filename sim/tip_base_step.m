@@ -21,7 +21,7 @@ function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 % TODO:
 % 
 
-grav = [0;0;0;0;0;-9.81];
+grav = [0;0;0;0;0;9.81];
 pp = zeros(6); % Seed for the p+ (ie: p+ at link N+1)
 zp = zeros(6,1);  % Seed for z+ (ie: z+ at link N+1)
 
@@ -100,7 +100,7 @@ for i = N:-1:1
 %         G
 %         fprintf('D is:\n');
 %         D
-%     end
+%    end
 end
 
 end

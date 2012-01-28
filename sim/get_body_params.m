@@ -40,14 +40,14 @@ props.edge_color = 'k';
 %
 
 if (strcmp(type, 'HT1'))
-    props.r_back = [0; 0; 0];
-    props.r_forward = [props.head_len; 0; 0];
+    props.r_back = [-props.head_len/2; 0; 0];
+    props.r_forward = [props.head_len/2; 0; 0];
     props.I_cm = eye(3);
     props.R_jts = eye(3);
     props.draw_fun = @draw_head_tail_1;
 elseif (strcmp(type, 'HT2'))
-    props.r_back = [0; 0; 0];
-    props.r_forward = [props.head_len; 0; 0];
+    props.r_back = [-props.head_len/2; 0; 0];
+    props.r_forward = [props.head_len/2; 0; 0];
     props.I_cm = eye(3);
     props.R_jts = rotX(-pi/2);
     props.draw_fun = @draw_head_tail_2;

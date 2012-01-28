@@ -18,7 +18,7 @@ props = get_body_params('HT_tail_cap');
 
 % geometric parameters
 s = props.width;
-r_cg_ref = props.r_back;
+r_cg_ref = -props.r_back;
 rad_tail = props.tail_radius;
 h_tail = props.tail_len;
 w_tail = props.tail_width;
@@ -71,7 +71,7 @@ verticies = [
 
 verticies_inertial = zeros(size(verticies,1), 3);
 for i=1:size(verticies,1)
-   verticies_inertial(i,:) = r_cg' + (R*R_correction*(r_cg_ref + verticies(i,:)'))';
+   verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)' + (R*R_correction*(verticies(i,:)'))';
 end
 
 

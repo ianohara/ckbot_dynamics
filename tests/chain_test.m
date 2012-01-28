@@ -12,6 +12,17 @@ sets.draw_geom = 1;
 sets.draw_vels = 1;
 sets.draw_geom_vecs = 1;
 
+chain0 = [
+    new_link('HT_tail_cap', 'q',0,  'qd',0, 'rotate', rotY(pi/2));
+    new_link('HT1', 'q',0, 'qd',0);
+    new_link('HT1', 'q', 0,'qd',.4);
+    new_link('HT1', 'q',0,  'qd',.1);
+    new_link('HT1', 'q', 0,'qd',0.5);
+    new_link('HT1', 'q', 0, 'qd',.1);
+    new_link('HT_head_cap', 'q', 0, 'qd',.1);
+    
+];
+
 chain1 = [
     new_link('HT_tail_cap', 'q',0,  'qd',0, 'rotate', rotY(pi/2));
     new_link('HT1', 'q',-pi/4, 'qd',0);
@@ -56,6 +67,24 @@ chain1 = [
     
 
 close all;
+figure;
+hold on;
+grid on;
+axis equal;
+xlabel('X [m]','FontSize',14);
+ylabel('Y [m]','FontSize',14);
+zlabel('Z [m]','FontSize',14);
+view(45,45);
+if (sets.draw_geom)
+    draw_chain(chain0);
+end
+if (sets.draw_vels)
+    draw_lin_vels(chain0);
+end
+if (sets.draw_geom_vecs)
+    draw_geom_vecs(chain0);
+end
+
 figure;
 hold on;
 grid on;
