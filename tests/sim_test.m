@@ -23,8 +23,6 @@ q0(2,1) = pi/60;
 
 qd0 = zeros(N,1);
 
-qd0(1,1) = 1;
-
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
     'torques', torque_history, 'q0', q0, 'qd0', qd0);
 

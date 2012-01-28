@@ -1,5 +1,5 @@
 function success = draw_chain(chain, varargin)
-%  Draws a chain of connected CKBot links
+%  Draws a chain of connected CKBot links in the current figure
 %  
 %  ARGUMENTS:
 %    chain - vector of link structures in the order of their linking

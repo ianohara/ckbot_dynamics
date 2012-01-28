@@ -1,6 +1,7 @@
-function sim = tip_base_step(sim)
+function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 %
-% Calculates P and z using the current system step (sim.s) state.
+% Calculates the values needed to do base to tip traversal for this
+%   state (which calculates the acceleration of state) for 
 %
 % ARGUMENTS
 %   sim - the simulation structure.  See sim_doc.txt for documentation.
@@ -9,8 +10,7 @@ function sim = tip_base_step(sim)
 %           simulation)
 %
 % RETURNS
-%   sim - the simulation structure with sim.p,sim.z,sim.s_vars.*, filled
-%   out for the current step of the system (sim.s)
+%
 %  
 % NOTES: 
 %   1. Everything should be done in the inertial frame
@@ -24,14 +24,27 @@ function sim = tip_base_step(sim)
 grav = [0;0;0;0;0;-9.81];
 pp = zeros(6); % Seed for the p+ (ie: p+ at link N+1)
 zp = zeros(6,1);  % Seed for z+ (ie: z+ at link N+1)
-N = size(sim.chain,1);
-s = sim.s;  % Current simulation step
+
+% Stuff needed from sim structure
+N = size(chain,1);
+q = s(1:N);
+qd = s(N+1:end);
+
+% Initialize Return Variables
+G_all = zeros(6*N,1);
+mu_all = zeros(N,1);
+a_all = zeros(6*N,1);
+
+% Temporary hack?  My rotation derivation functions use the qs stored
+% in the chain.
+chain = propogate_angles_and_rates(chain,q,qd);
 
 % link N = tip, link 1 = base
 for i = N:-1:1
-    cur = sim.chain(i);
+    
+    cur = chain(i);
    
-    R_cur = get_chain_pos_rot(sim.chain, i); % Rotation from current link to inertial
+    R_cur = get_chain_pos_rot(chain, i); % Rotation from current link to inertial
     r_i_ip = R_cur*(cur.r_ip1 - cur.r_im1); % Vector from current joint to outbound joint
     phi = get_bod_trans(r_i_ip);  % Spatial transform operator from this joint to outbound joint
     
@@ -40,45 +53,38 @@ for i = N:-1:1
         
     M = get_spatial_inertia_mat(cur);  % 6x6 inertia matrix about inbound joint
     
-    p_ind = get_block_indicies(size(sim.p), i, s);
+    p_ind = get_block_indicies(i);
+    
     p_cur = phi*pp*phi' + M;
-    sim.p(p_ind,p_ind, s) = p_cur;
     
     H_b_frame_star = get_joint_mat(cur)';
     H_w_frame_star = [R_cur, zeros(3);zeros(3),eye(3)]*H_b_frame_star;
     H = H_w_frame_star';
     
-    
     D = H*p_cur*H';
     G = p_cur*H'*(1/D);
     
     tau_tilde = eye(6) - G*H;
-    pp = tau_tilde*p_cur; % Setting p+ for next time around loop
+    pp = tau_tilde*p_cur; % Set p+ for next time around loop
     
-    omega = get_angular_vel(sim.chain, i, sim.qd(i,s));
+    omega = get_angular_vel(chain, i, qd(i));
     omega_cross = get_cross_mat(omega);
     
-    b = [omega_cross*sim.chain(i).I_cm*omega;...
-        sim.chain(i).m*omega_cross*omega_cross*(-cur.r_im1)];
+    b = [omega_cross*chain(i).I_cm*omega;...
+        chain(i).m*omega_cross*omega_cross*(-cur.r_im1)];
     a = [0; 0; 0; omega_cross*omega_cross*(-cur.r_im1)];
-%     % TODO: Right place for grav here? And, is this the correct way
-%     % of inserting gravity?  IE: body transform from CM to joint?
-%     fprintf('The force on this module by the outbound module in the outbound frame is..');
-%     zp
-%     fprintf('The force on this module by the outbound module in this frame is..');
-%     phi*zp
-%     phi
     
-    z = phi*zp + p_cur*a+b + phi_cm*sim.chain(i).m*grav;
-    epsilon = sim.T(i,s) - H*z;
+    z = phi*zp + p_cur*a+b + phi_cm*chain(i).m*grav;
+    epsilon = T(i) - H*z;
     
     mu = (1/D)*epsilon;
     zp = z + G*epsilon; % Setting z+ for the next time around loop
 
-    % Store the stuff we need for the base to tip traversals
-    sim.s_vars.G(p_ind) = G;
-    sim.s_vars.mu(i) = mu;
-    sim.s_vars.a(p_ind) = a;
+    % Returned for the base to tip traversal
+    G_all(p_ind) = G;
+    mu_all(i) = mu;
+    a_all(p_ind) = a;
+    
 %     if (exist('DEBUG_MSG') || exist('DEBUG_TIP_BASE'))
 %         fprintf('--------- Link %d -----------\n', i)
 %         fprintf('Chain Description:\n  (%d=tip, 1=base)\n', N);

@@ -1,10 +1,9 @@
-function inds = get_block_indicies(size, i, step)
+function inds = get_block_indicies(i)
 %  Returns the indicies for the ith diagonal 
 %   block of size 6x6 from matrix of size
 %   N x M x R (size = [N, M, R])
 %
 %  ARGUMENTS
-%   size - Size of array to give indicies for (CURRENTLY UNUSED)
 %   i - 6x6 block diagonal to extract indicies for
 %   step - third dimension index
 %
