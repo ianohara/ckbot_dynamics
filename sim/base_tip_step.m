@@ -14,6 +14,12 @@ function qdd = base_tip_step(chain, s, T, G, mu, a)
 % RETURNS:  
 %   qdd - nx1 array of joint accelerations
 %
+% NOTES: 
+%   1. Everything should be done in the inertial frame
+%   2. In spatial algebra notation for dynamics, we use 6x1 vectors
+%      (much like twists), except the 3 angular components are first
+%      and the 3 linear components are second.
+%
 % TODO:
 %   Move get_chain_pos_rot(...) outside of the loop and change it to return
 %   a 3x3N block matrix where each 3x3 block is a rotation matrix for a

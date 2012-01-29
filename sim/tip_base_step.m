@@ -4,13 +4,15 @@ function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 %   state (which calculates the acceleration of state) for 
 %
 % ARGUMENTS
-%   sim - the simulation structure.  See sim_doc.txt for documentation.
-%           Need: a chain configuration, and
-%           sim.T(N,num_t) defined (torque command time history to use in
-%           simulation)
+%   chain - array of links (chain(1) = base, chain(N) = tip)
+%   s - Current state [2N x 1]
+%   T - Current motor torques [N x 1]
 %
-% RETURNS
-%
+% RETURNS:
+%  Intermediate results needed by the base to tip recursion step.
+%    G_all - [6N x 1]
+%    mu_all - [N x 1]
+%    a_all - [6N x 1]
 %  
 % NOTES: 
 %   1. Everything should be done in the inertial frame

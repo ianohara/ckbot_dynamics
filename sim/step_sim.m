@@ -11,11 +11,15 @@ function [q_next, qd_next] = step_sim(chain, q, qd, T, dt)
 % NOTE: Right now the architecture of this simulator is asinine and
 %       not understandable by anyone who didn't write it.  This will
 %       change, be patient.
+%
+% TODO:
+%   Change this to take a function handle for the integrator as well.
+%
 
 step_func = @(s,u)(state_rate(chain, s, u));
 N = size(chain,1);
 
-next_state = rk4step([q; qd], T, step_func, dt);
+next_state = rk4Step([q; qd], T, step_func, dt);
 
 q_next = next_state(1:N);
 qd_next = next_state(N+1:end);
