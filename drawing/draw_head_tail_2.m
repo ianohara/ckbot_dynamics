@@ -24,7 +24,7 @@ props = get_body_params('HT2');
 
 % geometric parameters
 s = props.width;
-r_cg_ref = -props.r_back;
+r_cg_ref = props.r_back;
 rad_tail = props.tail_radius;
 h_tail = props.tail_len;
 w_tail = props.tail_width;
@@ -78,9 +78,9 @@ verticies = [
 verticies_inertial = zeros(size(verticies,1), 3);
 for i=1:size(verticies,1)
     if (((i >= 19) && (i <= 28)) || (i <= 8))
-        verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)'+(R*R_correction*(r_cg_ref + R_HT2_correction*verticies(i,:)'))';
+        verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)'+(R*R_correction*(R_HT2_correction*verticies(i,:)'))';
     else
-        verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)'+(R*R_correction*(r_cg_ref + verticies(i,:)'))';
+        verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)'+(R*R_correction*(verticies(i,:)'))';
     end
 end
 
