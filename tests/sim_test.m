@@ -18,7 +18,7 @@ N = size(chain_single, 1);
 t_sim = 30;    % Simulate for t_sim [s]
 num_s = 3000;  % Use this many timesteps
 
-torque_history = zeros(N,num_s);
+torque_history = zeros(N,num_s);  % At each timestep, the torque of each motor needs to be specified
 q0 = zeros(N,1);
 q0(2,1) = pi/6;
 

@@ -83,8 +83,6 @@ for i=1:steps
     end
 end
 
-styles = {'r-','b-'};
-
 if  ((draw_plots) && (~real_time))
     figure(plot_fig)
     st = 1:steps;
