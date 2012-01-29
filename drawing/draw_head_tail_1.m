@@ -76,7 +76,7 @@ verticies = [
 
 verticies_inertial = zeros(size(verticies,1), 3);
 for i=1:size(verticies,1)
-   verticies_inertial(i,:) = r_cg' + (R*R_correction*(r_cg_ref + verticies(i,:)'))';
+   verticies_inertial(i,:) = r_cg' + (R*r_cg_ref)' + (R*R_correction*( verticies(i,:)'))';
 end
 
 

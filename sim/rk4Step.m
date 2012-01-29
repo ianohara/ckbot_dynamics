@@ -28,7 +28,14 @@ nk = fh(s1 + mk*(dt/2), u);
 pk = fh(s1 + nk*(dt/2), u);
 qk = fh(s1 + pk*dt, u);
 
+fprintf('In rk4Step:\n  state is:\n');
+s1
+fprintf('  Euler rate of state is:\n');
+mk
+fprintf('  New state is:\n');
+
 % Compute the next state weighting the two middle slopes twice as much
 % as the other.
 s2 = s1 + ((mk + 2*nk + 2*pk + qk)/6)*dt;
+s2
 end

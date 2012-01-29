@@ -1,39 +1,41 @@
-function sim = base_tip_step(sim)
+function qdd = base_tip_step(chain, s, T, G, mu, a)
 % Calculates the joint accelerations based on the current
-% system state step (sim.s) defined for this simulation and the results
-% of the tip to base recursion on this same state.
+% system state, input torques, G, mu, and 'a' calculated in
+% the tip_base_step for this step.
 %
 % ARGUMENTS:
 %  sim - the simulation structure.  See sim_doc.txt for documentation
 %
 % RETURNS:
 %  
-% 
+% qdd - nx1 array of joint accelerations
 
-N = size(sim.chain,1);
-s = sim.s;
+N = size(chain,1);
 
 alpha = zeros(6,1);  % The seed acceleration (ie: the base joint does not rotate
-            % wrt the ground, so we use this to seed the base to tip
-            % recursion)
-% g = -9.81;
-% alpha(3) = g;
+                     % wrt the ground, so we use this to seed the base to tip
+                     % recursion)
+q = s(1:N);
+qd = s(N+1:end);
+qdd = NaN(N,1);
+
+chain = propogate_angles_and_rates(chain, q, qd);
 
 for i = 1:N
-    cur = sim.chain(i);
+    cur = chain(i);
     
-    R_cur = get_chain_pos_rot(sim.chain, i);
+    R_cur = get_chain_pos_rot(chain, i);
     r_i_ip = R_cur*(cur.r_ip1 - cur.r_im1);
-    phi = get_bod_trans(r_i_ip);  % From outbound to inbound
+    phi = get_bod_trans(r_i_ip);   % From outbound to inbound
   
     alpha_p = phi'*alpha;  % inbound alpha transformed to outbound frame
     
-    p_ind = get_block_indicies(size(sim.p),i,s);
+    p_ind = get_block_indicies(i);
     
-    sim.qdd(i,s) = sim.s_vars.mu(i) - sim.s_vars.G(p_ind)'*alpha_p;
+    qdd(i) = mu(i) - G(p_ind)'*alpha_p;
     
     H = get_joint_mat(cur);
-    alpha = alpha_p + H'*sim.qdd(i,s) + sim.s_vars.a(p_ind);     
+    alpha = alpha_p + H'*qdd(i) + a(p_ind);     
 % 
 %     if (exist('DEBUG_MSG') || exist('DEBUG_BASE_TIP'))
 %        fprintf('----------- LINK %d ------------\n', i);
