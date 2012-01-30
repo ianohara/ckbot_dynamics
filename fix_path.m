@@ -11,7 +11,14 @@ for i = 1:length(ls)
    if (strcmp(ls(i).name(1), '.')) 
        continue;
    end
-   addpath(strcat(pwd,'/',ls(i).name));
+   
+   if (isunix() || ismac())
+       delimeter = '/';
+   elseif (ispc())
+       delimeter = '\\';
+   end
+   
+   addpath(strcat(pwd,delimeter,ls(i).name));
 end
 
 clear all
