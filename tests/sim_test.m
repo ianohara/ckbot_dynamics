@@ -1,11 +1,14 @@
+function success = sim_test(varargin)
+
 % Setup, run, and verify a number of simulation steps and full
 % simulations on simple chain configurations that can be verified
-% by hand.
-
+% by hand
 %% Single module (one fixed module, one module attached to the fixed module)
 %    -> Equiv to a pendulum
-clear all
+
 close all
+
+global sim
 
 chain_single = [
     new_link('HT1','rotate', rotY(pi/2));
@@ -34,4 +37,6 @@ sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
 tic;
 sim = run_sim(sim, num_s);
 toc
-draw_sim(sim);
+draw_sim(sim,varargin{:});
+success = 1;
+end
