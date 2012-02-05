@@ -20,12 +20,18 @@ function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 %      (much like twists), except the 3 angular components are first
 %      and the 3 linear components are second.
 %
-% TODO:
-%   get_rotation... and get_omega... are eating up ~25% of computation time
+% TODO/BUGS:
+%   1. get_rotation... and get_omega... are eating up ~25% of computation time
 %   in this function.  They should be moved outside of the loop and changed
 %   so that they calculate the values for the entire arm at once, then
 %   index to the correct portions within the loop.
 % 
+%   2. The tip module acts as if gravity is acting in the opposite
+%   direction.  Also, The other modules react properly (ie: stable
+%   equilibrium is down) when g = 9.81 (instead of the expected -9.81).)
+%   No idea why the tip module has gravity act in the opposite sense than
+%   the rest of the chain.
+
 
 grav = [0;0;0;0;0;9.81];
 pp = zeros(6); % Seed for the p+ (ie: p+ at link N+1)
@@ -93,9 +99,13 @@ for i = N:-1:1
     % Spatial compensation force
     z = phi*zp + p_cur*a+b + phi_cm*chain(i).m*grav;
     
+    % Velocity dependent joint force (ie: damping)
+    % NOTE: Not in JPL paper.  Added by IMO
+    c = -cur.damping*qd(i);
+    
     % Correction force through the inbound joint (including the torque
-    % added due to motor torque)
-    epsilon = T(i) - H*z;
+    % added due to motor torque and damping)
+    epsilon = T(i) + c - H*z;
     
     % Relative joint acceleration
     mu = (1/D)*epsilon;

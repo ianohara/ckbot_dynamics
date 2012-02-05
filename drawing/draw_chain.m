@@ -20,6 +20,12 @@ else
     just_vectors = 0;
 end
 
+if (sum(ismember(varargin, 'link_nums')) > 0)
+    draw_nums = 1;
+else
+    draw_nums = 0;
+end
+
 % For using draw_chain as a standalone function.
 if (sum(ismember(varargin, 'need_figure')) > 0)
     fprintf('Initializing a figure for you...\n');
@@ -37,17 +43,22 @@ r_base = [0; 0; 0];  % First chain link starts at the origin
 
 R = chain(1).init_rotation; 
 
+% Nothing significant about using this, it just is a nice way to scale the
+% triads as the module dimensions change.
+triad_scale = norm(2*chain(1).r_im1); 
+
 for i = 1:length(chain)
-    
     R = R*rotZ(chain(i).q)*chain(i).R_jts;  % From i's coordinates to inertial
     r_cm = r_base - R*(chain(i).r_im1);
     if (~just_vectors)
         chain(i).draw(r_cm,R);
     end
-    
-    draw_triad(r_cm, R, 1, 'rgb');
+    if (draw_nums)
+       text(r_cm(1), r_cm(2), r_cm(3), sprintf('%d', i), 'FontSize', 14,'Color', 'w');
+    end
+    draw_triad(r_cm, R, triad_scale, 'rgb');
     r_base = r_cm + R*(chain(i).r_ip1);
-    draw_triad(r_base, R, 1, 'myc');
+    draw_triad(r_base, R, triad_scale, 'myc');
     
 end
 success = 1;

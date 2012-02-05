@@ -43,8 +43,8 @@ for i = 1:N
     % Rotation of current link's coordinate frame to the inertial frame
     R_cur = get_chain_pos_rot(chain, i);
     
-    % Vector from this link's inbound joint to its outbound joint
-    r_i_ip = R_cur*(cur.r_ip1 - cur.r_im1);
+    % Vector from this link's outbound to inbound joint
+    r_i_ip = R_cur*(cur.r_im1 - cur.r_ip1);
     % Spatial tranformation operator from outbound joint to inbound joint
     phi = get_bod_trans(r_i_ip);
   
@@ -64,6 +64,8 @@ for i = 1:N
     
     % Spatial acceleration of the link's inbound joint
     alpha = alpha_p + H'*qdd(i) + a(p_ind);
+    fprintf('  Link %d:\n    Linear Accel: %2.2e, %2.2e, %2.2e\n    Angular Accel: %2.2e, %2.2e, %2.2e\n', i, alpha(4:6), alpha(1:3));
+
 end
 
 end
