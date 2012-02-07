@@ -24,6 +24,7 @@ props.draw_cks = 0;
 props.real_time = 0;
 props.draw_plots = 1;
 props.just_vectors = 0;
+props.start_time = 0;
 
 %%% Parse any ARGUMENTS %%%
 i = 1;
@@ -41,6 +42,12 @@ while (i<nargin)
             end
             props.to_plot = varargin{i+1};
             i=i+1;
+        case 'start_time'
+            if (i==nargin)
+                error('Must supply text field as argument following "start_time".');
+            end
+            props.start_time = varargin{i+1};
+            i=i+1;
         case 'draw_cks'
             props.draw_cks = 1;
             props.real_time = 1;
@@ -54,12 +61,17 @@ while (i<nargin)
     i = i+1;
 end
 
+fprintf('Starting at time %e...\n', props.start_time);
+
+
 close all;
 
 dt = sim.dt;
 dt_draw = dt*props.pause_mult;
 steps = sim.s;
 chain = sim.chain;
+
+start_step = floor(props.start_time/dt)+1;
 
 draw_fig = figure();
 hold on;
@@ -85,9 +97,35 @@ hold on;
 xlabel('Time [s]', 'FontSize', 14);
 ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
 
-for i=1:steps
+if  (props.draw_plots)
+    figure(plot_fig)
+    st = 1:steps;
+    subplot(211);
+    plot(st*dt, sim.q(props.to_plot,:),'LineWidth',2);
+    hold on;
+    subplot(212);
+    plot(st*dt, sim.qd(props.to_plot,:),'LineWidth',2);
+    hold on;
+    legend_strs = {};
+    for i=1:length(props.to_plot)
+        fprintf('Link %d\n', props.to_plot(i));
+       legend_strs{end+1} = sprintf('Link %d', props.to_plot(i));
+    end
+    legend(legend_strs);
+end
+
+figure(plot_fig);
+subplot(211);
+cur_axis = axis();
+t_line1 = line([0.0 0.0], cur_axis(3:4), 'LineStyle', '-', 'LineWidth',2,'Color','k');
+subplot(212);
+cur_axis = axis();
+t_line2 = line([0.0 0.0], cur_axis(3:4),'LineStyle', '-', 'LineWidth',2,'Color','k');
+
+for i=start_step:steps
     if (props.draw_cks)
         figure(draw_fig);
+        [az, el] = view();
         clf;
         hold on;
         grid on;
@@ -96,42 +134,22 @@ for i=1:steps
         xlabel('X [m]','FontSize',14);
         ylabel('Y [m]', 'FontSize', 14);
         zlabel('Z [m]', 'FontSize', 14);
-        view(45,45);
-        fprintf('Drawing step %d (Time = %f)\n', i, i*dt);
+        view(az, el);
+%        fprintf('Drawing step %d (Time = %f)\n', i, i*dt);
         chain = propogate_angles_and_rates(chain, sim.q(:,i), sim.qd(:,i));
         if (props.just_vectors)
             draw_chain(chain, 'just_vectors');
             draw_geom_vecs(chain);
         else
-            draw_chain(chain);
+            draw_chain(chain, 'link_nums');
         end
     end
     if (props.real_time)
+        figure(draw_fig);
+        set(t_line1,'XData', [i*dt, i*dt]);
+        set(t_line2, 'XData', [i*dt, i*dt]);
         drawnow();
         pause(dt_draw);
-    end
-    if ((props.draw_plots) && props.real_time)
-        figure(plot_fig);
-        for n=1:size(props.to_plot)
-            subplot(211);
-            plot(i*dt, sim.q(props.to_plot(n),i), 'o');
-            subplot(212);
-            plot(i*dt, sim.qd(props.to_plot(n),i), 'o');
-        end
-    end
-end
-
-if  ((props.draw_plots) && (~props.real_time))
-    figure(plot_fig)
-    st = 1:steps;
-    for n = 1:length(props.to_plot)
-        fprintf('Plotting link number %d...\n',n);
-        subplot(211);
-        plot(st*dt, sim.q(props.to_plot(n),:),'LineWidth',2);
-        hold on;
-        subplot(212);
-        plot(st*dt, sim.qd(props.to_plot(n),:),'LineWidth',2);
-        hold on;
     end
 end
 success = 1;

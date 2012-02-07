@@ -51,6 +51,7 @@ link.q = props.q; % Angle of rotation about join wrt the previous link
 % (note: this implies link i's motor is at its base and rotates around
 % i-1's joint)
 link.qd = props.qd; 
+link.damping = props.damping;
 
 link.forward_joint_axis = props.joint_axis;
 link.r_im1 = props.r_back; % Vector in link coords to the joint of previous link
