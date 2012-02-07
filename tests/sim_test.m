@@ -19,16 +19,17 @@ global sim
 
 chain_single = [
     new_link('HT1','rotate',rotY(pi/2));
+    new_link('HT1');
     ];
 
 chain_single(1).damping = 1.0;
 
 N = size(chain_single, 1);
-t_sim = 5;
-num_s = 1000;
+t_sim = 10;
+num_s = 1500;
 torque_history = zeros(N, num_s);
 q0 = zeros(N,1);
-q0(1) = pi/6;
+q0(2) = pi/2;
 
 qd0 = zeros(N,1);
 
@@ -62,10 +63,10 @@ num_s = 1200;  % Use this many timesteps
 
 torque_history = zeros(N,num_s);  % At each timestep, the torque of each motor needs to be specified
 q0 = zeros(N,1);
-q0(1,1) = 0;
-q0(2,1) = 0;
-q0(3,1) = 0;
-q0(4,1) = pi/6;
+q0(1,1) = pi/10;
+q0(2,1) = pi/10;
+q0(3,1) = pi/10;
+q0(4,1) = pi/10;
 
 qd0 = zeros(N,1);
 

@@ -24,6 +24,7 @@ props.draw_cks = 0;
 props.real_time = 0;
 props.draw_plots = 1;
 props.just_vectors = 0;
+props.start_time = 0;
 
 %%% Parse any ARGUMENTS %%%
 i = 1;
@@ -41,6 +42,12 @@ while (i<nargin)
             end
             props.to_plot = varargin{i+1};
             i=i+1;
+        case 'start_time'
+            if (i==nargin)
+                error('Must supply text field as argument following "start_time".');
+            end
+            props.start_time = varargin{i+1};
+            i=i+1;
         case 'draw_cks'
             props.draw_cks = 1;
             props.real_time = 1;
@@ -54,12 +61,17 @@ while (i<nargin)
     i = i+1;
 end
 
+fprintf('Starting at time %e...\n', props.start_time);
+
+
 close all;
 
 dt = sim.dt;
 dt_draw = dt*props.pause_mult;
 steps = sim.s;
 chain = sim.chain;
+
+start_step = floor(props.start_time/dt)+1;
 
 draw_fig = figure();
 hold on;
@@ -110,7 +122,7 @@ subplot(212);
 cur_axis = axis();
 t_line2 = line([0.0 0.0], cur_axis(3:4),'LineStyle', '-', 'LineWidth',2,'Color','k');
 
-for i=1:steps
+for i=start_step:steps
     if (props.draw_cks)
         figure(draw_fig);
         [az, el] = view();
@@ -123,7 +135,7 @@ for i=1:steps
         ylabel('Y [m]', 'FontSize', 14);
         zlabel('Z [m]', 'FontSize', 14);
         view(az, el);
-        fprintf('Drawing step %d (Time = %f)\n', i, i*dt);
+%        fprintf('Drawing step %d (Time = %f)\n', i, i*dt);
         chain = propogate_angles_and_rates(chain, sim.q(:,i), sim.qd(:,i));
         if (props.just_vectors)
             draw_chain(chain, 'just_vectors');
