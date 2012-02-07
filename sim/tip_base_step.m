@@ -61,7 +61,7 @@ for i = N:-1:1
     phi = get_bod_trans(r_i_ip);  % Spatial transform operator from this joint to outbound joint
     
     % Vector from inbound joint to CM of this link (in inertial coords)
-    r_i_cm = R_cur*(cur.r_im1);
+    r_i_cm = R_cur*(-cur.r_im1);
     % Spatial transformation from inbound joint to CM
     phi_cm = get_bod_trans(r_i_cm);
         
