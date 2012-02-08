@@ -24,6 +24,7 @@ props.draw_cks = 0;
 props.real_time = 0;
 props.draw_plots = 1;
 props.just_vectors = 0;
+props.draw_torque = 0;
 props.start_time = 0;
 
 %%% Parse any ARGUMENTS %%%
@@ -51,6 +52,8 @@ while (i<nargin)
         case 'draw_cks'
             props.draw_cks = 1;
             props.real_time = 1;
+        case 'draw_torque'
+            props.draw_torque = 1;
         case 'real_time'
             props.real_time = 1;
         case 'just_vectors'
@@ -97,6 +100,23 @@ hold on;
 xlabel('Time [s]', 'FontSize', 14);
 ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
 
+if (props.draw_torque)
+   torque_fig = figure();
+   grid on;
+   hold on;
+   title('Time History of CKBot System','FontSize', 14);
+   xlabel('Time [s]','FontSize', 14);
+   ylabel('Joint Torque [Nm]','FontSize',14);
+   st = 1:steps;
+   plot(st*dt, sim.T(props.to_plot,:),'LineWidth', 2);
+   legend_strs = {};
+   for i=1:length(props.to_plot)
+        fprintf('Link %d\n', props.to_plot(i));
+       legend_strs{end+1} = sprintf('Link %d', props.to_plot(i));
+   end
+   legend(legend_strs);
+end
+
 if  (props.draw_plots)
     figure(plot_fig)
     st = 1:steps;
@@ -121,6 +141,10 @@ t_line1 = line([0.0 0.0], cur_axis(3:4), 'LineStyle', '-', 'LineWidth',2,'Color'
 subplot(212);
 cur_axis = axis();
 t_line2 = line([0.0 0.0], cur_axis(3:4),'LineStyle', '-', 'LineWidth',2,'Color','k');
+
+figure(torque_fig);
+cur_axis = axis();
+t_line3 = line([0.0 0.0], cur_axis(3:4), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k');
 
 for i=start_step:steps
     if (props.draw_cks)
@@ -148,6 +172,7 @@ for i=start_step:steps
         figure(draw_fig);
         set(t_line1,'XData', [i*dt, i*dt]);
         set(t_line2, 'XData', [i*dt, i*dt]);
+        set(t_line3, 'XData', [i*dt, i*dt]);
         drawnow();
         pause(dt_draw);
     end

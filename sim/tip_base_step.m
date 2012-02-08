@@ -51,12 +51,15 @@ a_all = zeros(6*N,1);
 % in the chain.
 chain = propogate_angles_and_rates(chain,q,qd);
 
+R_chain = get_chain_pos_rot(chain); % Nx3x3 array of rotation matricies for each link in the chain
+M_chain = get_spatial_inertia_mat(chain);
+
 % link N = tip, link 1 = base
 for i = N:-1:1
     
     cur = chain(i);
    
-    R_cur = get_chain_pos_rot(chain, i); % Rotation from current link to inertial
+    R_cur = R_chain(:,:,i); % Rotation from current link to inertial
     r_i_ip = R_cur*(cur.r_ip1 - cur.r_im1); % Vector from current joint to outbound joint
     phi = get_bod_trans(r_i_ip);  % Spatial transform operator from this joint to outbound joint
     
@@ -65,7 +68,7 @@ for i = N:-1:1
     % Spatial transformation from inbound joint to CM
     phi_cm = get_bod_trans(r_i_cm);
         
-    M = get_spatial_inertia_mat(cur);  % 6x6 inertia matrix about inbound joint
+    M = M_chain(:,:,i);  % 6x6 inertia matrix about inbound joint
     
     p_ind = get_block_indicies(i);
     

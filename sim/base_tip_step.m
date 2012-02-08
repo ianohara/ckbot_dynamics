@@ -35,13 +35,15 @@ q = s(1:N);
 qd = s(N+1:end);
 qdd = NaN(N,1);  % We calculate this.
 
+R_chain = get_chain_pos_rot(chain);
+
 chain = propogate_angles_and_rates(chain, q, qd);
 
 for i = 1:N
     cur = chain(i);
     
     % Rotation of current link's coordinate frame to the inertial frame
-    R_cur = get_chain_pos_rot(chain, i);
+    R_cur = R_chain(:,:,i);
     
     % Vector from this link's outbound to inbound joint
     r_i_ip = R_cur*(cur.r_im1 - cur.r_ip1);
@@ -64,7 +66,7 @@ for i = 1:N
     
     % Spatial acceleration of the link's inbound joint
     alpha = alpha_p + H'*qdd(i) + a(p_ind);
-    fprintf('  Link %d:\n    Linear Accel: %2.2e, %2.2e, %2.2e\n    Angular Accel: %2.2e, %2.2e, %2.2e\n', i, alpha(4:6), alpha(1:3));
+    %fprintf('  Link %d:\n    Linear Accel: %2.2e, %2.2e, %2.2e\n    Angular Accel: %2.2e, %2.2e, %2.2e\n', i, alpha(4:6), alpha(1:3));
 
 end
 
