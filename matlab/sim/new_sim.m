@@ -15,6 +15,8 @@ end
 
 sim = {};
 
+sim.integrator = @euler; % First order euler as default integrator
+
 num_s = NaN;
 t_sim = NaN;
 
@@ -42,6 +44,8 @@ for i = 1:2:nargin-1
            q0 = val;
        case 'qd0'
            qd0 = val;
+       case 'integrator';
+           sim.integrator = val;
        otherwise
            error('Unknown option: %s', opt);
    end

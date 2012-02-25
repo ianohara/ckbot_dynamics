@@ -30,6 +30,7 @@ props.just_vectors = 0;
 props.draw_torque = 0;
 props.start_time = 0;
 props.one_figure = 0;
+props.make_movie = 0;
 
 %%% Parse any ARGUMENTS %%%
 i = 1;

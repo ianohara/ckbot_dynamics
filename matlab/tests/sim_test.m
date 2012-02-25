@@ -1,4 +1,4 @@
-function success = sim_test(varargin)
+function sim = sim_test(varargin)
 
 % Setup, run, and verify a number of simulation steps and full
 % simulations on simple chain configurations that can be verified
@@ -41,7 +41,6 @@ sim = run_sim(sim, num_s);
 toc;
 
 draw_sim(sim, varargin{:});
-success = 1;
 
 elseif ((sim_num == 2) || (~sim_num))
 %% Multiple Modules
@@ -87,7 +86,6 @@ tic;
 sim = run_sim(sim, num_s);
 toc
 draw_sim(sim,varargin{:});
-success = 1;
 
 elseif ((sim_num == 3) || (~sim_num))
 %% Multiple Modules
@@ -119,7 +117,6 @@ tic;
 sim = run_sim(sim, num_s);
 toc
 draw_sim(sim,varargin{:});
-success = 1;
 end
 %% 
 end
