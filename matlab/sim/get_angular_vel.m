@@ -1,4 +1,4 @@
-function omega = get_angular_vel(chain, n, qd)
+function omega = get_angular_vel(chain, n)
 % Returns the angular velocity of the nth link in the chain
 % in the inertial frame
 %
@@ -17,9 +17,11 @@ function omega = get_angular_vel(chain, n, qd)
 omega = [0; 0; 0];
 R = chain(1).init_rotation;
 
-for i=1:n-1
-    omega = omega + R*[0; 0; qd];
-    R = R*chain(i).R_jts;
+for i=1:n
+    omega = omega + R*[0; 0; chain(i).qd];
+    % The current module's motor rotates around the last module's
+    % body frame z-axis.
+    R = R*rotZ(chain(i).q)*chain(i).R_jts;
 end
 
 end
