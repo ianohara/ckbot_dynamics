@@ -62,7 +62,7 @@ chain_single = [
 N = size(chain_single, 1);
 
 t_sim = 25;    % Simulate for t_sim [s]
-num_s = 500;  % Use this many timesteps
+num_s = 1000;  % Use this many timesteps
 
 torque_scale = 1;
 torque_omega = 1/20;
@@ -80,7 +80,7 @@ q0 = zeros(N,1);
 qd0 = zeros(N,1);
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
-    'torques', torque_history, 'q0', q0, 'qd0', qd0);
+    'torques', torque_history, 'q0', q0, 'qd0', qd0, 'integrator', @euler);
 
 tic;
 sim = run_sim(sim, num_s);
