@@ -146,13 +146,16 @@ namespace ckbot
             L_tilde = get_cross_mat(-r_im1_);
 
             Jo = I_cm_ - m_*L_tilde*L_tilde;
-
+            M_spat << Jo, m_*L_tilde,
+                     -m_*L_tilde, m_*Eigen::Matrix3d::Identity();
+/*
             M_spat << Jo(0,0), Jo(0,1), Jo(0,2), m_*L_tilde(0,0), m_*L_tilde(0,1), m_*L_tilde(0,2),
                       Jo(1,0), Jo(1,1), Jo(1,2), m_*L_tilde(1,0), m_*L_tilde(1,1), m_*L_tilde(1,2),
                       Jo(2,0), Jo(2,1), Jo(2,2), m_*L_tilde(2,0), m_*L_tilde(2,1), m_*L_tilde(2,2),
                       -m_*L_tilde(0,0), -m_*L_tilde(0,1), -m_*L_tilde(0,2), m_, 0, 0,
                       -m_*L_tilde(0,1), -m_*L_tilde(1,1), -m_*L_tilde(1,2), 0, m_, 0,
                       -m_*L_tilde(0,2), -m_*L_tilde(1,2), -m_*L_tilde(2,2), 0, 0, m_;
+  */
             return M_spat;
         }
         Eigen::RowVectorXd get_joint_matrix(void) const 
@@ -254,7 +257,7 @@ namespace ckbot
         {
             Eigen::Matrix3d R;
             R = links_[0].get_init_rotation();
-            
+
             for (int j = 0; j <= i; ++j)
             {
                 R = R*rotZ(links_[j].get_q())*links_[j].get_R_jts();
@@ -285,15 +288,6 @@ namespace ckbot
                 tmp3vec << 0,0, links_[cur].get_qd();
                 omega += R*tmp3vec;
                 R = R*rotZ(links_[cur].get_q())*links_[cur].get_R_jts();
-            }
-        }
-        void print_masses(void)
-        {
-            std::vector<module_link>::iterator link_iterator;
-            int num = 0;
-            for(link_iterator = links_.begin(); link_iterator != links_.end(); link_iterator++)
-            {
-                std::cout << "Link " << num++ << " has mass of " << link_iterator->get_mass() << " [kg]\n";
             }
         }
     };
@@ -572,7 +566,6 @@ int main(void)
     ckbot::module_link chain_modules[] = {ck2, ck2, ck2, ck2};
     int num_modules = 4;
     ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
-    ch.print_masses();
 
     ckbot::chain_rate rate_machine(ch);
 
