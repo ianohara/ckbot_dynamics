@@ -52,12 +52,16 @@ namespace ckbot
         Eigen::Matrix3d r_cross;
         r_cross = get_cross_mat(r);
 
+        phi << Eigen::Matrix3d::Identity(), r_cross,
+               Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
+        /*
         phi << 1, 0, 0, r_cross(0,0), r_cross(0,1), r_cross(0,2),
                0, 1, 0, r_cross(1,0), r_cross(1,1), r_cross(1,2),
                0, 0, 1, r_cross(2,0), r_cross(2,1), r_cross(2,2),
                0, 0, 0, 1,      0,      0, 
                0, 0, 0, 0,      1,      0,
                0, 0, 0, 0,      0,      1;
+        */
         return phi;
     }
     
@@ -165,7 +169,8 @@ namespace ckbot
             Ht = R_jts_.transpose()*Hprev;
 
             Eigen::RowVectorXd H(6);
-            H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
+            H << Ht, 0, 0, 0;
+            //H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
             return H;
         }
         double get_q(void) const
@@ -268,6 +273,12 @@ namespace ckbot
         {
             return N_;
         }
+        /* 
+         * If the propogate function needs to be thread safe, this method of
+         * updating a chain's state (q,qd) needs to be changed.  Any
+         * method that uses links_[] to get these two must then be changed to accept
+         * references to vectors of q and qd.
+         */
         void propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd)
         {
             for (int i=0; i<N_; ++i)
@@ -294,12 +305,13 @@ namespace ckbot
     class chain_rate
     {
     protected:
+        chain &c;
+
         std::vector<double> G_all;
         std::vector<double> mu_all;
         std::vector<double> a_all;
         std::vector<double> sd;
 
-        chain &c;
     public:
         chain_rate(chain& ch) : 
             c(ch), 
@@ -316,7 +328,8 @@ namespace ckbot
          */
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T)
         {
-            
+            tip_base_step(s, T);
+            return base_tip_step(s, T);    
         }
         void tip_base_step(std::vector<double> s, std::vector<double> T)
         {
@@ -575,9 +588,10 @@ int main(void)
     std::vector<double> T(num_modules);
     std::fill(T.begin(), T.end(), 1.0);
 
-    rate_machine.tip_base_step(s0, T);
+//    rate_machine.tip_base_step(s0, T);
     std::vector<double> qdd(num_modules);
-    qdd = rate_machine.base_tip_step(s0, T);
+//    qdd = rate_machine.base_tip_step(s0, T);
+    qdd rate_maching.calc_rate(s0, T);
 
     std::cout << "Made it out of the rate_machine...\n";
     std::vector<double>::iterator qdd_it;
