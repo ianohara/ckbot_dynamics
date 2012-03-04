@@ -1,6 +1,7 @@
 #include<vector>
 #include<eigen3/Eigen/Dense>
 #include<iostream>
+#define _USE_MATH_DEFINES
 #include<math.h>
 
 namespace ckbot
@@ -54,21 +55,19 @@ namespace ckbot
 
         phi << Eigen::Matrix3d::Identity(), r_cross,
                Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
-        /*
-        phi << 1, 0, 0, r_cross(0,0), r_cross(0,1), r_cross(0,2),
-               0, 1, 0, r_cross(1,0), r_cross(1,1), r_cross(1,2),
-               0, 0, 1, r_cross(2,0), r_cross(2,1), r_cross(2,2),
-               0, 0, 0, 1,      0,      0, 
-               0, 0, 0, 0,      1,      0,
-               0, 0, 0, 0,      0,      1;
-        */
+ 
         return phi;
     }
     
     class module_link
     {
     public:
-        module_link():
+        /* The void constructor is needed in order to 
+         * make STL vectors of module links.  In practice
+         * this shouldn't be used because the defaults 
+         * are non-sense.
+         */
+        module_link(void):
             q_(0.0),
             qd_(0.0),
             damping_(0.0),
@@ -79,26 +78,6 @@ namespace ckbot
             R_jts_(Eigen::Matrix3d::Identity()), 
             init_rotation_(Eigen::Matrix3d::Identity()),
             m_(0)
-        {
-        }
-        module_link(double damping, 
-                Eigen::Vector3d forward_joint_axis,
-                Eigen::Vector3d r_im1,
-                Eigen::Vector3d r_ip1,
-                Eigen::Matrix3d I_cm,
-                Eigen::Matrix3d R_jts,
-                Eigen::Matrix3d init_rotation,
-                double m) : 
-            q_(0.0),
-            qd_(0.0),
-            damping_(damping),
-            forward_joint_axis_(forward_joint_axis),
-            r_im1_(r_im1),
-            r_ip1_(r_ip1),
-            I_cm_(I_cm),
-            R_jts_(R_jts),
-            init_rotation_(init_rotation),
-            m_(m) 
         {
         }
         module_link(struct module_description m): 
@@ -141,6 +120,11 @@ namespace ckbot
         virtual ~module_link(void)
         {
         }
+
+        /* Returns a module's 6x6 spatial
+         * inertia matrix with respect to
+         * its base-side joint.
+         */
         Eigen::MatrixXd get_spatial_inertia_mat()
         {
             Eigen::Matrix3d Jo;
@@ -151,17 +135,17 @@ namespace ckbot
 
             Jo = I_cm_ - m_*L_tilde*L_tilde;
             M_spat << Jo, m_*L_tilde,
-                     -m_*L_tilde, m_*Eigen::Matrix3d::Identity();
-/*
-            M_spat << Jo(0,0), Jo(0,1), Jo(0,2), m_*L_tilde(0,0), m_*L_tilde(0,1), m_*L_tilde(0,2),
-                      Jo(1,0), Jo(1,1), Jo(1,2), m_*L_tilde(1,0), m_*L_tilde(1,1), m_*L_tilde(1,2),
-                      Jo(2,0), Jo(2,1), Jo(2,2), m_*L_tilde(2,0), m_*L_tilde(2,1), m_*L_tilde(2,2),
-                      -m_*L_tilde(0,0), -m_*L_tilde(0,1), -m_*L_tilde(0,2), m_, 0, 0,
-                      -m_*L_tilde(0,1), -m_*L_tilde(1,1), -m_*L_tilde(1,2), 0, m_, 0,
-                      -m_*L_tilde(0,2), -m_*L_tilde(1,2), -m_*L_tilde(2,2), 0, 0, m_;
-  */
+                     -m_*L_tilde, m_*(Eigen::Matrix3d::Identity());
+
             return M_spat;
         }
+        
+        /* Returns a 1x6 vector that maps changes in a modules
+         * single DOF to spatial changes.  In the simple case here,
+         * changes in a module's DOF are mapped to angular changes
+         * in the body z-axis of the previous module (ie: rotation around
+         * the base joint axis)
+         */
         Eigen::RowVectorXd get_joint_matrix(void) const 
         {
             Eigen::Vector3d Hprev(0,0,1);
@@ -169,58 +153,122 @@ namespace ckbot
             Ht = R_jts_.transpose()*Hprev;
 
             Eigen::RowVectorXd H(6);
-            H << Ht, 0, 0, 0;
-            //H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
+            
+            H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
             return H;
         }
+
+        /* Relative of a module with respect to its base side neighbor
+         * in Radians.
+         * [rad]
+         */
         double get_q(void) const
         {
             return q_;
         }
+        
+        /* Relative angular rate of a module with respect to its
+         * base side neighbor. In radians/second.
+         * [rad/s]
+         */
         double get_qd(void) const
         {
             return qd_;
         }
+
+        /* Returns a 3x1 vector that defines
+         * the joint connecting a module to its
+         * tip side neighbor.  This needs to be a unit vector,
+         * and should be written in the module's frame.
+         */
         Eigen::Vector3d get_forward_joint_axis(void) const
         {
             return forward_joint_axis_;
         }
+
+        /* Module frame 3x1 vector from a module's
+         * CM to its base side joint. 
+         * [m]
+         */
         Eigen::Vector3d get_r_im1(void) const
         {
             return r_im1_;
         }
+
+        /* Module frame 3x1 vector from a module's
+         * CM to its tip side joint
+         * [m]
+         */
         Eigen::Vector3d get_r_ip1(void) const
         {
             return r_ip1_;
         }
+
+        /* Returns a module's 3x3 inertia matrix written
+         * in the module frame with respect to the
+         * module's CM
+         * TODO: Fill in units.  I'm forgetting
+         */
         Eigen::Matrix3d get_I_cm(void) const
         {
             return I_cm_;
         }
+
+        /* TODO: Comment
+         */
         Eigen::Matrix3d get_R_jts(void) const
         {
             return R_jts_;
         }
+
+        /* Returns the 3x3 Rotation matrix that defines
+         * the initial world to module frame rotation of a module.
+         *
+         * This is ignored for modules that aren't
+         * first in a chain.  It allows arbitrary orientaions
+         * of the first link in a chain.
+         */
         Eigen::Matrix3d get_init_rotation(void) const
         {
             return init_rotation_;
         }
+
+        /* Returns the damping coefficient of a module's
+         * base side (where its motor/DOF is) joint.  
+         * [N*m*s]
+         */
         double get_damping(void) const
         {
             return damping_;
         }
+
+        /* Returns a module's mass.
+         * [kg]
+         */
         double get_mass(void) const
         {
             return m_;
         }
+
+        /* Set a module's joint DOF angle.  This
+         * is the angle between its base side neighbor and
+         * itself.
+         * [rad]
+         */
         void set_q(double q)
         {
             q_ = q;
         }
+
+        /* Set a module's joint DOF angular rate.  This
+         * is the angular rate with respect to its
+         * base side neighbor.
+         */
         void set_qd(double qd)
         {
             qd_ = qd;
         }
+
     protected:
         double q_;
         double qd_;
@@ -237,13 +285,14 @@ namespace ckbot
     class chain
     {
     protected:
+        /* Number of modules in the chain */
         const int N_;
         std::vector<module_link> links_;
 
     public:
-        chain(int N) : N_(N), links_(N)
-        { 
-        }
+        /* Form a new chain of modules.  The array of module_links, chain_modules,
+         * needs to a length of num_modules.
+         */
         chain(module_link chain_modules[], int num_modules) : N_(num_modules), links_(num_modules)
         {
             for (int link=0; link<num_modules; ++link)
@@ -254,10 +303,22 @@ namespace ckbot
         ~chain(void)
         {
         }
+
+        /* When walking up and down a chain, it is nice
+         * to be able to define a sort of "current module"
+         * reference. This serves the purpose. 
+         */
         module_link& get_link(int i)
         {
             return links_[i];
         }
+
+        /* Returns a 3x3 rotation matrix.
+         * Starting at the base of the chain (links_[0]) this
+         * walks and composes module's rotations together to get
+         * the rotation matrix that brings the i-th module from
+         * its module frame to the world frame.
+         */
         Eigen::Matrix3d get_current_R(int i)
         {
             Eigen::Matrix3d R;
@@ -269,10 +330,12 @@ namespace ckbot
             }
             return R;
         }
+
         int num_links(void)
         {
             return N_;
         }
+
         /* 
          * If the propogate function needs to be thread safe, this method of
          * updating a chain's state (q,qd) needs to be changed.  Any
@@ -287,6 +350,12 @@ namespace ckbot
                 links_[i].set_qd(qd[i]);
             }
         }
+
+        /* Walks along the chain from base to the i-th module
+         * adding each module's simple angular velocity (transformed to
+         * the world frame) and then returning the compound angular velocity
+         * of the i-th module that results.
+         */
         Eigen::Vector3d get_angular_velocity(int i)
         {
             Eigen::Vector3d omega(0,0,0);
@@ -302,6 +371,8 @@ namespace ckbot
             }
         }
     };
+
+
     class chain_rate
     {
     protected:
@@ -321,6 +392,7 @@ namespace ckbot
             sd(2*ch.num_links())
         {
         }
+    
         /* Given a state vector of length 2*N corresponding to N joint angles
          * and N joint speeds and torque vector of length N, 
          * this fills in the 2*N length vector sd with
@@ -328,25 +400,55 @@ namespace ckbot
          */
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T)
         {
+            int N = c.num_links();
+
+            std::vector<double> qdd(N);
+            std::vector<double> q(N);
+            std::vector<double> qd(N);
+
+            for(int i=0; i<N; ++i)
+            {
+                q[i] = s[i];
+                qd[i] = s[N+i];
+            }
+            /* Update the chain's state to match the requested initial
+             * conditions (s)
+             */
+            c.propogate_angles_and_rates(q,qd);
+
             tip_base_step(s, T);
-            return base_tip_step(s, T);    
+            qdd = base_tip_step(s, T);
+            
+            for (int i=0; i < N; ++i)
+            {
+                /* Rate of change of positions are already in our state */
+                sd[i] = s[N+i];
+
+                /* The second half of the state vector is rate of change
+                 * of velocities, or the calculated accelerations.
+                 */
+                sd[N+i] = qdd[i];
+            }
+            /* TODO: This should probably return the full sd instead of qdd.  What
+             *       does OMPL want?
+             */
+            return qdd;
         }
+       
         void tip_base_step(std::vector<double> s, std::vector<double> T)
         {
             int N = c.num_links();
             
             std::vector<double> q(N);
             std::vector<double> qd(N);
-            
+
             for(int i=0; i<N; ++i)
             {
                 q[i] = s[i];
                 qd[i] = s[N+i];
             }
 
-            c.propogate_angles_and_rates(q,qd);
-
-            /* Define all the loop variables */
+            /* Declare and initialized all of the loop variables */
             Eigen::VectorXd grav(6);
             grav << 0,0,0,0,0,9.81; 
             Eigen::MatrixXd pp(6,6);
@@ -410,11 +512,11 @@ namespace ckbot
                 std::cout << "p_cur:\n" << p_cur << "\n";
 
                 H_b_frame_star = cur.get_joint_matrix().transpose();
+
                 Eigen::MatrixXd tmp_6x6(6,6);
-                tmp_6x6.topLeftCorner(3,3) = R_cur;
-                tmp_6x6.topRightCorner(3,3) << 0,0,0,0,0,0,0,0,0;
-                tmp_6x6.bottomLeftCorner(3,3) << 0,0,0,0,0,0,0,0,0;
-                tmp_6x6.bottomRightCorner(3,3) << 1,0,0,0,1,0,0,0,1;
+                tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
+                           Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
+
                 std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n";
                 H_w_frame_star = tmp_6x6*H_b_frame_star;
                 
@@ -482,9 +584,7 @@ namespace ckbot
                 q[i] = s[i];
                 qd[i] = s[N+i];
             }
-
-            c.propogate_angles_and_rates(q,qd);
-           
+            
             Eigen::Matrix3d R_cur;
             Eigen::Vector3d r_i_ip;
             Eigen::MatrixXd phi(6,6);
@@ -520,17 +620,16 @@ namespace ckbot
                 qdd[i] = mu_all[i] - G.transpose()*alpha_p;
 
                 H_b_frame_star = cur.get_joint_matrix().transpose();
+                
                 Eigen::MatrixXd tmp_6x6(6,6);
-                tmp_6x6.topLeftCorner(3,3) = R_cur;
-                tmp_6x6.topRightCorner(3,3) << 0,0,0,0,0,0,0,0,0;
-                tmp_6x6.bottomLeftCorner(3,3) << 0,0,0,0,0,0,0,0,0;
-                tmp_6x6.bottomRightCorner(3,3) << 1,0,0,0,1,0,0,0,1;
-                std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n";
-                H_w_frame_star = tmp_6x6*H_b_frame_star;
-                std::cout << "HUUUURRR!\n"; 
-                //H = H_w_frame_star.transpose();
+                tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
+                           Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
 
-                //alpha = alpha_p + H.transpose()*qdd[i] + a;
+                H_w_frame_star = tmp_6x6*H_b_frame_star;
+
+                H = H_w_frame_star.transpose();
+
+                alpha = alpha_p + H.transpose()*qdd[i] + a;
             }
             std::cout << "Exiting base_tip_step.\n";
             return qdd;
@@ -561,23 +660,22 @@ int main(void)
          0,1,0,
          0,0,1;
 
-    init_rotation = ckBot 
+    init_rotation = ckbot::rotY(M_PI/2); 
 
-    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, m}; 
-
-    ckbot::module_link ck = ckbot::module_link(damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, m);
-
-    ckbot::module_link ck2 = ckbot::module_link(HT1);
-
-    std::cout << "The Joint angle is: " << ck.get_q() << "\n";
-    std::cout << "The forward joint axis is: \n" << ck.get_forward_joint_axis() << "\n";
-
-    std::cout << "The Joint angle for ck2 is is: " << ck2.get_q() << "\n";
-    std::cout << "The forward joint axis is: \n" << ck2.get_forward_joint_axis() << "\n";
+    struct ckbot::module_description HT1_first_link = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, m}; 
 
 
-    ckbot::module_link chain_modules[] = {ck2, ck2, ck2, ck2};
-    int num_modules = 4;
+    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, Eigen::Matrix3d::Identity(), m};
+
+    struct ckbot::module_description HT2 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, Eigen::Matrix3d::Identity(), m};
+
+    ckbot::module_link ck_first = ckbot::module_link(HT1_first_link);
+    ckbot::module_link ck_HT1 = ckbot::module_link(HT1);
+    ckbot::module_link ck_HT2 = ckbot::module_link(HT2);
+
+    ckbot::module_link chain_modules[] = {ck_first, ck_HT1, ck_HT1, ck_HT2, ck_HT2};
+    int num_modules = 5;
+
     ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
 
     ckbot::chain_rate rate_machine(ch);
@@ -588,10 +686,8 @@ int main(void)
     std::vector<double> T(num_modules);
     std::fill(T.begin(), T.end(), 1.0);
 
-//    rate_machine.tip_base_step(s0, T);
     std::vector<double> qdd(num_modules);
-//    qdd = rate_machine.base_tip_step(s0, T);
-    qdd rate_maching.calc_rate(s0, T);
+    qdd = rate_machine.calc_rate(s0, T);
 
     std::cout << "Made it out of the rate_machine...\n";
     std::vector<double>::iterator qdd_it;
