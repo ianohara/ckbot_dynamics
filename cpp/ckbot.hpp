@@ -38,6 +38,8 @@ namespace ckbot
             Eigen::MatrixXd get_spatial_inertia_mat(void);
             Eigen::RowVectorXd get_joint_matrix(void) const;
 
+            void describe_self(void);
+
             double get_q(void) const;
             double get_qd(void) const;
             double get_damping(void) const;

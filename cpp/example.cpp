@@ -6,7 +6,18 @@
 
 #include "ckbot.hpp"
 
+void sim_test_0(void);
+void sim_test_1(void);
+
 int main(void)
+{
+    sim_test_0();
+    sim_test_1();
+    return 0;
+}
+
+void 
+sim_test_0(void)
 {
     double mod_width = 0.2;
     double mod_head_len = mod_width/2.0;
@@ -64,5 +75,58 @@ int main(void)
     {
         std::cout << "Link accels: " << *qdd_it << "\n"; 
     }
-    return 0;
+ 
+}
+
+void 
+sim_test_1(void)
+{
+    double damping = 1.0;
+    double mass = 0.5;
+    Eigen::Vector3d forward_joint_axis(0,0,1);
+    Eigen::Vector3d r_im1(-0.100, 0.0,0.0);
+    Eigen::Vector3d r_ip1(0.100,0.0,0.0);
+
+    Eigen::Matrix3d I_cm;
+    Eigen::Matrix3d R_jts;
+    Eigen::Matrix3d init_rotation;
+
+    I_cm = Eigen::Matrix3d::Identity();
+    R_jts = Eigen::Matrix3d::Identity();
+    init_rotation << 0.0, 0.0, 1.0,
+                     0.0, 1.0, 0.0,
+                    -1.0, 0.0, 0.0;
+
+    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, mass};
+
+    ckbot::module_link test_1 = ckbot::module_link(HT1);
+
+    test_1.describe_self();
+
+    ckbot::module_link chain_modules[] = {test_1, test_1};
+    int num_modules = 2;
+
+    ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
+
+    ckbot::chain_rate rate_machine(ch);
+
+    std::vector<double> s0(2*num_modules);
+    std::fill(s0.begin(), s0.end(), 0.0);
+
+    s0[1] = M_PI/2;
+
+    std::vector<double> T(num_modules);
+    std::fill(T.begin(), T.end(), 0.0);
+
+    std::vector<double> qdd(num_modules);
+    std::fill(qdd.begin(), qdd.end(), 0.0);
+
+    qdd = rate_machine.calc_rate(s0, T);
+
+    std::cout << "For Simulation Test 1: 2 HT1 modules with Link 2 at an IC angle\n";
+    std::vector<double>::iterator qdd_it;
+    for (qdd_it = qdd.begin(); qdd_it != qdd.end(); qdd_it++)
+    {
+        std::cout << "Link Accels: " << *qdd_it << "\n";
+    }
 }
