@@ -1,3 +1,9 @@
+#include <eigen3/Eigen/Dense>
+#include<vector>
+#include<iostream>
+#define _USE_MATH_DEFINES
+#include<math.h>
+
 #include "ckbot.hpp"
 
 int main(void)

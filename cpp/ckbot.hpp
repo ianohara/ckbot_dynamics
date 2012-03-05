@@ -1,7 +1,7 @@
 #ifndef _CKBOT_HPP
 #define _CKBOT_HPP
 
-#include<vectors>
+#include<vector>
 #include<eigen3/Eigen/Dense>
 #include<iostream>
 #define _USE_MATH_DEFINES
@@ -47,7 +47,7 @@ namespace ckbot
 
             Eigen::Vector3d get_forward_joint_axis(void) const;
             Eigen::Vector3d get_r_im1(void) const;
-            Eigen::Vector3d get_r_ip1(vod) const;
+            Eigen::Vector3d get_r_ip1(void) const;
 
             Eigen::Matrix3d get_I_cm(void) const;
             Eigen::Matrix3d get_R_jts(void) const;
@@ -95,7 +95,7 @@ namespace ckbot
         chain_rate(chain& ch);
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T);
         void tip_base_step(std::vector<double> s, std::vector<double> T);
-        std::vector<double> base_tip_step(std::vector<double> s, std::vector<double> T)
+        std::vector<double> base_tip_step(std::vector<double> s, std::vector<double> T);
     };
 }
 
