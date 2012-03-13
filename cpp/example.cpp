@@ -66,14 +66,14 @@ sim_test_0(void)
     std::vector<double> T(num_modules);
     std::fill(T.begin(), T.end(), 1.0);
 
-    std::vector<double> qdd(num_modules);
-    qdd = rate_machine.calc_rate(s0, T);
+    std::vector<double> sd(2*num_modules);
+    sd = rate_machine.calc_rate(s0, T);
 
     std::cout << "Made it out of the rate_machine...\n";
-    std::vector<double>::iterator qdd_it;
-    for (qdd_it = qdd.begin(); qdd_it != qdd.end(); qdd_it++)
+    std::vector<double>::iterator sd_it;
+    for (sd_it = sd.begin(); sd_it != sd.end(); sd_it++)
     {
-        std::cout << "Link accels: " << *qdd_it << "\n"; 
+        std::cout << "Link accels: " << *sd_it << "\n"; 
     }
  
 }
@@ -118,15 +118,15 @@ sim_test_1(void)
     std::vector<double> T(num_modules);
     std::fill(T.begin(), T.end(), 0.0);
 
-    std::vector<double> qdd(num_modules);
-    std::fill(qdd.begin(), qdd.end(), 0.0);
+    std::vector<double> sd(num_modules);
+    std::fill(sd.begin(), sd.end(), 0.0);
 
-    qdd = rate_machine.calc_rate(s0, T);
+    sd = rate_machine.calc_rate(s0, T);
 
     std::cout << "For Simulation Test 1: 2 HT1 modules with Link 2 at an IC angle\n";
-    std::vector<double>::iterator qdd_it;
-    for (qdd_it = qdd.begin(); qdd_it != qdd.end(); qdd_it++)
+    std::vector<double>::iterator sd_it;
+    for (sd_it = sd.begin(); sd_it != sd.end(); sd_it++)
     {
-        std::cout << "Link Accels: " << *qdd_it << "\n";
+        std::cout << "Link state rates: " << *sd_it << "\n";
     }
 }

@@ -432,7 +432,7 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
     /* TODO: This should probably return the full sd instead of qdd.  What
      *       does OMPL want?
      */
-    return qdd;
+    return sd;
 }
 
 void 
