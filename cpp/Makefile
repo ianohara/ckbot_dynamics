@@ -1,8 +1,10 @@
 CC=g++
 CFLAGS=-I.
+LIBRARIES= -lompl
 
-main: example.o ckbot.o
-	$(CC) -o example example.o ckbot.o $(CFLAGS)
+example: example.o ckbot.o ck_ompl.o
+	$(CC) -o example example.o ckbot.o $(CFLAGS) $(LIBRARIES)
 
 clean:
 	rm *.o example
+	rm *.out

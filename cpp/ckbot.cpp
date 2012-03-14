@@ -389,6 +389,11 @@ ckbot::chain_rate::chain_rate(chain& ch) :
 {
 }
 
+ckbot::chain& ckbot::chain_rate::get_chain(void)
+{
+    return c;
+}
+
 /* Given a state vector of length 2*N corresponding to N joint angles
  * and N joint speeds and torque vector of length N, 
  * this fills in the 2*N length vector sd with

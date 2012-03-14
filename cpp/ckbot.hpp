@@ -98,7 +98,8 @@ namespace ckbot
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T);
         void tip_base_step(std::vector<double> s, std::vector<double> T);
         std::vector<double> base_tip_step(std::vector<double> s, std::vector<double> T);
+        chain& get_chain(void);
     };
-}
+};
 
 #endif /* _CKBOT_HPP */
