@@ -1,3 +1,21 @@
+/*
+* CKBot Kinodynamic Planning with OMPL
+* Copyright (C) 2012 Ian O'Hara
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+*(at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <eigen3/Eigen/Dense>
 #include<vector>
 #include<iostream>
@@ -171,8 +189,8 @@ sim_test_2(void)
 
     ckbot::module_link test_2 = ckbot::module_link(HT1);
 
-    ckbot::module_link chain_modules[] = {test_2, test_2};
-    int num_modules = 2;
+    ckbot::module_link chain_modules[] = {test_2, test_2, test_2, test_2};
+    int num_modules = 4;
 
     ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
 
@@ -218,11 +236,12 @@ sim_test_2(void)
 
     /* Define the start and end configurations */
     ompl::base::ScopedState<ompl::base::RealVectorStateSpace> start(ss.getSpaceInformation());
-    start[0]=start[1]=start[2]=start[3] = 0.0;
+    start[0]=start[1]=start[2]=start[3]=start[4]=start[5]=start[6]=start[7] = 0.0;
 
     ompl::base::ScopedState<ompl::base::RealVectorStateSpace> goal(ss.getSpaceInformation());
-    goal[0] = goal[2] = M_PI/2; // Angles
-    goal[1] = goal[3] = 0; // Velocities
+    goal[4] = goal[6] = goal[2] = 0.0; // Angles
+    goal[0] = M_PI;
+    goal[1] = goal[3] = goal[5] = goal[7] = 0.0; // Velocities
 
     ss.setStartAndGoalStates(start, goal);
 
@@ -234,7 +253,7 @@ sim_test_2(void)
     std::cout << "The goal point is: ";
     ss.getGoal()->print();
 
-    if(ss.solve(20.0))
+    if(ss.solve(1000.0))
     {
             ss.getSolutionPath().print(std::cout);
         /*
