@@ -408,10 +408,10 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
     std::vector<double> q(N);
     std::vector<double> qd(N);
 
-    std::cout << "Separating out the state into its parts: \n";
+    // std::cout << "Separating out the state into its parts: \n";
     for(int i=0; i<N; ++i)
     {
-        std::cout<< "Link " << i << ": q=" << s[i] << " qd=" << s[N+i] << "\n";
+       // std::cout<< "Link " << i << ": q=" << s[i] << " qd=" << s[N+i] << "\n";
         q[i] = s[i];
         qd[i] = s[N+i];
     }

@@ -189,39 +189,54 @@ sim_test_2(void)
     ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
     space->as<ompl::base::RealVectorStateSpace>()->setBounds(-M_PI/2.0, M_PI/2.0);
 
+
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
+
+    ompl::base::RealVectorBounds cbounds(num_modules);
+    cbounds.setLow(-10.0);
+    cbounds.setHigh(10.0);
+
+    cspace->as<ompl::control::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
     /* 
      * Use OMPL's built in setup mechanism instead of allocating state space information
      * and problem defintion pointers on my own
      */
     ompl::control::SimpleSetup ss(cspace);
+
+    // TODO: Write an actual state validity checker!
     ss.setStateValidityChecker(boost::bind(&ckbotStateValidityCheckerFunction, _1));
-    
+   /* 
+    ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(ss.getSpaceInformation()));
+    ss.setPlanner(planner);
+*/
+    /* Setup and get the dynamics of our system into the planner */
+    // ompl::control::ODEBasicSolver<> odeSolver (ss.getSpaceInformation(), boost::bind<void>(&ckbot::CKBotODEFunc, _1, _2, _3, rate_machine));
+    ompl::control::ODEBasicSolver<> odeSolver (ss.getSpaceInformation(), boost::bind<void>(&ckbot::CK_ompl::CKBotODE, rate_machine, _1, _2, _3));
+    ss.setStatePropagator(odeSolver.getStatePropagator());
+
     /* Define the start and end configurations */
-    ompl::base::ScopedState<> start(space);
+    ompl::base::ScopedState<ompl::base::RealVectorStateSpace> start(ss.getSpaceInformation());
     start[0]=start[1]=start[2]=start[3] = 0.0;
 
-    ompl::base::ScopedState<> goal(space);
+    ompl::base::ScopedState<ompl::base::RealVectorStateSpace> goal(ss.getSpaceInformation());
     goal[0] = goal[2] = M_PI/2; // Angles
     goal[1] = goal[3] = 0; // Velocities
 
     ss.setStartAndGoalStates(start, goal);
 
-    ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(ss.getSpaceInformation()));
-    ss.setPlanner(planner);
-
-    /* Setup and get the dynamics of our system into the planner */
-    ompl::control::ODEBasicSolver<> odeSolver (ss.getSpaceInformation(), boost::bind<void>(&ckbot::CKBotODEFunc, _1, _2, _3, rate_machine));
-
-    ss.setStatePropagator(odeSolver.getStatePropagator());
+    /* Allow more than 10 steps in our solution */
+    ss.getSpaceInformation()->setMinMaxControlDuration(1, 100);
 
     ss.setup();
+    std::cout << "The starting point is: " << start << "\n";
+    std::cout << "The goal point is: ";
+    ss.getGoal()->print();
 
-    if(ss.solve(10.0))
+    if(ss.solve(20.0))
     {
-        ss.getSolutionPath().print(std::cout);
+            ss.getSolutionPath().print(std::cout);
         /*
         ompl::control::PathControl& path(planner->getSolutionPath());
         for (unsigned int i=0; i<path.getStateCount(); ++i)

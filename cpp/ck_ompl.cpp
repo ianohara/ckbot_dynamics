@@ -12,8 +12,13 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* c
     const int N = c.num_links();
     const double *input = con->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
     std::vector<double> T(N);
+    
     for (int i = 0; i < N; i++)
     {
+        /*
+        std::cout << "Input " << i << " is " << input[i] << "\n";
+        std::cout << "State is: " << s[2*i] << ", " << s[2*i+1] << "\n";
+        */
         T[i] = input[i];
     }
 
@@ -35,6 +40,7 @@ ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, o
     for (int i = 0; i < N; i++)
     {
         T[i] = input[i];
+        std::cout << "State is: " << s[2*i] << ", " << s[2*i+1] << "\n";
     }
 
     std::vector<double> sdot_vec(2*N);
