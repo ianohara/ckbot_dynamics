@@ -1,0 +1,123 @@
+----BEGINNING OF SIM 2----
+---BEGIN CHAIN DESCRIPTION---
+--Module 0--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 1--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 2--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 3--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+---END CHAIN DESCRIPTION---
+---Simulation Info---
+--The starting point is: RealVectorState [0 0 0 0 0 0 0 0]
+
+--The goal point is: Goal state, threshold = 2.22045e-16, memory address = 0xaa8bc0, state = 
+RealVectorState [3.14159 0 0 0 0 0 0 0]
+
+---Simulation Solution---
+--Control Inputs--
+-Step from 0 to 1
+State from [0, 0, 0, 0, ] to [0.0485435, -0.036385, -0.0630246, 0.0705918, ]
+Control from 0 to 1: from: 0[s] to 0.0888577[s] by dt: 0.0888577[s]
+	 8.8899, -4.68343, -8.33099, 5.5392,
+-Step from 1 to 2
+State from [0.0485435, -0.036385, -0.0630246, 0.0705918, ] to [0.103385, -0.0403565, -0.199144, 0.171818, ]
+Control from 1 to 2: from: 0.0888577[s] to 0.177715[s] by dt: 0.0888577[s]
+	 -4.74136, 4.27527, -3.82939, -4.15764,
+-Step from 2 to 3
+State from [0.103385, -0.0403565, -0.199144, 0.171818, ] to [0.120447, 0.00876981, -0.307793, 0.210253, ]
+Control from 2 to 3: from: 0.177715[s] to 0.266573[s] by dt: 0.0888577[s]
+	 6.01926, 6.20368, 6.40048, 0.678558,
+-Step from 3 to 4
+State from [0.120447, 0.00876981, -0.307793, 0.210253, ] to [0.134879, 0.0458969, -0.347788, 0.198805, ]
+Control from 3 to 4: from: 0.266573[s] to 0.355431[s] by dt: 0.0888577[s]
+	 6.01926, 6.20368, 6.40048, 0.678558,

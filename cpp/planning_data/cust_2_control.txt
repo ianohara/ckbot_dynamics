@@ -1,0 +1,101 @@
+Made it out of the rate_machine...
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 1
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+For Simulation Test 1: 2 HT1 modules with Link 2 at an IC angle
+Link state rates: 0
+Link state rates: 0
+Link state rates: 0
+Link state rates: -0.4905
+Info:    KPIECE1: Attempting to use default projection.
+The starting point is: RealVectorState [0 0 0 0 0 0 0 0]
+
+The goal point is: Goal state, threshold = 2.22045e-16, memory address = 0x11af970, state = 
+RealVectorState [3.14159 0 0 0 0 0 0 0]
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 3678 states in 3560 cells (0 internal + 3560 external)
+Info:    SimpleSetup: Solution found in 100.698343 seconds
+Control path with 7 states
+At state RealVectorState [0 0 0 0 0 0 0 0]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 1 steps
+At state RealVectorState [0.00984345 -0.0164112 0.0132206 -0.00272316 0.212937 -0.351087 0.282824 -0.0554371]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 1 steps
+At state RealVectorState [0.0364302 -0.0594689 0.0479741 -0.00898296 0.37816 -0.603298 0.48822 -0.0814169]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 2 steps
+At state RealVectorState [0.124789 -0.195501 0.159545 -0.0240911 0.593374 -0.885273 0.738136 -0.0795989]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 4 steps
+At state RealVectorState [0.366139 -0.53136 0.459501 -0.0379119 0.710963 -0.924394 0.902665 0.0113882]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 2 steps
+At state RealVectorState [0.490058 -0.687074 0.621385 -0.0308687 0.676773 -0.821237 0.915431 0.0681162]
+  apply control RealVectorControl [3.82455 1.00705 2.83457 0.974267]
+  for 8 steps
+Arrive at state RealVectorState [0.863284 -1.0951 1.26544 0.0957498 0.355198 -0.355707 0.894334 0.281068]
+
+This path as a geometric path is...Geometric path with 19 states
+RealVectorState [0 0 0 0 0 0 0 0]
+RealVectorState [0.00984345 -0.0164112 0.0132206 -0.00272316 0.212937 -0.351087 0.282824 -0.0554371]
+RealVectorState [0.0364302 -0.0594689 0.0479741 -0.00898296 0.37816 -0.603298 0.48822 -0.0814169]
+RealVectorState [0.0758503 -0.121275 0.0982556 -0.016598 0.502902 -0.776005 0.635096 -0.0872492]
+RealVectorState [0.124789 -0.195501 0.159545 -0.0240911 0.593374 -0.885273 0.738136 -0.0795989]
+RealVectorState [0.180447 -0.277121 0.228474 -0.0304851 0.654967 -0.944476 0.808686 -0.0631596]
+RealVectorState [0.240472 -0.362198 0.302559 -0.0351523 0.692403 -0.964778 0.855466 -0.0411754]
+RealVectorState [0.302906 -0.447702 0.379998 -0.0377041 0.709843 -0.955498 0.88512 -0.0158418]
+RealVectorState [0.366139 -0.53136 0.459501 -0.0379119 0.710963 -0.924394 0.902665 0.0113882]
+RealVectorState [0.428868 -0.611526 0.540168 -0.0356522 0.698996 -0.877887 0.911848 0.0395738]
+RealVectorState [0.490058 -0.687074 0.621385 -0.0308687 0.676773 -0.821237 0.915431 0.0681162]
+RealVectorState [0.54891 -0.757299 0.702749 -0.0235478 0.646739 -0.758696 0.915423 0.0966348]
+RealVectorState [0.604824 -0.821832 0.784007 -0.0137033 0.610986 -0.693636 0.913262 0.124882]
+RealVectorState [0.657374 -0.880572 0.865016 -0.00136745 0.57127 -0.628665 0.90996 0.152687]
+RealVectorState [0.706274 -0.933617 0.945708 0.0134145 0.529045 -0.565733 0.90622 0.179918]
+RealVectorState [0.751354 -0.981213 1.02607 0.0305865 0.485488 -0.506233 0.90252 0.206465]
+RealVectorState [0.792541 -1.02371 1.10611 0.0500833 0.441536 -0.451088 0.899178 0.232229]
+RealVectorState [0.829832 -1.06152 1.18588 0.0718314 0.397921 -0.400837 0.896405 0.257123]
+RealVectorState [0.863284 -1.0951 1.26544 0.0957498 0.355198 -0.355707 0.894334 0.281068]
+
+Control from 0 to 1: from: 0 to: 0.0888577 by dt: 0.0888577
+	 3.82455, 1.00705, 2.83457, 0.974267,
+Control from 1 to 2: from: 0.0888577 to: 0.177715 by dt: 0.0888577
+	 3.82455, 1.00705, 2.83457, 0.974267,
+Control from 2 to 3: from: 0.177715 to: 0.355431 by dt: 0.177715
+	 3.82455, 1.00705, 2.83457, 0.974267,
+Control from 3 to 4: from: 0.355431 to: 0.710861 by dt: 0.355431
+	 3.82455, 1.00705, 2.83457, 0.974267,
+Control from 4 to 5: from: 0.710861 to: 0.888577 by dt: 0.177715
+	 3.82455, 1.00705, 2.83457, 0.974267,
+Control from 5 to 6: from: 0.888577 to: 1.59944 by dt: 0.710861
+	 3.82455, 1.00705, 2.83457, 0.974267,

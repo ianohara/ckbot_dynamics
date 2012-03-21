@@ -1,0 +1,155 @@
+Made it out of the rate_machine...
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 0
+Link accels: 1
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+For Simulation Test 1: 2 HT1 modules with Link 2 at an IC angle
+Link state rates: 0
+Link state rates: 0
+Link state rates: 0
+Link state rates: -0.4905
+Info:    KPIECE1: Attempting to use default projection.
+The starting point is: RealVectorState [0 0 0 0 0 0 0 0]
+
+The goal point is: Goal state, threshold = 2.22045e-16, memory address = 0x24ac970, state = 
+RealVectorState [3.14159 0 0 0 0 0 0 0]
+Info:    KPIECE1: Starting with 1 states
+Info:    KPIECE1: Created 37770 states in 35404 cells (92 internal + 35312 external)
+Info:    SimpleSetup: Solution found in 1000.422309 seconds
+Control path with 18 states
+At state RealVectorState [0 0 0 0 0 0 0 0]
+  apply control RealVectorControl [-3.09169 -7.91165 -6.57536 -6.24283]
+  for 1 steps
+At state RealVectorState [0.0170319 -0.0219815 0.00269801 -0.0217327 0.370571 -0.473791 0.0451464 -0.474566]
+  apply control RealVectorControl [4.4543 -4.01067 4.13883 -8.79937]
+  for 1 steps
+At state RealVectorState [0.0758579 -0.117038 0.0775185 -0.138182 0.926526 -1.59816 1.55212 -2.07603]
+  apply control RealVectorControl [7.34327 8.63898 -8.69838 -2.65257]
+  for 1 steps
+At state RealVectorState [0.143533 -0.170678 0.106974 -0.290894 0.625751 0.299134 -0.783266 -1.4134]
+  apply control RealVectorControl [7.34327 8.63898 -8.69838 -2.65257]
+  for 1 steps
+At state RealVectorState [0.19145 -0.0783595 -0.0449293 -0.397242 0.473473 1.70655 -2.55202 -1.01755]
+  apply control RealVectorControl [7.34327 8.63898 -8.69838 -2.65257]
+  for 1 steps
+At state RealVectorState [0.230753 0.121203 -0.3333 -0.477287 0.425397 2.72845 -3.87234 -0.810039]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [0.300737 0.287896 -0.622361 -0.539699 1.11291 1.09493 -2.68104 -0.584723]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [0.422557 0.327316 -0.817201 -0.579871 1.59851 -0.149108 -1.74133 -0.31416]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [0.579926 0.270754 -0.93761 -0.5949 1.9189 -1.07695 -0.997394 -0.022063]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [0.759677 0.14337 -0.998908 -0.583647 2.10761 -1.75319 -0.404202 0.275125]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [0.951495 -0.0350357 -1.01285 -0.546189 2.19542 -2.23402 0.0736427 0.566263]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [1.14768 -0.249289 -0.988435 -0.48341 2.21039 -2.56735 0.462968 0.844079]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [1.3429 -0.488111 -0.932612 -0.396713 2.17747 -2.79297 0.783282 1.10406]
+  apply control RealVectorControl [7.69928 0.0643594 4.52564 4.35044]
+  for 1 steps
+At state RealVectorState [1.53387 -0.743403 -0.850872 -0.287809 2.118 -2.94275 1.04816 1.3436]
+  apply control RealVectorControl [-8.8328 7.88048 -8.08695 -7.55665]
+  for 1 steps
+At state RealVectorState [1.63343 -0.85005 -0.823676 -0.202225 0.198853 0.396023 -0.356318 0.583854]
+  apply control RealVectorControl [-3.96892 -1.51317 -0.225294 2.80236]
+  for 1 steps
+At state RealVectorState [1.63101 -0.808337 -0.848853 -0.134568 -0.244963 0.533522 -0.206799 0.930793]
+  apply control RealVectorControl [-3.96892 -1.51317 -0.225294 2.80236]
+  for 1 steps
+At state RealVectorState [1.59122 -0.756612 -0.86 -0.038153 -0.64386 0.624356 -0.0427005 1.23228]
+  apply control RealVectorControl [5.7987 -3.71312 -6.49763 -9.29708]
+  for 1 steps
+Arrive at state RealVectorState [1.5599 -0.725943 -0.851277 0.0178593 -0.0768634 0.0935743 0.206345 0.0659785]
+
+This path as a geometric path is...Geometric path with 18 states
+RealVectorState [0 0 0 0 0 0 0 0]
+RealVectorState [0.0170319 -0.0219815 0.00269801 -0.0217327 0.370571 -0.473791 0.0451464 -0.474566]
+RealVectorState [0.0758579 -0.117038 0.0775185 -0.138182 0.926526 -1.59816 1.55212 -2.07603]
+RealVectorState [0.143533 -0.170678 0.106974 -0.290894 0.625751 0.299134 -0.783266 -1.4134]
+RealVectorState [0.19145 -0.0783595 -0.0449293 -0.397242 0.473473 1.70655 -2.55202 -1.01755]
+RealVectorState [0.230753 0.121203 -0.3333 -0.477287 0.425397 2.72845 -3.87234 -0.810039]
+RealVectorState [0.300737 0.287896 -0.622361 -0.539699 1.11291 1.09493 -2.68104 -0.584723]
+RealVectorState [0.422557 0.327316 -0.817201 -0.579871 1.59851 -0.149108 -1.74133 -0.31416]
+RealVectorState [0.579926 0.270754 -0.93761 -0.5949 1.9189 -1.07695 -0.997394 -0.022063]
+RealVectorState [0.759677 0.14337 -0.998908 -0.583647 2.10761 -1.75319 -0.404202 0.275125]
+RealVectorState [0.951495 -0.0350357 -1.01285 -0.546189 2.19542 -2.23402 0.0736427 0.566263]
+RealVectorState [1.14768 -0.249289 -0.988435 -0.48341 2.21039 -2.56735 0.462968 0.844079]
+RealVectorState [1.3429 -0.488111 -0.932612 -0.396713 2.17747 -2.79297 0.783282 1.10406]
+RealVectorState [1.53387 -0.743403 -0.850872 -0.287809 2.118 -2.94275 1.04816 1.3436]
+RealVectorState [1.63343 -0.85005 -0.823676 -0.202225 0.198853 0.396023 -0.356318 0.583854]
+RealVectorState [1.63101 -0.808337 -0.848853 -0.134568 -0.244963 0.533522 -0.206799 0.930793]
+RealVectorState [1.59122 -0.756612 -0.86 -0.038153 -0.64386 0.624356 -0.0427005 1.23228]
+RealVectorState [1.5599 -0.725943 -0.851277 0.0178593 -0.0768634 0.0935743 0.206345 0.0659785]
+
+Control from 0 to 1: from: 0 to: 0.0888577 by dt: 0.0888577
+	 -3.09169, -7.91165, -6.57536, -6.24283,
+Control from 1 to 2: from: 0.0888577 to: 0.177715 by dt: 0.0888577
+	 4.4543, -4.01067, 4.13883, -8.79937,
+Control from 2 to 3: from: 0.177715 to: 0.266573 by dt: 0.0888577
+	 7.34327, 8.63898, -8.69838, -2.65257,
+Control from 3 to 4: from: 0.266573 to: 0.355431 by dt: 0.0888577
+	 7.34327, 8.63898, -8.69838, -2.65257,
+Control from 4 to 5: from: 0.355431 to: 0.444288 by dt: 0.0888577
+	 7.34327, 8.63898, -8.69838, -2.65257,
+Control from 5 to 6: from: 0.444288 to: 0.533146 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 6 to 7: from: 0.533146 to: 0.622004 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 7 to 8: from: 0.622004 to: 0.710861 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 8 to 9: from: 0.710861 to: 0.799719 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 9 to 10: from: 0.799719 to: 0.888577 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 10 to 11: from: 0.888577 to: 0.977434 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 11 to 12: from: 0.977434 to: 1.06629 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 12 to 13: from: 1.06629 to: 1.15515 by dt: 0.0888577
+	 7.69928, 0.0643594, 4.52564, 4.35044,
+Control from 13 to 14: from: 1.15515 to: 1.24401 by dt: 0.0888577
+	 -8.8328, 7.88048, -8.08695, -7.55665,
+Control from 14 to 15: from: 1.24401 to: 1.33286 by dt: 0.0888577
+	 -3.96892, -1.51317, -0.225294, 2.80236,
+Control from 15 to 16: from: 1.33286 to: 1.42172 by dt: 0.0888577
+	 -3.96892, -1.51317, -0.225294, 2.80236,
+Control from 16 to 17: from: 1.42172 to: 1.51058 by dt: 0.0888577
+	 5.7987, -3.71312, -6.49763, -9.29708,

@@ -1,0 +1,107 @@
+----BEGINNING OF SIM 2----
+---BEGIN CHAIN DESCRIPTION---
+--Module 0--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 1--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 2--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+--Module 3--
+Module Self Description:
+  mass: 0.5
+  damping: 1
+  f_jt_axis: 
+0
+0
+1
+  r_im1: 
+-0.1
+0
+0
+  I_cm: 
+1 0 0
+0 1 0
+0 0 1
+  R_jts: 
+1 0 0
+0 1 0
+0 0 1
+ init_rot: 
+0 0 1
+0 1 0
+-1 0 0
+---END CHAIN DESCRIPTION---
+---Simulation Info---
+--The starting point is: RealVectorState [0 0 0 0 0 0 0 0]
+
+--The goal point is: Goal state, threshold = 2.22045e-16, memory address = 0x16d8bc0, state = 
+RealVectorState [3.14159 0 0 0 0 0 0 0]
+
+Control from 0 to 1: from: 0 to: 0.0888577 by dt: 0.0888577
+	 8.62208, 5.57438, 1.55951, 3.20651,
