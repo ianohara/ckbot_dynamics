@@ -23,6 +23,7 @@
 #include<vector>
 #include<eigen3/Eigen/Dense>
 #include<iostream>
+#include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
 #include"ckbot.hpp"
@@ -102,7 +103,10 @@ ckbot::module_link::module_link(struct module_description m):
     I_cm_(m.I_cm),
     R_jts_(m.R_jts),
     init_rotation_(m.init_rotation),
-    m_(m.m)
+    m_(m.m),
+    joint_min_(m.joint_min),
+    joint_max_(m.joint_max),
+    torque_max_(m.torque_max)
 {
 }
 
@@ -116,7 +120,10 @@ ckbot::module_link::module_link(const module_link& source):
     I_cm_(source.get_I_cm()),
     R_jts_(source.get_R_jts()),
     init_rotation_(source.get_init_rotation()),
-    m_(source.get_mass())
+    m_(source.get_mass()),
+    joint_min_(source.get_joint_min()),
+    joint_max_(source.get_joint_max()),
+    torque_max_(source.get_torque_max())
 {
 }
 
@@ -131,14 +138,20 @@ ckbot::module_link::operator=(module_link& source)
     R_jts_ = source.get_R_jts();
     init_rotation_ = source.get_init_rotation();
     m_ = source.get_mass();
+    joint_max_ = source.get_joint_max();
+    joint_min_ = source.get_joint_min();
+    torque_max_ = source.get_torque_max();
 }
 
 void
-ckbot::module_link::describe_self(void)
+ckbot::module_link::describe_self(std::ostream& out)
 {
-    std::cout << "Module Self Description:\n" <<
+    out << "Module Self Description:\n" <<
         "  mass: " << m_ <<
         "\n  damping: " << damping_ <<
+        "\n joint_max: " << joint_max_ <<
+        "\n joint_min: " << joint_min_ <<
+        "\n torque_max: " << torque_max_ <<
         "\n  f_jt_axis: \n" << forward_joint_axis_ <<
         "\n  r_im1: \n" << r_im1_ <<
         "\n  I_cm: \n" << I_cm_ <<
@@ -148,6 +161,23 @@ ckbot::module_link::describe_self(void)
 ckbot::module_link::~module_link(void)
 {
 }
+
+double
+ckbot::module_link::get_joint_min(void) const
+{
+    return joint_min_;
+}
+double
+ckbot::module_link::get_joint_max(void) const
+{
+    return joint_max_;
+}
+double
+ckbot::module_link::get_torque_max(void) const
+{
+    return torque_max_;
+}
+    
 
 /* Returns a module's 6x6 spatial
  * inertia matrix with respect to
@@ -326,6 +356,22 @@ ckbot::chain::chain(module_link chain_modules[], int num_modules) : N_(num_modul
 ckbot::chain::~chain(void)
 {
 }
+
+/*
+ * Tell each module on the chain to describe itself (in chain order from base to tip)
+ */
+void 
+ckbot::chain::describe_self(std::ostream& out)
+{
+    out << "---BEGIN CHAIN DESCRIPTION---" << std::endl;
+    for (int i=0; i<N_; ++i)
+    {
+        out << "--Module " << i << "--" << std::endl;
+        links_[i].describe_self(out);
+    }
+    out << "---END CHAIN DESCRIPTION---" << std::endl;
+}
+
 
 /* When walking up and down a chain, it is nice
  * to be able to define a sort of "current module"

@@ -22,8 +22,15 @@
 #include<ompl/control/ODESolver.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/control/Control.h>
+#include<ompl/base/spaces/RealVectorStateSpace.h>
 
 namespace oc = ompl::control;
+
+bool
+ckbot::CK_ompl::stateValidityChecker(const ompl::base::State *s)
+{
+    return true;
+}
 
 void
 ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot)
@@ -70,3 +77,5 @@ ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, o
         sdot[i] = sdot_vec[i];
     } 
 };
+
+

@@ -23,6 +23,7 @@
 #include<vector>
 #include<eigen3/Eigen/Dense>
 #include<iostream>
+#include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
 
@@ -37,7 +38,22 @@ namespace ckbot
         Eigen::Matrix3d R_jts;
         Eigen::Matrix3d init_rotation;
         double m;
+        double joint_min;
+        double joint_max;
+        double torque_max;
     };
+
+    const struct module_description ZERO_MODULE = {0.0, 
+                                                Eigen::Vector3d::Zero(), 
+                                                Eigen::Vector3d::Zero(), 
+                                                Eigen::Vector3d::Zero(),
+                                                Eigen::Matrix3d::Zero(), 
+                                                Eigen::Matrix3d::Zero(),
+                                                Eigen::Matrix3d::Zero(),
+                                                0.0,
+                                               -M_PI/2,
+                                                M_PI/2,
+                                                3.0};
 
     Eigen::Matrix3d rotY(double phi);
     Eigen::Matrix3d rotZ(double phi);
@@ -57,7 +73,7 @@ namespace ckbot
             Eigen::MatrixXd get_spatial_inertia_mat(void);
             Eigen::RowVectorXd get_joint_matrix(void) const;
 
-            void describe_self(void);
+            void describe_self(std::ostream& out);
 
             double get_q(void) const;
             double get_qd(void) const;
@@ -74,6 +90,11 @@ namespace ckbot
             Eigen::Matrix3d get_R_jts(void) const;
 
             Eigen::Matrix3d get_init_rotation(void) const;
+            
+            double get_joint_max(void) const;
+            double get_joint_min(void) const;
+            double get_torque_max(void) const;
+
         protected:
             double q_;
             double qd_;
@@ -85,6 +106,9 @@ namespace ckbot
             Eigen::Matrix3d R_jts_;
             Eigen::Matrix3d init_rotation_;
             double m_;
+            double joint_min_;
+            double joint_max_;
+            double torque_max_;
     };
     class chain
     {
@@ -101,6 +125,7 @@ namespace ckbot
         int num_links(void);
         void propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd);
         Eigen::Vector3d get_angular_velocity(int i);
+        void describe_self(std::ostream &);
     };
     class chain_rate
     {
