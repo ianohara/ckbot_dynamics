@@ -23,6 +23,8 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 #include<boost/bind.hpp>
+#include<boost/program_options.hpp>
+#include<boost/filesystem.hpp>
 
 #include<ompl/control/SimpleSetup.h>
 #include<ompl/control/planners/kpiece/KPIECE1.h>
@@ -33,133 +35,107 @@
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 
-void sim_test_0(void);
-void sim_test_1(void);
 void sim_test_2(void);
 
 const float SOLUTION_TIME = 3600;
 
-int main(void)
+int main(int ac, char* av[])
 {
-    sim_test_0();
-    sim_test_1();
-    sim_test_2();
+    std::string sim_dir("");
+    std::string desc_path("description.txt");
+    std::string chain_path("chain.txt");
+    std::string sim_path("sim.txt");
+    std::string result_dir("results/");
+
+    namespace po = boost::program_options;
+    try 
+    {
+        po::options_description desc("Usage:");
+        desc.add_options()
+            ("dir", po::value<std::string>(), "Set the directory in which the simulation to run exists")
+            ("help", "Give non-sensical help.")
+        ;
+
+        po::variables_map vm;
+        po::store(po::parse_command_line(ac, av, desc), vm);
+        po::notify(vm);
+
+        if (vm.count("help"))
+        {
+            std::cout << desc << std::endl;
+            return 1;
+        }
+
+        if (vm.count("dir")) 
+        {
+            sim_dir = vm["dir"].as<std::string>();
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Exception of unknown type!" << std::endl;
+    }
+
+    /* Check to make sure the simulation directory and all of its components
+     * exist
+     */
+    if ((sim_dir.length() == 0) || (! boost::filesystem::is_directory(sim_dir)))
+    {
+        std::cout << "The simululation directory ('" << sim_dir << "') specified by --dir must exist!" << std::endl;   
+        return 1;
+    }
+    if (! (sim_dir.at(sim_dir.length()-1) == '/'))
+    {
+        sim_dir.push_back('/');
+        std::cout << "Fixed sim_path with delim..." << sim_dir << std::endl;
+    }
+    desc_path = sim_dir + desc_path;
+    chain_path = sim_dir + chain_path;
+    sim_path = sim_dir + sim_path;
+    result_dir = sim_dir + result_dir;
+
+    if (! boost::filesystem::is_regular_file(desc_path)) 
+    {
+        std::cout << "The description file does not exist. (" << desc_path << ")" << std::endl;
+        return 1;
+    }
+    if (! boost::filesystem::is_regular_file(chain_path))
+    {
+        std::cout << "The chain file does not exist." << std::endl;
+        return 1;
+    }
+    if (! boost::filesystem::is_regular_file(sim_path))
+    {
+        std::cout << "The simulation file does not exist." << std::endl;
+        return 1;
+    }
+    if (! boost::filesystem::is_directory(result_dir))
+    {
+        std::cout << "The result directory doesn't exist yet...creating...";
+        try 
+        {
+            boost::filesystem::create_directory(result_dir);
+    std::cout << "Last char is: " << sim_dir.at(sim_dir.length()-1) << std::endl;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+        catch (...)
+        {
+            std::cerr << "Unknown error occured while creating directory" << std::endl;
+        }
+        std::cout << "Success!" << std::endl;
+    }
+
+    std::cout << "Running simulation in '" << sim_dir << "'." << std::endl;
+
     return 0;
 
-}
-
-void 
-sim_test_0(void)
-{
-    double mod_width = 0.2;
-    double mod_head_len = mod_width/2.0;
-    double mod_mass = 0.5;
-    double damping = 0.5;
-
-    Eigen::Vector3d forward_joint_axis(0.0,0.0,1.0);
-    Eigen::Vector3d r_im1(-mod_head_len/2, 0, 0);
-    Eigen::Vector3d r_ip1(mod_head_len/2, 0, 0);
-    Eigen::Matrix3d I_cm;
-    Eigen::Matrix3d R_jts;
-    Eigen::Matrix3d init_rotation;
-    double m = mod_mass;
-
-    I_cm << 1,0,0,
-         0,1,0,
-         0,0,1;
-    
-    R_jts << 1,0,0,
-         0,1,0,
-         0,0,1;
-
-    init_rotation = ckbot::rotY(M_PI/2); 
-
-    struct ckbot::module_description HT1_first_link = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, m, -M_PI/2, M_PI/2, 5.0}; 
-
-
-    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, Eigen::Matrix3d::Identity(), m, -M_PI/2, M_PI/2, 5.0};
-
-    struct ckbot::module_description HT2 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, Eigen::Matrix3d::Identity(), m, -M_PI/2, M_PI/2, 5.0};
-
-    ckbot::module_link ck_first = ckbot::module_link(HT1_first_link);
-    ckbot::module_link ck_HT1 = ckbot::module_link(HT1);
-    ckbot::module_link ck_HT2 = ckbot::module_link(HT2);
-
-    ckbot::module_link chain_modules[] = {ck_first, ck_HT1, ck_HT1, ck_HT2, ck_HT2};
-    int num_modules = 5;
-
-    ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
-
-    ckbot::chain_rate rate_machine(ch);
-
-    std::vector<double> s0(2*num_modules);
-    std::fill(s0.begin(), s0.end(), 0.0);
-
-    std::vector<double> T(num_modules);
-    std::fill(T.begin(), T.end(), 1.0);
-
-    std::vector<double> sd(2*num_modules);
-    sd = rate_machine.calc_rate(s0, T);
-
-    std::cout << "Made it out of the rate_machine...\n";
-    std::vector<double>::iterator sd_it;
-    for (sd_it = sd.begin(); sd_it != sd.end(); sd_it++)
-    {
-        std::cout << "Link accels: " << *sd_it << "\n"; 
-    }
-}
-
-void 
-sim_test_1(void)
-{
-    double damping = 1.0;
-    double mass = 0.5;
-    Eigen::Vector3d forward_joint_axis(0,0,1);
-    Eigen::Vector3d r_im1(-0.100, 0.0,0.0);
-    Eigen::Vector3d r_ip1(0.100,0.0,0.0);
-
-    Eigen::Matrix3d I_cm;
-    Eigen::Matrix3d R_jts;
-    Eigen::Matrix3d init_rotation;
-
-    I_cm = Eigen::Matrix3d::Identity();
-    R_jts = Eigen::Matrix3d::Identity();
-    init_rotation << 0.0, 0.0, 1.0,
-                     0.0, 1.0, 0.0,
-                    -1.0, 0.0, 0.0;
-
-    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, mass, -M_PI/2.0, M_PI/2.0, 5.0};
-
-    ckbot::module_link test_1 = ckbot::module_link(HT1);
-
-    test_1.describe_self(std::cout);
-
-    ckbot::module_link chain_modules[] = {test_1, test_1};
-    int num_modules = 2;
-
-    ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
-
-    ckbot::chain_rate rate_machine(ch);
-
-    std::vector<double> s0(2*num_modules);
-    std::fill(s0.begin(), s0.end(), 0.0);
-
-    s0[1] = M_PI/2;
-
-    std::vector<double> T(num_modules);
-    std::fill(T.begin(), T.end(), 0.0);
-
-    std::vector<double> sd(num_modules);
-    std::fill(sd.begin(), sd.end(), 0.0);
-
-    sd = rate_machine.calc_rate(s0, T);
-
-    std::cout << "For Simulation Test 1: 2 HT1 modules with Link 2 at an IC angle\n";
-    std::vector<double>::iterator sd_it;
-    for (sd_it = sd.begin(); sd_it != sd.end(); sd_it++)
-    {
-        std::cout << "Link state rates: " << *sd_it << "\n";
-    }
 }
 
 void 
