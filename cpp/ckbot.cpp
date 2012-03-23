@@ -143,21 +143,38 @@ ckbot::module_link::operator=(module_link& source)
     torque_max_ = source.get_torque_max();
 }
 
+/* Have a module describe itself, in valid json form, to a stream */
 void
 ckbot::module_link::describe_self(std::ostream& out)
 {
-    out << "Module Self Description:\n" <<
-        "  mass: " << m_ <<
-        "\n  damping: " << damping_ <<
-        "\n joint_max: " << joint_max_ <<
-        "\n joint_min: " << joint_min_ <<
-        "\n torque_max: " << torque_max_ <<
-        "\n  f_jt_axis: \n" << forward_joint_axis_ <<
-        "\n  r_im1: \n" << r_im1_ <<
-        "\n  I_cm: \n" << I_cm_ <<
-        "\n  R_jts: \n" << R_jts_ <<
-        "\n init_rot: \n" << init_rotation_ << "\n";
+    out << "\"module\": {" << std::endl << 
+        "\"mass\": " << m_ << "," << std::endl <<
+        "\"damping\": " << damping_ << "," << std::endl <<
+        "\"joint_max\": " << joint_max_ << "," << std::endl <<
+        "\"joint_min\": " << joint_min_ << "," << std::endl << 
+        "\"torque_max\": " << torque_max_ << "," << std::endl <<
+        "\"f_jt_axis\":" << std::endl;
+    eigen_json_print(out, forward_joint_axis_);
+    out << "," << std::endl;
+
+    out << "\"r_im1\":" << std::endl;
+    eigen_json_print(out, r_im1_); 
+    out << "," << std::endl;
+
+    out << "\"I_cm\":" << std::endl;
+    eigen_json_print(out, I_cm_);
+    out << "," << std::endl;
+
+    out << "\"R_jts\":" << std::endl;
+    eigen_json_print(out, R_jts_);
+    out << "," << std::endl;
+
+    out << "\"init_rotation\":" << std::endl;
+    eigen_json_print(out, init_rotation_);
+    
+    out << "}" << std::endl;
 }
+
 ckbot::module_link::~module_link(void)
 {
 }

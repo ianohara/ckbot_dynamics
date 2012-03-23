@@ -47,6 +47,7 @@ int main(int ac, char* av[])
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
 
+    /* Parse options and execute options */
     namespace po = boost::program_options;
     try 
     {
@@ -119,7 +120,7 @@ int main(int ac, char* av[])
         try 
         {
             boost::filesystem::create_directory(result_dir);
-    std::cout << "Last char is: " << sim_dir.at(sim_dir.length()-1) << std::endl;
+            std::cout << "Last char is: " << sim_dir.at(sim_dir.length()-1) << std::endl;
         }
         catch (std::exception& e)
         {
@@ -131,7 +132,7 @@ int main(int ac, char* av[])
         }
         std::cout << "Success!" << std::endl;
     }
-
+    
     std::cout << "Running simulation in '" << sim_dir << "'." << std::endl;
 
     return 0;

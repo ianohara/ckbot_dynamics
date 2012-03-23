@@ -22,6 +22,7 @@
 
 #include<vector>
 #include<eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Core>
 #include<iostream>
 #include<fstream>
 #define _USE_MATH_DEFINES
@@ -43,17 +44,33 @@ namespace ckbot
         double torque_max;
     };
 
-    const struct module_description ZERO_MODULE = {0.0, 
-                                                Eigen::Vector3d::Zero(), 
-                                                Eigen::Vector3d::Zero(), 
-                                                Eigen::Vector3d::Zero(),
-                                                Eigen::Matrix3d::Zero(), 
-                                                Eigen::Matrix3d::Zero(),
-                                                Eigen::Matrix3d::Zero(),
-                                                0.0,
-                                               -M_PI/2,
-                                                M_PI/2,
-                                                3.0};
+    template <typename Derived>
+    void
+    eigen_json_print(std::ostream & out, const Eigen::EigenBase<Derived>& mat)
+    {
+        out << "[";
+        for (int m=0; m < mat.rows(); ++m)
+        {
+            out << "[";
+            for (int n=0; n < mat.cols(); ++n)
+            {
+                out << (mat.derived())(m,n);
+                if (n+1 < mat.cols())
+                {
+                    out << ", ";
+                }
+            }
+            if (m+1 < mat.rows())
+            {
+                out << "]," << std::endl;
+            } else
+            {
+                out << "]";
+            }
+        }
+        out << "]" << std::endl;
+    }
+
 
     Eigen::Matrix3d rotY(double phi);
     Eigen::Matrix3d rotZ(double phi);
