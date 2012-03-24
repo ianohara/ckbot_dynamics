@@ -150,12 +150,14 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
 {
     
     std::cout << "Loading simulation...";
-    std::ifstream chain_file(chain_path);
-    std::ifstream sim_file(sim_path);
+    std::ifstream chain_file;
+    std::ifstream sim_file;
+
+    chain_file.open((char*)chain_path.c_str());
     
     Json::Value chain_root;
     Json::Reader chain_reader;
-    bool parsingSuccessful = reader.parse(chain_file, chain_root);
+    bool parsingSuccessful = chain_reader.parse(chain_file, chain_root);
     chain_file.close();
 
     if (!parsingSuccessful)
@@ -164,15 +166,15 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
         return false;
     }
    
-    Json::Value chain_array = chain_root.get("chain");
+    Json::Value chain_array = chain_root["chain"];
+    struct ckbot::module_description* module_descriptions = new struct ckbot::module_description[chain_array.size()];
 
-    for (link=0; link<chain_array.size(); ++link)
+    for (unsigned int link=0; link<chain_array.size(); ++link)
     {
-        std::cout << "BLAAAARG: " << link << std::endl;
+        std::cout << "BLAAAARG: " << chain_array[link]["module_name"].asString() << std::endl;
     }
 
-    std::ofstream out_file;
-    out_file.open("control_test.txt");
+    sim_file.open((char*)sim_path.c_str());
 
     /* Define the different Modules used in the chain of modules */
     double damping = 1.0;
@@ -198,11 +200,8 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
     /* Initialize the chain */
     ckbot::module_link chain_modules[] = {test_2, test_2, test_2, test_2};
     int num_modules = 4;
-    chain_modules[2].describe_self(std::cout);
     ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
     
-    ch.describe_self(out_file);
-
     /* Initialize the chain rate calculating object and get it ready to hand off to OMPL */
     ckbot::CK_ompl rate_machine(ch);
     /* Start State */
@@ -258,11 +257,7 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
     ss.getSpaceInformation()->setMinMaxControlDuration(1, 100);
 
     ss.setup();
-    out_file << "---Simulation Info---" << std::endl;
-    out_file << "--The starting point is: " << start << std::endl;
-    out_file << "--The goal point is: ";
-    ss.getGoal()->print(out_file);
-    out_file << std::endl;
+    delete[] module_descriptions;
 }
 
 
@@ -272,15 +267,13 @@ run_sol(std::ostream& out_file, ompl::control::SimpleSetup& ss)
     /* Try to find a solution */
     if(ss.solve(SOLUTION_TIME))
     {
-        out_file << "---Simulation Solution---" << std::endl;
         /* Output solution to file */
         const ompl::control::PathControl& sol_path(ss.getSolutionPath());
 
-        unsigned int num_modules = (ss.getStateSpace())->as<ompl::base::RealVectorStateSpace>->getDimension();
+        unsigned int num_modules = (*ss.getStateSpace()).as<ompl::base::RealVectorStateSpace>()->getDimension();
 
         std::vector<double> time(sol_path.getStateCount());
         time[0] = 0.0;
-        out_file << "--Control Inputs--" << std::endl;
         std::vector<double> dt(sol_path.getStateCount()-1);
         for (unsigned int i=0; i < sol_path.getStateCount(); ++i)
         {
