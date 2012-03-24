@@ -32,10 +32,12 @@
 #include<ompl/base/spaces/RealVectorStateSpace.h>
 #include<ompl/control/Control.h>
 
+#include<json/json.h>
+
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 
-void sim_test_2(void);
+bool load_simulation(const std::string&, const std::string&);
 
 const float SOLUTION_TIME = 3600;
 
@@ -94,11 +96,11 @@ int main(int ac, char* av[])
         sim_dir.push_back('/');
         std::cout << "Fixed sim_path with delim..." << sim_dir << std::endl;
     }
+
     desc_path = sim_dir + desc_path;
     chain_path = sim_dir + chain_path;
     sim_path = sim_dir + sim_path;
     result_dir = sim_dir + result_dir;
-
     if (! boost::filesystem::is_regular_file(desc_path)) 
     {
         std::cout << "The description file does not exist. (" << desc_path << ")" << std::endl;
@@ -114,6 +116,8 @@ int main(int ac, char* av[])
         std::cout << "The simulation file does not exist." << std::endl;
         return 1;
     }
+
+    /* Verify and (if needed) create the result directory */
     if (! boost::filesystem::is_directory(result_dir))
     {
         std::cout << "The result directory doesn't exist yet...creating...";
@@ -133,19 +137,42 @@ int main(int ac, char* av[])
         std::cout << "Success!" << std::endl;
     }
     
+    load_simulation(chain_path, sim_path);
+
     std::cout << "Running simulation in '" << sim_dir << "'." << std::endl;
 
     return 0;
 
 }
 
-void 
-sim_test_2(void)
+bool
+load_simulation(const std::string& chain_path, const std::string& sim_path)
 {
+    
+    std::cout << "Loading simulation...";
+    std::ifstream chain_file(chain_path);
+    std::ifstream sim_file(sim_path);
+    
+    Json::Value chain_root;
+    Json::Reader chain_reader;
+    bool parsingSuccessful = reader.parse(chain_file, chain_root);
+    chain_file.close();
+
+    if (!parsingSuccessful)
+    {
+        std::cerr << "Couldn't parse chain file." << std::endl;
+        return false;
+    }
+   
+    Json::Value chain_array = chain_root.get("chain");
+
+    for (link=0; link<chain_array.size(); ++link)
+    {
+        std::cout << "BLAAAARG: " << link << std::endl;
+    }
+
     std::ofstream out_file;
     out_file.open("control_test.txt");
-
-    out_file << "----BEGINNING OF SIM 2----" << std::endl;
 
     /* Define the different Modules used in the chain of modules */
     double damping = 1.0;
@@ -185,7 +212,6 @@ sim_test_2(void)
     std::vector<double> s_fin(2*num_modules);
     std::fill(s_fin.begin(), s_fin.end(), 0.0);
     s_fin[0] = M_PI;
-
 
     /* Set up OMPL */
     /* Make our configuration space and set the bounds on each module's angles */
@@ -237,14 +263,20 @@ sim_test_2(void)
     out_file << "--The goal point is: ";
     ss.getGoal()->print(out_file);
     out_file << std::endl;
+}
 
 
+void 
+run_sol(std::ostream& out_file, ompl::control::SimpleSetup& ss)
+{
     /* Try to find a solution */
     if(ss.solve(SOLUTION_TIME))
     {
         out_file << "---Simulation Solution---" << std::endl;
         /* Output solution to file */
         const ompl::control::PathControl& sol_path(ss.getSolutionPath());
+
+        unsigned int num_modules = (ss.getStateSpace())->as<ompl::base::RealVectorStateSpace>->getDimension();
 
         std::vector<double> time(sol_path.getStateCount());
         time[0] = 0.0;
@@ -256,6 +288,7 @@ sim_test_2(void)
             {
                 const ompl::base::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ompl::base::RealVectorStateSpace::StateType>();
                 const ompl::base::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ompl::base::RealVectorStateSpace::StateType>();
+
                 dt[i-1] = sol_path.getControlDuration(i-1); // Control Duration to go from state i-1 to i;
                 time[i] = time[i-1]+dt[i-1]; // Time at this step
                 out_file << "-Step from " << i-1 << " to " << i << std::endl;
@@ -283,5 +316,4 @@ sim_test_2(void)
         }
         
     }
-    out_file.close();
 }
