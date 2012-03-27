@@ -83,7 +83,7 @@ namespace ckbot
             module_link(void);
             module_link(struct module_description m);
             module_link(const module_link& source);
-            ~module_link(void);
+            ~module_link(void); 
             
             module_link& operator=(module_link& source);
 
@@ -134,8 +134,8 @@ namespace ckbot
         std::vector<module_link> links_;
 
     public:
-        chain(module_link chain_modules[], int num_modules);
-        ~chain(void);
+        chain(module_link chain_modules[], int num_modules); 
+        ~chain(void); 
 
         module_link& get_link(int i);
         Eigen::Matrix3d get_current_R(int i);

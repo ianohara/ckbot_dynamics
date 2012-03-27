@@ -37,9 +37,13 @@
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 
-bool load_simulation(const std::string&, const std::string&);
+bool fill_start_and_goal(const Json::Value& sim_root, std::vector<double>& s0, std::vector<double>& s_fin);
+bool load_and_run_simulation(std::ostream& out_file, const std::string&, const std::string&, const std::string&);
+bool fill_module(const Json::Value&, ckbot::module_link*);
+ckbot::CK_ompl setup_ckbot(Json::Value& chain_root);
+bool save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file);
 
-const float SOLUTION_TIME = 3600;
+const float SOLUTION_TIME = 5;
 
 int main(int ac, char* av[])
 {
@@ -48,6 +52,7 @@ int main(int ac, char* av[])
     std::string chain_path("chain.txt");
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
+    std::string result_path("results.txt");
 
     /* Parse options and execute options */
     namespace po = boost::program_options;
@@ -55,7 +60,8 @@ int main(int ac, char* av[])
     {
         po::options_description desc("Usage:");
         desc.add_options()
-            ("dir", po::value<std::string>(), "Set the directory in which the simulation to run exists")
+            ("dir", po::value<std::string>(), 
+               "Set the directory in which the simulation to run exists")
             ("help", "Give non-sensical help.")
         ;
 
@@ -86,24 +92,30 @@ int main(int ac, char* av[])
     /* Check to make sure the simulation directory and all of its components
      * exist
      */
-    if ((sim_dir.length() == 0) || (! boost::filesystem::is_directory(sim_dir)))
+    if (  (sim_dir.length() == 0) 
+       || (! boost::filesystem::is_directory(sim_dir)))
     {
-        std::cout << "The simululation directory ('" << sim_dir << "') specified by --dir must exist!" << std::endl;   
+        std::cout << "The simululation directory ('" 
+                  << sim_dir 
+                  << "') specified by --dir must exist!" << std::endl;   
         return 1;
     }
+    /* Make sure the directory path ends with a forward slash */
     if (! (sim_dir.at(sim_dir.length()-1) == '/'))
     {
         sim_dir.push_back('/');
-        std::cout << "Fixed sim_path with delim..." << sim_dir << std::endl;
     }
 
     desc_path = sim_dir + desc_path;
     chain_path = sim_dir + chain_path;
     sim_path = sim_dir + sim_path;
     result_dir = sim_dir + result_dir;
+    result_path = result_dir + result_path;
     if (! boost::filesystem::is_regular_file(desc_path)) 
     {
-        std::cout << "The description file does not exist. (" << desc_path << ")" << std::endl;
+        std::cout << "The description file does not exist. (" 
+                  << desc_path 
+                  << ")" << std::endl;
         return 1;
     }
     if (! boost::filesystem::is_regular_file(chain_path))
@@ -124,7 +136,8 @@ int main(int ac, char* av[])
         try 
         {
             boost::filesystem::create_directory(result_dir);
-            std::cout << "Last char is: " << sim_dir.at(sim_dir.length()-1) << std::endl;
+            std::cout << "Last char is: " 
+                      << sim_dir.at(sim_dir.length()-1) << std::endl;
         }
         catch (std::exception& e)
         {
@@ -136,93 +149,107 @@ int main(int ac, char* av[])
         }
         std::cout << "Success!" << std::endl;
     }
-    
-    load_simulation(chain_path, sim_path);
 
-    std::cout << "Running simulation in '" << sim_dir << "'." << std::endl;
-
+    bool sim_status = load_and_run_simulation(std::cout, chain_path, sim_path, result_path);
+    if (! sim_status)
+    {
+        std::cout << "Error loading simulation..exiting." << std::endl;
+        return 1;
+    }
     return 0;
-
 }
 
-bool
-load_simulation(const std::string& chain_path, const std::string& sim_path)
+/*
+ * Take a json chain subtree, which is an array of module dictionaries,
+ * and turn it into a usable chain object populated by the module defined
+ * in the module dictionaries.
+ */
+ckbot::CK_ompl 
+setup_ckbot(Json::Value& chain_root)
 {
-    
-    std::cout << "Loading simulation...";
+    Json::Value chain_array = chain_root["chain"];
+    int num_modules = chain_array.size();
+    struct ckbot::module_link* modules_for_chain = new struct ckbot::module_link[num_modules];
+    for (unsigned int link=0; link<num_modules; ++link)
+    {
+        if (! fill_module(chain_array[link], &modules_for_chain[link]))
+        {
+            throw "Error";
+        }
+    }
+    ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
+    ckbot::CK_ompl rate_machine(*ch);
+    return rate_machine;
+}
+
+/*
+ * Load a simulation from files containing json descriptions of the chain, 
+ * and start and goal positions.
+ * Then run and save the results for later. 
+ */
+bool
+load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, const std::string& sim_path, const std::string& result_path)
+{
+    /*****
+    * Load both the CKBot chain simulator and the start and end goals
+    *****/
     std::ifstream chain_file;
     std::ifstream sim_file;
-
-    chain_file.open((char*)chain_path.c_str());
-    
+    std::ofstream result_file;
     Json::Value chain_root;
     Json::Reader chain_reader;
+    Json::Value sim_root;
+    Json::Reader sim_reader;
+
+    result_file.open((char*)result_path.c_str());
+    result_file << "{" << std::endl;
+
+    chain_file.open((char*)chain_path.c_str());
     bool parsingSuccessful = chain_reader.parse(chain_file, chain_root);
     chain_file.close();
-
     if (!parsingSuccessful)
     {
         std::cerr << "Couldn't parse chain file." << std::endl;
         return false;
     }
-   
-    Json::Value chain_array = chain_root["chain"];
-    struct ckbot::module_description* module_descriptions = new struct ckbot::module_description[chain_array.size()];
-
-    for (unsigned int link=0; link<chain_array.size(); ++link)
-    {
-        std::cout << "BLAAAARG: " << chain_array[link]["module_name"].asString() << std::endl;
-    }
+    
+    ckbot::CK_ompl rate_machine = setup_ckbot(chain_root);
+    rate_machine.get_chain().describe_self(result_file);
+    result_file << "," << std::endl;
+    int num_modules = rate_machine.get_chain().num_links();
+    ckbot::module_link first_module = rate_machine.get_chain().get_link(0u);
 
     sim_file.open((char*)sim_path.c_str());
+    bool sim_parse_success = sim_reader.parse(sim_file, sim_root);
+    sim_file.close();
 
-    /* Define the different Modules used in the chain of modules */
-    double damping = 1.0;
-    double mass = 0.3;
-    Eigen::Vector3d forward_joint_axis(0,0,1);
-    Eigen::Vector3d r_im1(-0.060, 0.0,0.0);
-    Eigen::Vector3d r_ip1(0.060,0.0,0.0);
+    if (!sim_parse_success)
+    {
+        std::cerr << "Couldn't parse sim file." << std::endl;
+        return false;
+    }
 
-    Eigen::Matrix3d I_cm;
-    Eigen::Matrix3d R_jts;
-    Eigen::Matrix3d init_rotation;
-
-    I_cm = Eigen::Matrix3d::Identity();
-    R_jts = Eigen::Matrix3d::Identity();
-    init_rotation << 0.0, 0.0, 1.0,
-                     0.0, 1.0, 0.0,
-                    -1.0, 0.0, 0.0;
-
-    struct ckbot::module_description HT1 = {damping, forward_joint_axis, r_im1, r_ip1, I_cm, R_jts, init_rotation, mass, -M_PI/2, M_PI/2, 10.0};
-
-    ckbot::module_link test_2 = ckbot::module_link(HT1);
-
-    /* Initialize the chain */
-    ckbot::module_link chain_modules[] = {test_2, test_2, test_2, test_2};
-    int num_modules = 4;
-    ckbot::chain ch = ckbot::chain(chain_modules, num_modules);
-    
-    /* Initialize the chain rate calculating object and get it ready to hand off to OMPL */
-    ckbot::CK_ompl rate_machine(ch);
     /* Start State */
     std::vector<double> s0(2*num_modules);
-    std::fill(s0.begin(), s0.end(), 0.0);
     /* Goal State */
     std::vector<double> s_fin(2*num_modules);
-    std::fill(s_fin.begin(), s_fin.end(), 0.0);
-    s_fin[0] = M_PI;
 
-    /* Set up OMPL */
+    fill_start_and_goal(sim_root, s0, s_fin);
+
+    /*****
+     * Set up OMPL 
+     *****/
     /* Make our configuration space and set the bounds on each module's angles */
     ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
-    space->as<ompl::base::RealVectorStateSpace>()->setBounds(HT1.joint_min, HT1.joint_max);
+    space->as<ompl::base::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
+                                                             first_module.get_joint_max());
 
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
 
     ompl::base::RealVectorBounds cbounds(num_modules);
-    cbounds.setLow(-HT1.torque_max);
-    cbounds.setHigh(HT1.torque_max);
+    cbounds.setLow(-first_module.get_torque_max());
+    cbounds.setHigh(first_module.get_torque_max());
 
     cspace->as<ompl::control::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
@@ -233,10 +260,15 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
     ompl::control::SimpleSetup ss(cspace);
 
     // TODO: Write an actual state validity checker!
-    ss.setStateValidityChecker(boost::bind<bool>(&ckbot::CK_ompl::stateValidityChecker, rate_machine, _1));
+    ss.setStateValidityChecker(boost::bind<bool>(&ckbot::CK_ompl::stateValidityChecker, 
+                                                 rate_machine, 
+                                                 _1));
 
     /* Setup and get the dynamics of our system into the planner */
-    ompl::control::ODEBasicSolver<> odeSolver (ss.getSpaceInformation(), boost::bind<void>(&ckbot::CK_ompl::CKBotODE, rate_machine, _1, _2, _3));
+    ompl::control::ODEBasicSolver<> odeSolver(ss.getSpaceInformation(), 
+                                              boost::bind<void>(&ckbot::CK_ompl::CKBotODE, 
+                                                                rate_machine, _1, _2, _3));
+
     ss.setStatePropagator(odeSolver.getStatePropagator());
 
     /* Define the start and end configurations */
@@ -253,60 +285,177 @@ load_simulation(const std::string& chain_path, const std::string& sim_path)
     ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(ss.getSpaceInformation()));
     ss.setPlanner(planner);
 
-    /* Allow more than 10 steps in our solution */
+    /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(1, 100);
 
     ss.setup();
-    delete[] module_descriptions;
+    if (ss.solve(SOLUTION_TIME))
+    {
+        save_sol(ss, result_file);
+    } else {
+        result_file << "}" << std::endl;
+        result_file.close();
+        return false;
+    }
+
+    result_file << "}" << std::endl;
+    result_file.close();   
+    return true;
 }
 
-
-void 
-run_sol(std::ostream& out_file, ompl::control::SimpleSetup& ss)
+/* 
+ * Output solution to file in json format
+ */
+bool 
+save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
 {
-    /* Try to find a solution */
-    if(ss.solve(SOLUTION_TIME))
+    const ompl::control::PathControl& sol_path(ss.getSolutionPath());
+    unsigned int num_modules = (*(ss.getStateSpace())).as<ompl::base::RealVectorStateSpace>()->getDimension();
+    std::vector<double> time(sol_path.getStateCount());
+    std::vector<double> dt(sol_path.getStateCount()-1);
+    out_file << "\"control\": [" << std::endl;   
+
+    time[0] = 0.0;
+    for (unsigned int i=0; i < sol_path.getStateCount(); ++i)
     {
-        /* Output solution to file */
-        const ompl::control::PathControl& sol_path(ss.getSolutionPath());
-
-        unsigned int num_modules = (*ss.getStateSpace()).as<ompl::base::RealVectorStateSpace>()->getDimension();
-
-        std::vector<double> time(sol_path.getStateCount());
-        time[0] = 0.0;
-        std::vector<double> dt(sol_path.getStateCount()-1);
-        for (unsigned int i=0; i < sol_path.getStateCount(); ++i)
+        if (i != 0)
         {
-            if (i != 0)
+            out_file << "{" << std::endl;
+            const ompl::base::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ompl::base::RealVectorStateSpace::StateType>();
+            const ompl::base::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ompl::base::RealVectorStateSpace::StateType>();
+
+            dt[i-1] = sol_path.getControlDuration(i-1); // Control Duration to go from state i-1 to i;
+            time[i] = time[i-1]+dt[i-1]; // Time at this step
+            out_file << "\"start_state_index\":" << i-1 << "," << std::endl;
+            out_file << "\"end_state_index\":" << i << "," << std::endl;
+
+            out_file << "\"start_state\": [";
+            for (unsigned int j=0; j<num_modules; ++j)
             {
-                const ompl::base::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ompl::base::RealVectorStateSpace::StateType>();
-                const ompl::base::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ompl::base::RealVectorStateSpace::StateType>();
-
-                dt[i-1] = sol_path.getControlDuration(i-1); // Control Duration to go from state i-1 to i;
-                time[i] = time[i-1]+dt[i-1]; // Time at this step
-                out_file << "-Step from " << i-1 << " to " << i << std::endl;
-                out_file << "State from [";
-                
-                for (unsigned int j=0; j<num_modules; ++j)
+                out_file << s_minus[j];
+                if (j+1 < num_modules)
                 {
-                    out_file << s_minus[j] << ", ";
+                    out_file << ", ";
                 }
-                out_file << "] to [";
-                for (unsigned int j=0; j<num_modules; ++j)
-                {
-                    out_file  << s[j] << ", ";
-                }
-                out_file << "]" << std::endl;
-
-                out_file << "Control from " << i-1 << " to " << i << ":" << " from: " << time[i-1] << "[s] to " << time[i] << "[s] by dt: " << dt[i-1] << "[s]" << std::endl << "\t";
-                const double* c = sol_path.getControl(i-1)->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
-                for (unsigned int j=0; j<num_modules; ++j)
-                {
-                    out_file << " " << c[j] << ",";
-                }
-                out_file << std::endl;
             }
+            out_file << "]," << std::endl;
+
+            out_file << "\"end_state\": [";
+            for (unsigned int j=0; j<num_modules; ++j)
+            {
+                out_file  << s[j];
+                if (j+1 < num_modules)
+                {
+                    out_file << ", ";
+                }
+            }
+            out_file << "]," << std::endl;
+            
+            out_file << "\"start_time\":" << time[i-1] << "," << std::endl;
+            out_file << "\"end_time\":" << time[i] << "," << std::endl;
+            out_file << "\"dt\":" << dt[i-1] << "," << std::endl;
+            const double* c = sol_path.getControl(i-1)->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+            out_file << "\"control\": [";
+            for (unsigned int j=0; j<num_modules; ++j)
+            {
+                out_file << " " << c[j];
+                if (j+1 < num_modules)
+                {
+                    out_file << ", ";
+                }
+            }
+            out_file << "]";
+
+            /* End this control dictionary and prepare for another, if needed */
+            out_file << "}";
+            if (i+1 < sol_path.getStateCount())
+            {
+                out_file << ",";
+            }
+            out_file << std::endl;
         }
-        
     }
+    out_file << "]" << std::endl;
+    return true;
+}
+
+bool
+fill_module(const Json::Value& json_mod, ckbot::module_link* module)
+{
+    ckbot::module_description this_module_desc;
+    double damping = json_mod["damping"].asDouble();
+    double mass = json_mod["mass"].asDouble();
+    double joint_max = json_mod["joint_max"].asDouble();
+    double joint_min = json_mod["joint_min"].asDouble();
+    double torque_max = json_mod["torque_max"].asDouble();
+
+    Eigen::Vector3d forward_joint_axis;
+    Eigen::Vector3d r_ip1; 
+    Eigen::Vector3d r_im1;
+    if ((json_mod["f_jt_axis"].size() != 3)
+            || (json_mod["r_im1"].size() != 3)
+            || (json_mod["r_ip1"].size() != 3))
+    {
+        return false;
+    }
+    for (unsigned int m=0; m<3; ++m)
+    {
+        /*Need 0u as index to distinguish from operator[] which takes a string*/
+        forward_joint_axis(m) = ((json_mod["f_jt_axis"])[m])[0u].asDouble();
+        r_im1(m) = ((json_mod["r_im1"])[m])[0u].asDouble();
+        r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
+    } 
+
+    Eigen::Matrix3d I_cm;
+    Eigen::Matrix3d R_jts;
+    Eigen::Matrix3d init_rotation;
+    /* TODO: Check that the json for these 3 are 3x3 arrays!!! */ 
+    for (unsigned int m=0; m < 3; ++m)
+    {
+        for (unsigned int n=0; n<3; ++n)
+        {
+            I_cm(m,n) = json_mod["I_cm"][m][n].asDouble();
+            R_jts(m,n) = json_mod["R_jts"][m][n].asDouble();
+            init_rotation(m,n) = json_mod["init_rotation"][m][n].asDouble();
+        }
+    }
+
+    this_module_desc.damping = damping;
+    this_module_desc.m = mass;
+    this_module_desc.joint_max = joint_max;
+    this_module_desc.joint_min = joint_min;
+    this_module_desc.torque_max = torque_max;
+    this_module_desc.forward_joint_axis = forward_joint_axis;
+    this_module_desc.r_im1 = r_im1;
+    this_module_desc.r_ip1 = r_ip1;
+    this_module_desc.I_cm = I_cm;
+    this_module_desc.R_jts = R_jts;
+    this_module_desc.init_rotation = init_rotation;
+
+    ckbot::module_link this_module(this_module_desc);
+    *module = this_module;
+
+    return true;
+}
+
+bool
+fill_start_and_goal(const Json::Value& sim_root, std::vector<double>& s0, std::vector<double>& s_fin)
+{
+    if((! sim_root["start"].isArray()) || (! sim_root["goal"].isArray()))
+    {
+        std::cerr << "In simulation file the start and goal positions must be Json arrays." << std::endl;
+        return false;
+    }
+    if ((sim_root["start"].size() != s0.size()) || (sim_root["goal"].size() != s_fin.size()))
+    {
+        std::cerr << "The start and goal positions in the sim file must have the same dimension as the chain suggests (ie: #modules*2)." << std::endl;
+        return false;
+    }
+
+    for (unsigned int i = 0; i < s0.size(); ++i)
+    {
+       s0[i] = sim_root["start"][i].asDouble();
+       s_fin[i] = sim_root["goal"][i].asDouble();
+    }
+    return true;
 }

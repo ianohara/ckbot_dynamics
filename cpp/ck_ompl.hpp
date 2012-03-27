@@ -34,8 +34,8 @@ namespace ckbot
     class CK_ompl: public chain_rate
     {
         public:
-            CK_ompl(chain& ch): chain_rate(ch) {};
-            ~CK_ompl(void) {};
+            CK_ompl(chain& ch): chain_rate(ch){}; 
+            ~CK_ompl(void){}; 
             void CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot);
             bool stateValidityChecker(const ompl::base::State *s);
     };

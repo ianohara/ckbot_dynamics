@@ -28,6 +28,19 @@
 #include<math.h>
 #include"ckbot.hpp"
 
+struct ckbot::module_description _ZERO_MODULE = {0.0,
+        Eigen::Vector3d::Zero(),
+        Eigen::Vector3d::Zero(),
+        Eigen::Vector3d::Zero(),
+        Eigen::Matrix3d::Identity(),
+        Eigen::Matrix3d::Identity(),
+        Eigen::Matrix3d::Identity(),
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+
 Eigen::Matrix3d 
 ckbot::rotY(double phi)
 {
@@ -147,7 +160,7 @@ ckbot::module_link::operator=(module_link& source)
 void
 ckbot::module_link::describe_self(std::ostream& out)
 {
-    out << "\"module\": {" << std::endl << 
+    out << " {" << std::endl << 
         "\"mass\": " << m_ << "," << std::endl <<
         "\"damping\": " << damping_ << "," << std::endl <<
         "\"joint_max\": " << joint_max_ << "," << std::endl <<
@@ -155,6 +168,10 @@ ckbot::module_link::describe_self(std::ostream& out)
         "\"torque_max\": " << torque_max_ << "," << std::endl <<
         "\"f_jt_axis\":" << std::endl;
     eigen_json_print(out, forward_joint_axis_);
+    out << "," << std::endl;
+
+    out << "\"r_ip1\":" << std::endl;
+    eigen_json_print(out, r_ip1_);
     out << "," << std::endl;
 
     out << "\"r_im1\":" << std::endl;
@@ -380,13 +397,16 @@ ckbot::chain::~chain(void)
 void 
 ckbot::chain::describe_self(std::ostream& out)
 {
-    out << "---BEGIN CHAIN DESCRIPTION---" << std::endl;
+    out << "\"chain\": [" << std::endl;
     for (int i=0; i<N_; ++i)
     {
-        out << "--Module " << i << "--" << std::endl;
         links_[i].describe_self(out);
+        if (i+1 < N_) 
+        {
+            out << "," << std::endl;
+        }
     }
-    out << "---END CHAIN DESCRIPTION---" << std::endl;
+    out << "]" << std::endl;
 }
 
 
