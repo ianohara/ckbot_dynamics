@@ -16,7 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Dense>
 #include<vector>
 #include<iostream>
 #include<fstream>
@@ -153,7 +153,7 @@ int main(int ac, char* av[])
     bool sim_status = load_and_run_simulation(std::cout, chain_path, sim_path, result_path);
     if (! sim_status)
     {
-        std::cout << "Error loading simulation..exiting." << std::endl;
+        std::cout << "Error during simulation..exiting." << std::endl;
         return 1;
     }
     return 0;
@@ -188,10 +188,16 @@ setup_ckbot(Json::Value& chain_root)
  * Then run and save the results for later. 
  */
 bool
-load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, const std::string& sim_path, const std::string& result_path)
+load_and_run_simulation(std::ostream& out_file, 
+                        const std::string& chain_path, 
+                        const std::string& sim_path, 
+                        const std::string& result_path)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
+    * While loading the chain description, start outputing the description
+    * to the result file.  Using only one file for the results guarantees
+    * nothing gets mixed up (ie: One file describes it all).
     *****/
     std::ifstream chain_file;
     std::ifstream sim_file;
@@ -200,7 +206,10 @@ load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, c
     Json::Reader chain_reader;
     Json::Value sim_root;
     Json::Reader sim_reader;
-
+    
+    /* No reason to run if we can't open our result file, 
+     * so let the exceptions flow through!
+     */
     result_file.open((char*)result_path.c_str());
     result_file << "{" << std::endl;
 
@@ -212,13 +221,22 @@ load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, c
         std::cerr << "Couldn't parse chain file." << std::endl;
         return false;
     }
-    
+   
+    /*
+     * Load the chain and initialize an ODE solver for it from the JSON tree
+     * we now have.
+     */
     ckbot::CK_ompl rate_machine = setup_ckbot(chain_root);
     rate_machine.get_chain().describe_self(result_file);
     result_file << "," << std::endl;
+    
+    /* For reference when setting up OMPL */
     int num_modules = rate_machine.get_chain().num_links();
     ckbot::module_link first_module = rate_machine.get_chain().get_link(0u);
 
+    /* The start and goal positions are in a separate file. 
+     * Hopefully this allows easy re-use of config parts
+     */
     sim_file.open((char*)sim_path.c_str());
     bool sim_parse_success = sim_reader.parse(sim_file, sim_root);
     sim_file.close();
@@ -229,15 +247,13 @@ load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, c
         return false;
     }
 
-    /* Start State */
+    /* Fill the start and goal positions from the sim JSON tree */
     std::vector<double> s0(2*num_modules);
-    /* Goal State */
     std::vector<double> s_fin(2*num_modules);
-
     fill_start_and_goal(sim_root, s0, s_fin);
 
     /*****
-     * Set up OMPL 
+     * Setup OMPL 
      *****/
     /* Make our configuration space and set the bounds on each module's angles */
     ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
@@ -246,11 +262,9 @@ load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, c
 
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
-
     ompl::base::RealVectorBounds cbounds(num_modules);
     cbounds.setLow(-first_module.get_torque_max());
     cbounds.setHigh(first_module.get_torque_max());
-
     cspace->as<ompl::control::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
     /* 
@@ -268,7 +282,6 @@ load_and_run_simulation(std::ostream& out_file, const std::string& chain_path, c
     ompl::control::ODEBasicSolver<> odeSolver(ss.getSpaceInformation(), 
                                               boost::bind<void>(&ckbot::CK_ompl::CKBotODE, 
                                                                 rate_machine, _1, _2, _3));
-
     ss.setStatePropagator(odeSolver.getStatePropagator());
 
     /* Define the start and end configurations */
@@ -313,6 +326,8 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
     unsigned int num_modules = (*(ss.getStateSpace())).as<ompl::base::RealVectorStateSpace>()->getDimension();
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
+
+    /* Note: We're assuming that we're already in a dictionary */
     out_file << "\"control\": [" << std::endl;   
 
     time[0] = 0.0;
@@ -432,8 +447,8 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     this_module_desc.R_jts = R_jts;
     this_module_desc.init_rotation = init_rotation;
 
-    ckbot::module_link this_module(this_module_desc);
-    *module = this_module;
+    ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
+    *module = *this_module;
 
     return true;
 }
