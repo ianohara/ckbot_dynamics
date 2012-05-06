@@ -37,13 +37,18 @@
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 
-bool fill_start_and_goal(const Json::Value& sim_root, std::vector<double>& s0, std::vector<double>& s_fin);
-bool load_and_run_simulation(std::ostream& out_file, const std::string&, const std::string&, const std::string&);
+bool fill_start_and_goal(const Json::Value& sim_root, 
+                         std::vector<double>& s0, 
+                         std::vector<double>& s_fin);
+bool load_and_run_simulation(std::ostream& out_file, 
+                             const std::string&, 
+                             const std::string&, 
+                             const std::string&);
 bool fill_module(const Json::Value&, ckbot::module_link*);
 ckbot::CK_ompl setup_ckbot(Json::Value& chain_root);
 bool save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file);
 
-const float SOLUTION_TIME = 5;
+float SOLUTION_TIME = 30;
 
 int main(int ac, char* av[])
 {
@@ -60,9 +65,10 @@ int main(int ac, char* av[])
     {
         po::options_description desc("Usage:");
         desc.add_options()
+            ("help", "Give non-sensical help.")
             ("dir", po::value<std::string>(), 
                "Set the directory in which the simulation to run exists")
-            ("help", "Give non-sensical help.")
+            ("time", po::value<double>(), "Set the maximum runtime of the solver")
         ;
 
         po::variables_map vm;
@@ -78,6 +84,10 @@ int main(int ac, char* av[])
         if (vm.count("dir")) 
         {
             sim_dir = vm["dir"].as<std::string>();
+        }
+        if (vm.count("time"))
+        {
+            SOLUTION_TIME = vm["time"].as<double>();
         }
     }
     catch (std::exception& e)
@@ -172,6 +182,7 @@ setup_ckbot(Json::Value& chain_root)
     struct ckbot::module_link* modules_for_chain = new struct ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
+        std::cout << "DEBUG: Attempting to fill chain link " << link << " of " << num_modules << std::endl;
         if (! fill_module(chain_array[link], &modules_for_chain[link]))
         {
             throw "Error";
@@ -208,7 +219,7 @@ load_and_run_simulation(std::ostream& out_file,
     Json::Reader sim_reader;
     
     /* No reason to run if we can't open our result file, 
-     * so let the exceptions flow through!
+     * so let the exceptions flow up.
      */
     result_file.open((char*)result_path.c_str());
     result_file << "{" << std::endl;
@@ -224,7 +235,8 @@ load_and_run_simulation(std::ostream& out_file,
    
     /*
      * Load the chain and initialize an ODE solver for it from the JSON tree
-     * we now have.
+     * we now have. Also, while we're at it, output the chain description
+     * to the result file.
      */
     ckbot::CK_ompl rate_machine = setup_ckbot(chain_root);
     rate_machine.get_chain().describe_self(result_file);
@@ -292,6 +304,8 @@ load_and_run_simulation(std::ostream& out_file,
         start[i] = s0[i];
         goal[i] = s_fin[i];
     }
+    start.print(std::cout);
+    goal.print(std::cout);
 
     ss.setStartAndGoalStates(start, goal);
 
@@ -323,7 +337,7 @@ bool
 save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
 {
     const ompl::control::PathControl& sol_path(ss.getSolutionPath());
-    unsigned int num_modules = (*(ss.getStateSpace())).as<ompl::base::RealVectorStateSpace>()->getDimension();
+    unsigned int num_modules = (*(ss.getStateSpace())).as<ompl::base::RealVectorStateSpace>()->getDimension()/2;
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
 
@@ -345,10 +359,10 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
             out_file << "\"end_state_index\":" << i << "," << std::endl;
 
             out_file << "\"start_state\": [";
-            for (unsigned int j=0; j<num_modules; ++j)
+            for (unsigned int j=0; j<2*num_modules; ++j)
             {
                 out_file << s_minus[j];
-                if (j+1 < num_modules)
+                if (j+1 < 2*num_modules)
                 {
                     out_file << ", ";
                 }
@@ -356,10 +370,10 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
             out_file << "]," << std::endl;
 
             out_file << "\"end_state\": [";
-            for (unsigned int j=0; j<num_modules; ++j)
+            for (unsigned int j=0; j<2*num_modules; ++j)
             {
                 out_file  << s[j];
-                if (j+1 < num_modules)
+                if (j+1 < 2*num_modules)
                 {
                     out_file << ", ";
                 }
@@ -397,6 +411,7 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
 bool
 fill_module(const Json::Value& json_mod, ckbot::module_link* module)
 {
+    //std::cout << "DEBUG: Now filling scalars." << std::endl;
     ckbot::module_description this_module_desc;
     double damping = json_mod["damping"].asDouble();
     double mass = json_mod["mass"].asDouble();
@@ -404,6 +419,7 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     double joint_min = json_mod["joint_min"].asDouble();
     double torque_max = json_mod["torque_max"].asDouble();
 
+    //std::cout << "DEBUG: Now filling 1x3s" << std::endl;
     Eigen::Vector3d forward_joint_axis;
     Eigen::Vector3d r_ip1; 
     Eigen::Vector3d r_im1;
@@ -421,6 +437,7 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
         r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
     } 
 
+    //std::cout << "DEBUG: Now filling 3x3s" << std::endl;
     Eigen::Matrix3d I_cm;
     Eigen::Matrix3d R_jts;
     Eigen::Matrix3d init_rotation;
@@ -448,22 +465,30 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     this_module_desc.init_rotation = init_rotation;
 
     ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
+    /* TODO: This doesn't really make sense.  Should make module pointer point to the newly allocated memory, not copy the newly allocated memory */
     *module = *this_module;
 
     return true;
 }
 
 bool
-fill_start_and_goal(const Json::Value& sim_root, std::vector<double>& s0, std::vector<double>& s_fin)
+fill_start_and_goal(const Json::Value& sim_root, 
+                    std::vector<double>& s0, 
+                    std::vector<double>& s_fin)
 {
-    if((! sim_root["start"].isArray()) || (! sim_root["goal"].isArray()))
+    if((! sim_root["start"].isArray()) || 
+       (! sim_root["goal"].isArray()))
     {
-        std::cerr << "In simulation file the start and goal positions must be Json arrays." << std::endl;
+        std::cerr << "In simulation file the start and " <<
+                     "goal positions must be Json arrays." << std::endl;
         return false;
     }
-    if ((sim_root["start"].size() != s0.size()) || (sim_root["goal"].size() != s_fin.size()))
+    if ((sim_root["start"].size() != s0.size()) || 
+        (sim_root["goal"].size() != s_fin.size()))
     {
-        std::cerr << "The start and goal positions in the sim file must have the same dimension as the chain suggests (ie: #modules*2)." << std::endl;
+        std::cerr << "The start and goal positions in the sim file " << 
+                     "must have the same dimension as the chain " <<
+                     "suggests (ie: #modules*2)." << std::endl;
         return false;
     }
 

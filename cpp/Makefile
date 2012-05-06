@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-I.
-LIBRARIES= -lompl -lboost_program_options -lboost_filesystem -ljson
+LIBRARIES= -lompl -lboost_program_options -lboost_filesystem -ljson -lboost_system
 
 run_sim: run_sim.o ckbot.o ck_ompl.o
 	$(CC) -o run_sim run_sim.o ckbot.o ck_ompl.o $(CFLAGS) $(LIBRARIES)
