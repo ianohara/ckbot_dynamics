@@ -19,7 +19,10 @@ sim.integrator = @euler; % First order euler as default integrator
 
 num_s = NaN;
 t_sim = NaN;
+t = NaN;
+dt = NaN;
 
+% Note: All options are 'key', value options.  
 for i = 1:2:nargin-1
    opt = varargin{i};
    val = varargin{i+1};
@@ -46,15 +49,28 @@ for i = 1:2:nargin-1
            qd0 = val;
        case 'integrator';
            sim.integrator = val;
+       case 'dt'
+           dt = val;
        otherwise
            error('Unknown option: %s', opt);
    end
 end
 
 N = size(sim.chain,1);
-dt = t_sim/num_s;
+if (isnan(dt))
+    dt = t_sim/num_s;
+    t = 0:dt:(t_sim-dt);
+elseif (length(dt) == 1)
+    t = 0:dt:(t_sim-dt);
+else
+    t = zeros(1,length(dt));
+    for i = 1:length(dt)-1
+       t(i+1) = t(i) + dt(i);
+    end
+end
+
 sim.dt = dt;
-t = 0:dt:(t_sim-dt);
+
 sim.t = t';
 
 if (size(sim.t,1) ~= num_s)

@@ -10,15 +10,15 @@ function props = get_body_params(type)
 
 % Universal geometric and inertial parameters
 props = {};
-props.width = 0.2;
+props.width = 1;
 props.head_len = props.width;
-props.mass = 0.5;
+props.mass = 1;
 props.joint_axis = [0;0;1];
 props.tail_len = props.width;
 props.tail_width = props.width/2;
 props.tail_radius = props.tail_width/2;
 props.joint_mat = [0,0,0,0,0,1]; % Defn in JPL paper.
-props.damping = 2.0;  % Joint damping [N * s * m]
+props.damping = 1.0;  % Joint damping [N * s * m]
 
 % Drawing Options
 props.transparency = 0.6;

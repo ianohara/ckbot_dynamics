@@ -9,8 +9,14 @@ function sim = run_sim(sim, steps)
 %         filled in.
 %
 
+if (length(sim.dt) == 1)
+    sim.dt = repmat(sim.dt, 1, steps-1);
+elseif (length(sim.dt) ~= steps-1)
+    error('sim.dt must either be a vector of length steps-1 or a scalar. (ie: specify a timestep for each step, or specify a single timestep to use for all steps).');
+end
+
 for i = 1:steps-1
-    [q_n,qd_n] = step_sim(sim.chain, sim.q(:,i), sim.qd(:,i), sim.T(:,i), sim.dt, sim.integrator);
+    [q_n,qd_n] = step_sim(sim.chain, sim.q(:,i), sim.qd(:,i), sim.T(:,i), sim.dt(i), sim.integrator);
     sim.q(:,i+1) = q_n;
     sim.qd(:,i+1) = qd_n;
     sim.s = sim.s+1;

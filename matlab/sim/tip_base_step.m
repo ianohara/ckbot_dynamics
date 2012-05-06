@@ -91,7 +91,7 @@ for i = N:-1:1
     % Set p+ for next time around loop
     pp = tau_tilde*p_cur; 
     
-    omega = get_angular_vel(chain, i, qd(i));
+    omega = get_angular_vel(chain, i);
     omega_cross = get_cross_mat(omega);
     
     % The Coriolis and Gyroscopic terms

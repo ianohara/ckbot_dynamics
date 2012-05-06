@@ -77,12 +77,30 @@ fprintf('Starting at time %e...\n', props.start_time);
 
 close all;
 
-dt = sim.dt;
+if (length(sim.dt) == 1)
+    dt = repmat(sim.dt,sim.s,1);
+else
+    dt = sim.dt;
+end
 dt_draw = dt*props.pause_mult;
 steps = sim.s;
 chain = sim.chain;
 
-start_step = floor(props.start_time/dt)+1;
+step_times = zeros(1,steps);
+for i=1:length(step_times)-1
+   step_times(i+1) = step_times(i) + dt(i); 
+end
+
+start_step = 1;
+tmp_time = 0;
+for i=1:length(dt);
+    tmp_time = tmp_time+dt(i);
+    if (tmp_time >= props.start_time)
+        start_step = floor(i);
+        break
+    end
+end
+
 
 % Subplots
 draw_fig = figure();
@@ -142,19 +160,18 @@ hold on;
 title('Time History of CKBot System','FontSize', 14);
 xlabel('Time [s]','FontSize', 14);
 ylabel('Joint Torque [Nm]','FontSize',14);
-st = 1:steps;
-plot(st*dt, sim.T(props.to_plot,:),'LineWidth', 2);
+
+plot(step_times, sim.T(props.to_plot,1:end),'LineWidth', 2);
 grid on;
 hold on;
 
 if  (props.draw_plots)
     figure(plot_fig)
-    st = 1:steps;
     subplot(joint_ang_sp);
-    plot(st*dt, sim.q(props.to_plot,:),'LineWidth',2);
+    plot(step_times, sim.q(props.to_plot,1:end),'LineWidth',2);
     hold on;
     subplot(joint_vel_sp);
-    plot(st*dt, sim.qd(props.to_plot,:),'LineWidth',2);
+    plot(step_times, sim.qd(props.to_plot,1:end),'LineWidth',2);
     hold on;
     legend_strs = {};
     for i=1:length(props.to_plot)
@@ -212,9 +229,9 @@ for i=start_step:steps
     if (props.real_time)
         figure(draw_fig);
         subplot(ck_sp);
-        set(t_line1,'XData', [i*dt, i*dt]);
-        set(t_line2, 'XData', [i*dt, i*dt]);
-        set(t_line3, 'XData', [i*dt, i*dt]);
+        set(t_line1,'XData', [sum(dt(1:i)), sum(dt(1:i))]);
+        set(t_line2, 'XData', [sum(dt(1:i)), sum(dt(1:i))]);
+        set(t_line3, 'XData', [sum(dt(1:i)), sum(dt(1:i))]);
         drawnow();
         if (props.make_movie)
             print(draw_fig, '-dpng', sprintf('%s%05d_%s_Frame.png', movie_dir, i,movie_name)); 
