@@ -536,9 +536,6 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
          */
         sd[N+i] = qdd[i];
     }
-    /* TODO: This should probably return the full sd instead of qdd.  What
-     *       does OMPL want?
-     */
     return sd;
 }
 
@@ -641,7 +638,6 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         omega = c.get_angular_velocity(i);
         omega_cross = get_cross_mat(omega);
 
-        // TODO: Use block matrix notiation and the stream (<<) operator here.
         b.topLeftCorner(3,1) = omega_cross*cur.get_I_cm()*omega;
         b.bottomLeftCorner(3,1) = cur.get_mass()*omega_cross*omega_cross*(-cur.get_r_im1());
         
