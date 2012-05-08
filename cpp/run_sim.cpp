@@ -313,7 +313,12 @@ load_and_run_simulation(std::ostream& out_file,
     ss.setPlanner(planner);
 
     /* Allow this range of number of steps in our solution */
-    ss.getSpaceInformation()->setMinMaxControlDuration(1, 100);
+    ss.getSpaceInformation()->setMinMaxControlDuration(1, 1);
+    ss.getSpaceInformation()->setPropagationStepSize(0.05);
+    std::cout << "DEBUG: The progagationStepSize is: " << ss.getSpaceInformation()->getPropagationStepSize()
+              << std::endl << "  The Minimum number of steps is: " << ss.getSpaceInformation()->getMinControlDuration()
+              << std::endl << "  The Max number of steps is: " << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
+
 
     ss.setup();
     if (ss.solve(SOLUTION_TIME))
