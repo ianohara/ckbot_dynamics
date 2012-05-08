@@ -10,9 +10,9 @@ function sim = run_sim(sim, steps)
 %
 
 if (length(sim.dt) == 1)
-    sim.dt = repmat(sim.dt, 1, steps-1);
-elseif (length(sim.dt) ~= steps-1)
-    error('sim.dt must either be a vector of length steps-1 or a scalar. (ie: specify a timestep for each step, or specify a single timestep to use for all steps).');
+    sim.dt = repmat(sim.dt, 1, steps);
+elseif (length(sim.dt) ~= steps)
+    error('sim.dt must either be a vector of length steps or a scalar. (ie: specify a timestep for each step, or specify a single timestep to use for all steps).');
 end
 
 for i = 1:steps-1

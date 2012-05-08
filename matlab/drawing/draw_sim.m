@@ -9,7 +9,7 @@ function success = draw_sim(sim, varargin)
 %  to_plot - Chain links to plot in the time history plot
 %
 % RETURNS
-%  success - (Code for: nothing useful)
+%  success - evaluates to false if unsuccessful, true if successful
 %
 % TODO:
 %   When plotting joint angles, why doesn't matlab change the line colors?
@@ -175,7 +175,6 @@ if  (props.draw_plots)
     hold on;
     legend_strs = {};
     for i=1:length(props.to_plot)
-       fprintf('Link %d\n', props.to_plot(i));
        legend_strs{end+1} = sprintf('Link %d', props.to_plot(i));
     end
     legend(legend_strs);
@@ -185,6 +184,7 @@ figure(plot_fig);
 subplot(joint_ang_sp);
 cur_axis = axis();
 t_line1 = line([0.0 0.0], cur_axis(3:4), 'LineStyle', '-', 'LineWidth',2,'Color','k');
+
 subplot(joint_vel_sp);
 cur_axis = axis();
 t_line2 = line([0.0 0.0], cur_axis(3:4),'LineStyle', '-', 'LineWidth',2,'Color','k');

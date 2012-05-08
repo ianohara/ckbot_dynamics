@@ -57,6 +57,7 @@ for i = 1:2:nargin-1
 end
 
 N = size(sim.chain,1);
+
 if (isnan(dt))
     dt = t_sim/num_s;
     t = 0:dt:(t_sim-dt);

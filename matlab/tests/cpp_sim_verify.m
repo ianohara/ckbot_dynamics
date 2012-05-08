@@ -89,6 +89,7 @@ if (overlay)
    cpp_len = length(json.control);
    q_cpp = zeros(N,cpp_len);
    qd_cpp = zeros(N, cpp_len);
+   T_cpp = zeros(N, cpp_len);
    t_cpp = zeros(1, cpp_len);
    for i = 1:cpp_len
        end_time = json.control{i}.end_time;
@@ -96,6 +97,7 @@ if (overlay)
        s_mat = cell2mat(json.control{i}.end_state)'; % Column.
        q_cpp(:,i) = s_mat(1:N);
        qd_cpp(:,i) = s_mat(N+1:2*N);
+       T_cpp(:, i) = cell2mat(json.control{i}.control)';
    end
    
    legend_strs = {};
@@ -120,6 +122,17 @@ if (overlay)
    xlabel('Time [s]', 'FontSize', 14);
    ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
    plot(t_cpp, qd_cpp,'LineWidth',2);
+   legend(legend_strs);
+   
+   torque_fig = figure();
+   torque_sp = 111;
+   subplot(torque_sp);
+   grid on;
+   hold on;
+   title('Time History of C++ Planned System','FontSize', 14);
+   xlabel('Time [s]','FontSize', 14);
+   ylabel('Joint Torque [Nm]','FontSize',14);
+   plot(t_cpp, T_cpp, 'LineWidth', 2);
    legend(legend_strs);
    
 end
