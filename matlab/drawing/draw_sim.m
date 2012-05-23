@@ -96,7 +96,7 @@ tmp_time = 0;
 for i=1:length(dt);
     tmp_time = tmp_time+dt(i);
     if (tmp_time >= props.start_time)
-        start_step = floor(i);
+        start_step = floor(i)
         break
     end
 end
@@ -160,7 +160,6 @@ hold on;
 title('Time History of CKBot System','FontSize', 14);
 xlabel('Time [s]','FontSize', 14);
 ylabel('Joint Torque [Nm]','FontSize',14);
-
 plot(step_times, sim.T(props.to_plot,1:end),'LineWidth', 2);
 grid on;
 hold on;

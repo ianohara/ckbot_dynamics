@@ -62,8 +62,9 @@ end
 % split them into equal parts for the simulator steps.
 dt = zeros(size(json.control,2)*step_splits, 1);
 T = zeros(N, size(json.control,2)*step_splits);
-
+t = zeros(size(json.control,2)*step_splits+1,1);
 for i = 1:(size(json.control,2))
+    fprintf('From %d to %d for i=%d\n', ((i-1)*step_splits + 1), ((i-1)*step_splits+1)+step_splits-1, i);
     expanded_steps = ((i-1)*step_splits + 1):((i-1)*step_splits+1)+step_splits-1;
     dt(expanded_steps) = repmat(json.control{i}.dt/step_splits,step_splits,1);
     T_vec = cell2mat(json.control{i}.control)';
@@ -73,8 +74,9 @@ end
 
 t_sim = sum(dt);
 num_s = length(dt);
-q0 = zeros(N,1);
-qd0 = zeros(N,1);
+s0 = cell2mat(json.control{1}.start_state)';
+q0 = s0(1:N);
+qd0 = s0(N+1:end);
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain, ...
     'torques', T, 'q0', q0, 'qd0', qd0,'dt', dt, 'integrator', @rk4step);
@@ -92,12 +94,12 @@ if (overlay)
    T_cpp = zeros(N, cpp_len);
    t_cpp = zeros(1, cpp_len);
    for i = 1:cpp_len
-       end_time = json.control{i}.end_time;
-       t_cpp(i) = end_time;
-       s_mat = cell2mat(json.control{i}.end_state)'; % Column.
+       start_time = json.control{i}.start_time;
+       t_cpp(i) = start_time;
+       s_mat = cell2mat(json.control{i}.start_state)'; % Column.
        q_cpp(:,i) = s_mat(1:N);
        qd_cpp(:,i) = s_mat(N+1:2*N);
-       T_cpp(:, i) = cell2mat(json.control{i}.control)';
+       T_cpp(:, i) = cell2mat(json.control{i}.control)'; % Column.
    end
    
    legend_strs = {};
@@ -124,7 +126,7 @@ if (overlay)
    plot(t_cpp, qd_cpp,'LineWidth',2);
    legend(legend_strs);
    
-   torque_fig = figure();
+   torque_fig = figure(3);
    torque_sp = 111;
    subplot(torque_sp);
    grid on;
@@ -132,8 +134,15 @@ if (overlay)
    title('Time History of C++ Planned System','FontSize', 14);
    xlabel('Time [s]','FontSize', 14);
    ylabel('Joint Torque [Nm]','FontSize',14);
-   plot(t_cpp, T_cpp, 'LineWidth', 2);
+   plot(t_cpp, T_cpp, '.-','LineWidth', 2);
    legend(legend_strs);
+   
+   error_fig = figure();
+   grid on;
+   hold on;
+   title('Torque Error between C++ and matlab sims', 'FontSize', 14);
+   xlabel('Time [s]', 'FontSize', 14);
+   plot(t_cpp, T-T_cpp, '.');
    
 end
 
