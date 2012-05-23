@@ -16,5 +16,5 @@ example: example.o ckbot.o ck_ompl.o
 	$(CC) -o example ck_ompl.o example.o ckbot.o $(CFLAGS) $(LIBRARIES)
 
 clean:
-	rm *.o example ompl_ex
+	rm *.o run_sim example ompl_ex
 	rm *.out
