@@ -40,15 +40,27 @@
 bool fill_start_and_goal(const Json::Value& sim_root, 
                          std::vector<double>& s0, 
                          std::vector<double>& s_fin);
-bool load_and_run_simulation(std::ostream& out_file, 
-                             const std::string&, 
-                             const std::string&, 
-                             const std::string&);
+bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
 bool fill_module(const Json::Value&, ckbot::module_link*);
 ckbot::CK_ompl setup_ckbot(Json::Value& chain_root);
 bool save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file);
 
-float SOLUTION_TIME = 30;
+struct sim_settings {
+    std::string sim_dir;
+    std::string desc_path;
+    std::string chain_path;
+    std::string sim_path;
+    std::string result_dir;
+    std::string result_path;
+
+    unsigned int min_control_steps;
+    unsigned int max_control_steps;
+    double dt;
+
+    float max_sol_time;
+
+    unsigned int debug;
+};
 
 int main(int ac, char* av[])
 {
@@ -58,6 +70,22 @@ int main(int ac, char* av[])
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
     std::string result_path("results.txt");
+
+    struct sim_settings sets = {
+        "",
+        "description.txt",
+        "chain.txt",
+        "sim.txt",
+        "results/",
+        "results.txt",
+
+        1,      /* OMPL min control steps */
+        1,      /* OMPL max control steps */
+        0.05,   /* OMPL timestep resolution */
+
+        30,     /* Solution search timeout in [s] */
+        1   /* Debugging output? */
+    };
 
     /* Parse options and execute options */
     namespace po = boost::program_options;
@@ -69,6 +97,9 @@ int main(int ac, char* av[])
             ("dir", po::value<std::string>(), 
                "Set the directory in which the simulation to run exists")
             ("time", po::value<double>(), "Set the maximum runtime of the solver")
+            ("min_control_steps", po::value<unsigned int>(), "Set the minimum number of steps OMPL applies controls for")
+            ("max_control_steps", po::value<unsigned int>(), "Set the maximum number of steps OMPL applies controls for")
+            ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
         ;
 
         po::variables_map vm;
@@ -83,11 +114,23 @@ int main(int ac, char* av[])
 
         if (vm.count("dir")) 
         {
-            sim_dir = vm["dir"].as<std::string>();
+            sets.sim_dir = vm["dir"].as<std::string>();
         }
         if (vm.count("time"))
         {
-            SOLUTION_TIME = vm["time"].as<double>();
+            sets.max_sol_time = vm["time"].as<double>();
+        }
+        if (vm.count("dt"))
+        {
+            sets.dt = vm["dt"].as<double>();
+        }
+        if (vm.count("min_control_steps"))
+        {
+            sets.min_control_steps = vm["min_control_steps"].as<unsigned int>();
+        }
+        if (vm.count("max_control_steps"))
+        {
+            sets.max_control_steps = vm["max_control_steps"].as<unsigned int>();
         }
     }
     catch (std::exception& e)
@@ -102,52 +145,54 @@ int main(int ac, char* av[])
     /* Check to make sure the simulation directory and all of its components
      * exist
      */
-    if (  (sim_dir.length() == 0) 
-       || (! boost::filesystem::is_directory(sim_dir)))
+    if (  (sets.sim_dir.length() == 0) 
+       || (! boost::filesystem::is_directory(sets.sim_dir)))
     {
         std::cout << "The simululation directory ('" 
-                  << sim_dir 
+                  << sets.sim_dir 
                   << "') specified by --dir must exist!" << std::endl;   
         return 1;
     }
     /* Make sure the directory path ends with a forward slash */
-    if (! (sim_dir.at(sim_dir.length()-1) == '/'))
+    if (! (sets.sim_dir.at(sets.sim_dir.length()-1) == '/'))
     {
-        sim_dir.push_back('/');
+        sets.sim_dir.push_back('/');
     }
 
-    desc_path = sim_dir + desc_path;
-    chain_path = sim_dir + chain_path;
-    sim_path = sim_dir + sim_path;
-    result_dir = sim_dir + result_dir;
-    result_path = result_dir + result_path;
-    if (! boost::filesystem::is_regular_file(desc_path)) 
+    sets.desc_path = sets.sim_dir + sets.desc_path;
+    sets.chain_path = sets.sim_dir + sets.chain_path;
+    sets.sim_path = sets.sim_dir + sets.sim_path;
+    sets.result_dir = sets.sim_dir + sets.result_dir;
+    sets.result_path = sets.result_dir + sets.result_path;
+    if (! boost::filesystem::is_regular_file(sets.desc_path)) 
     {
         std::cout << "The description file does not exist. (" 
-                  << desc_path 
+                  << sets.desc_path 
                   << ")" << std::endl;
         return 1;
     }
-    if (! boost::filesystem::is_regular_file(chain_path))
+    if (! boost::filesystem::is_regular_file(sets.chain_path))
     {
-        std::cout << "The chain file does not exist." << std::endl;
+        std::cout << "The chain file does not exist. ( " <<
+           sets.chain_path << ")" << std::endl;
         return 1;
     }
-    if (! boost::filesystem::is_regular_file(sim_path))
+    if (! boost::filesystem::is_regular_file(sets.sim_path))
     {
-        std::cout << "The simulation file does not exist." << std::endl;
+        std::cout << "The simulation file does not exist. ( " <<
+           sets.sim_path << ")" << std::endl;
         return 1;
     }
 
     /* Verify and (if needed) create the result directory */
-    if (! boost::filesystem::is_directory(result_dir))
+    if (! boost::filesystem::is_directory(sets.result_dir))
     {
         std::cout << "The result directory doesn't exist yet...creating...";
         try 
         {
-            boost::filesystem::create_directory(result_dir);
+            boost::filesystem::create_directory(sets.result_dir);
             std::cout << "Last char is: " 
-                      << sim_dir.at(sim_dir.length()-1) << std::endl;
+                      << sets.sim_dir.at(sets.sim_dir.length()-1) << std::endl;
         }
         catch (std::exception& e)
         {
@@ -160,7 +205,7 @@ int main(int ac, char* av[])
         std::cout << "Success!" << std::endl;
     }
 
-    bool sim_status = load_and_run_simulation(std::cout, chain_path, sim_path, result_path);
+    bool sim_status = load_and_run_simulation(std::cout, sets);
     if (! sim_status)
     {
         std::cout << "Error during simulation..exiting." << std::endl;
@@ -199,10 +244,7 @@ setup_ckbot(Json::Value& chain_root)
  * Then run and save the results for later. 
  */
 bool
-load_and_run_simulation(std::ostream& out_file, 
-                        const std::string& chain_path, 
-                        const std::string& sim_path, 
-                        const std::string& result_path)
+load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
@@ -221,10 +263,10 @@ load_and_run_simulation(std::ostream& out_file,
     /* No reason to run if we can't open our result file, 
      * so let the exceptions flow up.
      */
-    result_file.open((char*)result_path.c_str());
+    result_file.open((char*)sets.result_path.c_str());
     result_file << "{" << std::endl;
 
-    chain_file.open((char*)chain_path.c_str());
+    chain_file.open((char*)sets.chain_path.c_str());
     bool parsingSuccessful = chain_reader.parse(chain_file, chain_root);
     chain_file.close();
     if (!parsingSuccessful)
@@ -249,7 +291,7 @@ load_and_run_simulation(std::ostream& out_file,
     /* The start and goal positions are in a separate file. 
      * Hopefully this allows easy re-use of config parts
      */
-    sim_file.open((char*)sim_path.c_str());
+    sim_file.open((char*)sets.sim_path.c_str());
     bool sim_parse_success = sim_reader.parse(sim_file, sim_root);
     sim_file.close();
 
@@ -271,7 +313,20 @@ load_and_run_simulation(std::ostream& out_file,
     ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
     space->as<ompl::base::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
                                                              first_module.get_joint_max());
-
+    if (sets.debug)
+    {
+        const ompl::base::RealVectorBounds bounds = space->as<ompl::base::RealVectorStateSpace>()->getBounds();
+        out_file << "The Joint Bounds are: " << std::endl;
+        std::vector<double> low = bounds.low;
+        std::vector<double> high = bounds.high;
+        std::vector<double>::iterator bl_it;
+        std::vector<double>::iterator bh_it;
+        unsigned int counter = 0;
+        for (bl_it = low.begin(), bh_it = high.begin(); (bl_it != low.end()) && (bh_it != high.end()); bl_it++,bh_it++)
+        {
+            out_file << " Dof" << ++counter << ": Low: " << *bl_it << " High: " << *bh_it << std::endl; 
+        }
+    }
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
     ompl::base::RealVectorBounds cbounds(num_modules);
@@ -313,15 +368,20 @@ load_and_run_simulation(std::ostream& out_file,
     ss.setPlanner(planner);
 
     /* Allow this range of number of steps in our solution */
-    ss.getSpaceInformation()->setMinMaxControlDuration(1, 1);
-    ss.getSpaceInformation()->setPropagationStepSize(0.05);
-    std::cout << "DEBUG: The progagationStepSize is: " << ss.getSpaceInformation()->getPropagationStepSize()
-              << std::endl << "  The Minimum number of steps is: " << ss.getSpaceInformation()->getMinControlDuration()
-              << std::endl << "  The Max number of steps is: " << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
-
+    ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
+    ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
+    if (sets.debug)
+    {
+        out_file << "DEBUG: The progagationStepSize is: " 
+            << ss.getSpaceInformation()->getPropagationStepSize()
+            << std::endl << "  The Minimum number of steps is: " 
+            << ss.getSpaceInformation()->getMinControlDuration() << std::endl 
+            << "  The Max number of steps is: " 
+            << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
+    }
 
     ss.setup();
-    if (ss.solve(SOLUTION_TIME))
+    if (ss.solve(sets.max_sol_time))
     {
         save_sol(ss, result_file);
     } else {
