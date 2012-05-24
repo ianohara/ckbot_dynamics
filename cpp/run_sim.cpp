@@ -56,6 +56,8 @@ struct sim_settings {
     unsigned int min_control_steps;
     unsigned int max_control_steps;
     double dt;
+    double min_torque;
+    double max_torque;
 
     float max_sol_time;
 
@@ -82,6 +84,8 @@ int main(int ac, char* av[])
         1,      /* OMPL min control steps */
         1,      /* OMPL max control steps */
         0.05,   /* OMPL timestep resolution */
+        -1.0,   /* Minimum link torque */
+        1.0,    /* Max link torque */
 
         30,     /* Solution search timeout in [s] */
         1   /* Debugging output? */
@@ -100,6 +104,8 @@ int main(int ac, char* av[])
             ("min_control_steps", po::value<unsigned int>(), "Set the minimum number of steps OMPL applies controls for")
             ("max_control_steps", po::value<unsigned int>(), "Set the maximum number of steps OMPL applies controls for")
             ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
+            ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
+            ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
         ;
 
         po::variables_map vm;
@@ -131,6 +137,14 @@ int main(int ac, char* av[])
         if (vm.count("max_control_steps"))
         {
             sets.max_control_steps = vm["max_control_steps"].as<unsigned int>();
+        }
+        if (vm.count("max_torque"))
+        {
+            sets.max_torque = vm["max_torque"].as<double>();
+        }
+        if (vm.count("min_torque"))
+        {
+            sets.min_torque = vm["min_torque"].as<double>();
         }
     }
     catch (std::exception& e)
@@ -317,8 +331,8 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
     ompl::base::RealVectorBounds cbounds(num_modules);
-    cbounds.setLow(-first_module.get_torque_max());
-    cbounds.setHigh(first_module.get_torque_max());
+    cbounds.setLow(sets.min_torque);
+    cbounds.setHigh(sets.max_torque);
     cspace->as<ompl::control::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
     /* 
