@@ -238,7 +238,8 @@ setup_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
 {
     Json::Value chain_array = chain_root["chain"];
     int num_modules = chain_array.size();
-    struct ckbot::module_link* modules_for_chain = new struct ckbot::module_link[num_modules];
+    /* This will never be explicitly freed, just let program end do it. */
+    ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
         
@@ -248,6 +249,7 @@ setup_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
             throw "Error";
         }
     }
+    /* Again, never explictly freed.  Let the program run till death! */
     ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
     ckbot::CK_ompl rate_machine(*ch);
     return rate_machine;
@@ -371,10 +373,21 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
     
+    /* Tell SimpleSetup that we've given it all of the info, and that
+     * it should distribute parameters to the different components 
+     * (mostly, fill in the planner parameters.) 
+     */
     ss.setup();
- 
+
+    /* Debug printing section for information having to do with the setup
+     * of the planner and any of its components.
+     * This should be the only debug printing section for this purpose.
+     */
     if (sets.debug)
     {
+        /* Have the chain in our rate machine describe itself */
+        rate_machine.get_chain().describe_self(out_file);
+
         /* Print the planner start and goal states */
         out_file << "Planner Start and Goal states: " << std::endl;
         const ompl::base::ProblemDefinitionPtr pProbDef = planner->getProblemDefinition();
