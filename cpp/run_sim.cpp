@@ -42,7 +42,7 @@ bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s_fin);
 bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
 bool fill_module(const Json::Value&, ckbot::module_link*);
-ckbot::CK_ompl setup_ckbot(Json::Value& chain_root);
+ckbot::CK_ompl setup_ckbot(Json::Value& chain_root, std::ostream& out_file);
 bool save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file);
 
 struct sim_settings {
@@ -220,14 +220,15 @@ int main(int ac, char* av[])
  * in the module dictionaries.
  */
 ckbot::CK_ompl 
-setup_ckbot(Json::Value& chain_root)
+setup_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
 {
     Json::Value chain_array = chain_root["chain"];
     int num_modules = chain_array.size();
     struct ckbot::module_link* modules_for_chain = new struct ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        std::cout << "DEBUG: Attempting to fill chain link " << link << " of " << num_modules << std::endl;
+        
+        out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
         if (! fill_module(chain_array[link], &modules_for_chain[link]))
         {
             throw "Error";
@@ -313,20 +314,6 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
     space->as<ompl::base::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
                                                              first_module.get_joint_max());
-    if (sets.debug)
-    {
-        const ompl::base::RealVectorBounds bounds = space->as<ompl::base::RealVectorStateSpace>()->getBounds();
-        out_file << "The Joint Bounds are: " << std::endl;
-        std::vector<double> low = bounds.low;
-        std::vector<double> high = bounds.high;
-        std::vector<double>::iterator bl_it;
-        std::vector<double>::iterator bh_it;
-        unsigned int counter = 0;
-        for (bl_it = low.begin(), bh_it = high.begin(); (bl_it != low.end()) && (bh_it != high.end()); bl_it++,bh_it++)
-        {
-            out_file << " Dof" << ++counter << ": Low: " << *bl_it << " High: " << *bh_it << std::endl; 
-        }
-    }
     /* Make our control space, which is one bound direction for each joint (Torques) */
     ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
     ompl::base::RealVectorBounds cbounds(num_modules);
@@ -366,21 +353,67 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
     ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(ss.getSpaceInformation()));
     ss.setPlanner(planner);
-
     /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
+    
+    ss.setup();
+ 
     if (sets.debug)
     {
-        out_file << "DEBUG: The progagationStepSize is: " 
+        /* Print the planner start and goal states */
+        out_file << "Planner Start and Goal states: " << std::endl;
+        const ompl::base::ProblemDefinitionPtr pProbDef = planner->getProblemDefinition();
+        pProbDef->print(out_file);
+
+        /* Print the current planner parameter list */
+        std::map< std::string, std::string > params;
+        planner->params().getParams(params); 
+
+        out_file << "Planner Parameter list: " << std::endl; 
+        std::map< std::string, std::string >::iterator paramIt;
+        for (paramIt = params.begin(); paramIt != params.end(); paramIt++)
+        {
+            out_file << "    " << paramIt->first << ", " << paramIt->second << std::endl;
+        }
+
+        /* Print the control space bounds */
+        const ompl::control::ControlSpacePtr pControl = ss.getControlSpace();
+        const ompl::base::RealVectorBounds bounds = pControl->as<ompl::control::RealVectorControlSpace>()->getBounds();
+        std::vector<double> low = bounds.low;
+        std::vector<double> high = bounds.high;
+        std::vector<double>::iterator l_it;
+        std::vector<double>::iterator h_it;
+
+        out_file << "Control Space bounds: " << std::endl; 
+        unsigned int counter = 0;
+        for (l_it = low.begin(), h_it = high.begin(); (l_it != low.end()) && (h_it != high.end()); l_it++, h_it++)
+        {
+            out_file << "    Link " << ++counter << ": Low: " << *l_it << " High: " << *h_it << std::endl;
+        }
+
+        /* Print the configuration space bounds */    
+        const ompl::base::RealVectorBounds cbounds = space->as<ompl::base::RealVectorStateSpace>()->getBounds();
+        out_file << "The Configuration bounds are: " << std::endl;
+        std::vector<double> clow = cbounds.low;
+        std::vector<double> chigh = cbounds.high;
+        std::vector<double>::iterator bl_it;
+        std::vector<double>::iterator bh_it;
+        unsigned int config_counter = 0;
+        for (bl_it = clow.begin(), bh_it = chigh.begin(); (bl_it != clow.end()) && (bh_it != chigh.end()); bl_it++,bh_it++)
+        {
+            out_file << "    Dof" << ++config_counter << ": Low: " << *bl_it << " High: " << *bh_it << std::endl; 
+        }
+
+        /* Print information about how the planner will interface with the dynamics engine */
+        out_file << "The progagationStepSize is: " 
             << ss.getSpaceInformation()->getPropagationStepSize()
-            << std::endl << "  The Minimum number of steps is: " 
+            << std::endl << "    The Minimum number of steps is: " 
             << ss.getSpaceInformation()->getMinControlDuration() << std::endl 
-            << "  The Max number of steps is: " 
+            << "    The Max number of steps is: " 
             << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
     }
 
-    ss.setup();
     if (ss.solve(sets.max_sol_time))
     {
         save_sol(ss, result_file);
@@ -394,6 +427,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     result_file.close();   
     return true;
 }
+
 
 /* 
  * Output solution to file in json format
@@ -476,7 +510,6 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
 bool
 fill_module(const Json::Value& json_mod, ckbot::module_link* module)
 {
-    //std::cout << "DEBUG: Now filling scalars." << std::endl;
     ckbot::module_description this_module_desc;
     double damping = json_mod["damping"].asDouble();
     double mass = json_mod["mass"].asDouble();
@@ -484,7 +517,6 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     double joint_min = json_mod["joint_min"].asDouble();
     double torque_max = json_mod["torque_max"].asDouble();
 
-    //std::cout << "DEBUG: Now filling 1x3s" << std::endl;
     Eigen::Vector3d forward_joint_axis;
     Eigen::Vector3d r_ip1; 
     Eigen::Vector3d r_im1;
@@ -502,7 +534,6 @@ fill_module(const Json::Value& json_mod, ckbot::module_link* module)
         r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
     } 
 
-    //std::cout << "DEBUG: Now filling 3x3s" << std::endl;
     Eigen::Matrix3d I_cm;
     Eigen::Matrix3d R_jts;
     Eigen::Matrix3d init_rotation;
