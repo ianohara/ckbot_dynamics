@@ -401,9 +401,13 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
         out_file << "Control Space bounds: " << std::endl; 
         unsigned int counter = 0;
-        for (l_it = low.begin(), h_it = high.begin(); (l_it != low.end()) && (h_it != high.end()); l_it++, h_it++)
+        for (l_it = low.begin(), h_it = high.begin(); 
+            (l_it != low.end()) && (h_it != high.end()); 
+            l_it++, h_it++)
         {
-            out_file << "    Link " << ++counter << ": Low: " << *l_it << " High: " << *h_it << std::endl;
+            out_file << "    Link " << ++counter 
+                << ": Low: " << *l_it 
+                << " High: " << *h_it << std::endl;
         }
 
         /* Print the configuration space bounds */    
@@ -414,9 +418,13 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         std::vector<double>::iterator bl_it;
         std::vector<double>::iterator bh_it;
         unsigned int config_counter = 0;
-        for (bl_it = clow.begin(), bh_it = chigh.begin(); (bl_it != clow.end()) && (bh_it != chigh.end()); bl_it++,bh_it++)
+        for (bl_it = clow.begin(), bh_it = chigh.begin(); 
+            (bl_it != clow.end()) && (bh_it != chigh.end()); 
+             bl_it++,bh_it++)
         {
-            out_file << "    Dof" << ++config_counter << ": Low: " << *bl_it << " High: " << *bh_it << std::endl; 
+            out_file << "    Dof" << ++config_counter 
+                << ": Low: " << *bl_it 
+                << " High: " << *bh_it << std::endl; 
         }
 
         /* Print information about how the planner will interface with the dynamics engine */
