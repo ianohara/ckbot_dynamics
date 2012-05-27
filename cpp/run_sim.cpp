@@ -32,6 +32,9 @@
 #include<ompl/base/spaces/RealVectorStateSpace.h>
 #include<ompl/control/Control.h>
 
+namespace ob = ompl::base;
+namespace oc = ompl::control;
+
 #include<json/json.h>
 
 #include "ckbot.hpp"
@@ -43,7 +46,7 @@ bool fill_start_and_goal(const Json::Value& sim_root,
 bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
 bool fill_module(const Json::Value&, ckbot::module_link*);
 ckbot::CK_ompl setup_ckbot(Json::Value& chain_root, std::ostream& out_file);
-bool save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file);
+bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file);
 
 struct sim_settings {
     std::string sim_dir;
@@ -327,21 +330,21 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
      * Setup OMPL 
      *****/
     /* Make our configuration space and set the bounds on each module's angles */
-    ompl::base::StateSpacePtr space(new ompl::base::RealVectorStateSpace(2*num_modules));
-    space->as<ompl::base::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
+    ob::StateSpacePtr space(new ob::RealVectorStateSpace(2*num_modules));
+    space->as<ob::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
                                                              first_module.get_joint_max());
     /* Make our control space, which is one bound direction for each joint (Torques) */
-    ompl::control::ControlSpacePtr cspace(new ompl::control::RealVectorControlSpace(space, num_modules));
-    ompl::base::RealVectorBounds cbounds(num_modules);
+    oc::ControlSpacePtr cspace(new oc::RealVectorControlSpace(space, num_modules));
+    ob::RealVectorBounds cbounds(num_modules);
     cbounds.setLow(sets.min_torque);
     cbounds.setHigh(sets.max_torque);
-    cspace->as<ompl::control::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
+    cspace->as<oc::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
     /* 
      * Use OMPL's built in setup mechanism instead of allocating state space information
      * and problem defintion pointers on my own
      */
-    ompl::control::SimpleSetup ss(cspace);
+    oc::SimpleSetup ss(cspace);
 
     // TODO: Write an actual state validity checker!
     ss.setStateValidityChecker(boost::bind<bool>(&ckbot::CK_ompl::stateValidityChecker, 
@@ -349,14 +352,14 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
                                                  _1));
 
     /* Setup and get the dynamics of our system into the planner */
-    ompl::control::ODEBasicSolver<> odeSolver(ss.getSpaceInformation(), 
+    oc::ODEBasicSolver<> odeSolver(ss.getSpaceInformation(), 
                                               boost::bind<void>(&ckbot::CK_ompl::CKBotODE, 
                                                                 rate_machine, _1, _2, _3));
     ss.setStatePropagator(odeSolver.getStatePropagator());
 
     /* Define the start and end configurations */
-    ompl::base::ScopedState<ompl::base::RealVectorStateSpace> start(ss.getSpaceInformation());
-    ompl::base::ScopedState<ompl::base::RealVectorStateSpace> goal(ss.getSpaceInformation());
+    ob::ScopedState<ob::RealVectorStateSpace> start(ss.getSpaceInformation());
+    ob::ScopedState<ob::RealVectorStateSpace> goal(ss.getSpaceInformation());
     for (int i = 0; i < 2*num_modules; ++i)
     {
         start[i] = s0[i];
@@ -367,7 +370,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
     ss.setStartAndGoalStates(start, goal);
 
-    ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(ss.getSpaceInformation()));
+    ob::PlannerPtr planner(new oc::KPIECE1(ss.getSpaceInformation()));
     ss.setPlanner(planner);
     /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
@@ -390,7 +393,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
         /* Print the planner start and goal states */
         out_file << "Planner Start and Goal states: " << std::endl;
-        const ompl::base::ProblemDefinitionPtr pProbDef = planner->getProblemDefinition();
+        const ob::ProblemDefinitionPtr pProbDef = planner->getProblemDefinition();
         pProbDef->print(out_file);
 
         /* Print the current planner parameter list */
@@ -405,8 +408,8 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         }
 
         /* Print the control space bounds */
-        const ompl::control::ControlSpacePtr pControl = ss.getControlSpace();
-        const ompl::base::RealVectorBounds bounds = pControl->as<ompl::control::RealVectorControlSpace>()->getBounds();
+        const oc::ControlSpacePtr pControl = ss.getControlSpace();
+        const ob::RealVectorBounds bounds = pControl->as<oc::RealVectorControlSpace>()->getBounds();
         std::vector<double> low = bounds.low;
         std::vector<double> high = bounds.high;
         std::vector<double>::iterator l_it;
@@ -424,7 +427,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         }
 
         /* Print the configuration space bounds */    
-        const ompl::base::RealVectorBounds cbounds = space->as<ompl::base::RealVectorStateSpace>()->getBounds();
+        const ob::RealVectorBounds cbounds = space->as<ob::RealVectorStateSpace>()->getBounds();
         out_file << "The Configuration bounds are: " << std::endl;
         std::vector<double> clow = cbounds.low;
         std::vector<double> chigh = cbounds.high;
@@ -447,20 +450,21 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
             << ss.getSpaceInformation()->getMinControlDuration() << std::endl 
             << "    The Max number of steps is: " 
             << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
-    }
 
+        /* Print information about the ODE Solver */
+        out_file << "The ODE Step size is: " << odeSolver.getIntegrationStepSize() << std::endl;
+    }
+    
+    bool solve_status = false;
     if (ss.solve(sets.max_sol_time))
     {
+        solve_status = true;
         save_sol(ss, result_file);
-    } else {
-        result_file << "}" << std::endl;
-        result_file.close();
-        return false;
-    }
+    } 
 
     result_file << "}" << std::endl;
     result_file.close();   
-    return true;
+    return solve_status;
 }
 
 
@@ -468,10 +472,10 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
  * Output solution to file in json format
  */
 bool 
-save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
+save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
 {
-    const ompl::control::PathControl& sol_path(ss.getSolutionPath());
-    unsigned int num_modules = (*(ss.getStateSpace())).as<ompl::base::RealVectorStateSpace>()->getDimension()/2;
+    const oc::PathControl& sol_path(ss.getSolutionPath());
+    unsigned int num_modules = (*(ss.getStateSpace())).as<ob::RealVectorStateSpace>()->getDimension()/2;
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
 
@@ -484,8 +488,8 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
         if (i != 0)
         {
             out_file << "{" << std::endl;
-            const ompl::base::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ompl::base::RealVectorStateSpace::StateType>();
-            const ompl::base::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ompl::base::RealVectorStateSpace::StateType>();
+            const ob::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ob::RealVectorStateSpace::StateType>();
+            const ob::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ob::RealVectorStateSpace::StateType>();
 
             dt[i-1] = sol_path.getControlDuration(i-1); // Control Duration to go from state i-1 to i;
             time[i] = time[i-1]+dt[i-1]; // Time at this step
@@ -517,7 +521,7 @@ save_sol(ompl::control::SimpleSetup& ss, std::ostream& out_file)
             out_file << "\"start_time\":" << time[i-1] << "," << std::endl;
             out_file << "\"end_time\":" << time[i] << "," << std::endl;
             out_file << "\"dt\":" << dt[i-1] << "," << std::endl;
-            const double* c = sol_path.getControl(i-1)->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+            const double* c = sol_path.getControl(i-1)->as<oc::RealVectorControlSpace::ControlType>()->values;
             out_file << "\"control\": [";
             for (unsigned int j=0; j<num_modules; ++j)
             {
