@@ -40,6 +40,8 @@ namespace oc = ompl::control;
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 
+const char DELIMITER = '/';
+
 bool fill_start_and_goal(const Json::Value& sim_root, 
                          std::vector<double>& s0, 
                          std::vector<double>& s_fin);
@@ -47,6 +49,7 @@ bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
 bool fill_module(const Json::Value&, ckbot::module_link*);
 ckbot::CK_ompl setup_ckbot(Json::Value& chain_root, std::ostream& out_file);
 bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file);
+bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
 
 struct sim_settings {
     std::string sim_dir;
@@ -65,6 +68,7 @@ struct sim_settings {
     float max_sol_time;
 
     unsigned int debug;
+    bool save_full_tree;
 };
 
 int main(int ac, char* av[])
@@ -91,7 +95,8 @@ int main(int ac, char* av[])
         1.0,    /* Max link torque */
 
         30,     /* Solution search timeout in [s] */
-        1   /* Debugging output? */
+        1,      /* Debugging output? */
+        false   /* Save the full planning tree? */
     };
 
     /* Parse options and execute options */
@@ -109,6 +114,7 @@ int main(int ac, char* av[])
             ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
             ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
             ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
+            ("tree", "Save the entire planning tree.")
         ;
 
         po::variables_map vm;
@@ -120,7 +126,6 @@ int main(int ac, char* av[])
             std::cout << desc << std::endl;
             return 1;
         }
-
         if (vm.count("dir")) 
         {
             sets.sim_dir = vm["dir"].as<std::string>();
@@ -149,6 +154,10 @@ int main(int ac, char* av[])
         {
             sets.min_torque = vm["min_torque"].as<double>();
         }
+        if (vm.count("tree"))
+        {
+            sets.save_full_tree = true;
+        }
     }
     catch (std::exception& e)
     {
@@ -170,10 +179,10 @@ int main(int ac, char* av[])
                   << "') specified by --dir must exist!" << std::endl;   
         return 1;
     }
-    /* Make sure the directory path ends with a forward slash */
-    if (! (sets.sim_dir.at(sets.sim_dir.length()-1) == '/'))
+    /* Make sure the directory path ends with a path delimeter */
+    if (! (sets.sim_dir.at(sets.sim_dir.length()-1) == DELIMITER))
     {
-        sets.sim_dir.push_back('/');
+        sets.sim_dir.push_back(DELIMITER);
     }
 
     sets.desc_path = sets.sim_dir + sets.desc_path;
@@ -460,6 +469,10 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     {
         solve_status = true;
         save_sol(ss, result_file);
+        if (sets.save_full_tree)
+        {
+            save_full_tree(ss, out_file); /* DEBUG: replace out_file with result_file after this works */
+        }
     } 
 
     result_file << "}" << std::endl;
@@ -544,6 +557,16 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
     }
     out_file << "]" << std::endl;
     return true;
+}
+
+bool
+save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
+{
+    oc::KPIECE1 *kPlanner = ss.getPlanner()->as<oc::KPIECE1>();
+    oc::PlannerData data;
+    kPlanner->getPlannerData(data);
+    data.print(out_file);
+    /* Wow, that was easy... */
 }
 
 bool
