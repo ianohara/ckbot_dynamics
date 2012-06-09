@@ -21,12 +21,14 @@
 #define _CKBOT_HPP
 
 #include<vector>
-#include<eigen3/Eigen/Dense>
-#include<eigen3/Eigen/Core>
 #include<iostream>
 #include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
+
+#include<eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Core>
+#include <json/json.h>
 
 namespace ckbot
 {
@@ -84,7 +86,7 @@ namespace ckbot
             module_link(struct module_description m);
             module_link(const module_link& source);
             ~module_link(void); 
-            
+ 
             module_link& operator=(module_link& source);
 
             Eigen::MatrixXd get_spatial_inertia_mat(void);
@@ -107,7 +109,7 @@ namespace ckbot
             Eigen::Matrix3d get_R_jts(void) const;
 
             Eigen::Matrix3d get_init_rotation(void) const;
-            
+
             double get_joint_max(void) const;
             double get_joint_min(void) const;
             double get_torque_max(void) const;
@@ -127,6 +129,9 @@ namespace ckbot
             double joint_max_;
             double torque_max_;
     };
+
+    bool fill_module(const Json::Value&, ckbot::module_link*);
+
     class chain
     {
     protected:

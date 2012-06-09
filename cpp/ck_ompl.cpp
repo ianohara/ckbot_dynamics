@@ -16,15 +16,50 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#include"ckbot.hpp"
-#include"ck_ompl.hpp"
+/*
+ * This code implements the functions needed by differential (control) planners
+ * in OMPL.
+ *
+ */
 #include<ompl/control/ODESolver.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/control/Control.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
 
 namespace oc = ompl::control;
+
+#include"ckbot.hpp"
+#include"ck_ompl.hpp"
+
+/*
+ * Take a json chain subtree, which is an array of module dictionaries,
+ * and turn it into a usable chain object populated by the module defined
+ * in the module dictionaries.
+ */
+ckbot::CK_ompl
+ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
+{
+    Json::Value chain_array = chain_root["chain"];
+    int num_modules = chain_array.size();
+    /* This will never be explicitly freed, just let program end do it. */
+    ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
+    for (unsigned int link=0; link<num_modules; ++link)
+    {
+        out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
+        if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
+        {
+            throw "Error"; /* TODO: Make this more descriptive and useful/correct */
+        }
+    }
+    /* Again, never explictly freed.  Let the program run till death! */
+    ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
+    /* Chain rate store a reference to a chain, so this is right memory-wise (right?)
+     * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
+     * isn't passed as a copy, but instead as a reference.  Think that's right... 
+     */
+    ckbot::CK_ompl rate_machine(*ch);
+    return rate_machine;
+};
 
 bool
 ckbot::CK_ompl::stateValidityChecker(const ompl::base::State *s)
@@ -33,12 +68,14 @@ ckbot::CK_ompl::stateValidityChecker(const ompl::base::State *s)
 }
 
 void
-ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot)
+ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
+                         const oc::Control* con,
+                         oc::ODESolver::StateType& sdot)
 {
     const int N = c.num_links();
-    const double *input = con->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+    const double *input = con->as<oc::RealVectorControlSpace::ControlType>()->values;
     std::vector<double> T(N);
-    
+
     for (int i = 0; i < N; i++)
     {
         /*
@@ -50,18 +87,21 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* c
 
     std::vector<double> sdot_vec(2*N);
     sdot_vec = calc_rate(static_cast<std::vector<double> >(s), T);
-    
+
     for (int i = 0; i < 2*N; i++)
     {
         sdot[i] = sdot_vec[i];
     }
-}    
+}
 
 void
-ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot, ckbot::chain_rate& ch_r)
+ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s,
+                    const oc::Control* con,
+                    oc::ODESolver::StateType& sdot,
+                    ckbot::chain_rate& ch_r)
 {
     const int N = ch_r.get_chain().num_links();
-    const double *input = con->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+    const double *input = con->as<oc::RealVectorControlSpace::ControlType>()->values;
     std::vector<double> T(N);
     for (int i = 0; i < N; i++)
     {
@@ -71,11 +111,11 @@ ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, o
 
     std::vector<double> sdot_vec(2*N);
     sdot_vec = ch_r.calc_rate(static_cast<std::vector<double> >(s), T);
-    
+
     for (int i = 0; i < 2*N; i++)
     {
         sdot[i] = sdot_vec[i];
-    } 
+    }
 };
 
 
