@@ -40,7 +40,7 @@ namespace ckbot
             bool stateValidityChecker(const ompl::base::State *s);
     };
 
-    ckbot::CK_ompl setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file);
+    ckbot::CK_ompl setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout);
     void CKBotODEFunc(const oc::ODESolver::StateType& s,
                       const oc::Control* con,
                       oc::ODESolver::StateType& sdot,

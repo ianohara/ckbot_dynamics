@@ -37,7 +37,7 @@ namespace oc = ompl::control;
  * in the module dictionaries.
  */
 ckbot::CK_ompl
-ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
+ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
 {
     Json::Value chain_array = chain_root["chain"];
     int num_modules = chain_array.size();
