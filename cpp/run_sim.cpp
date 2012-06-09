@@ -421,35 +421,25 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         const ob::RealVectorBounds bounds = pControl->as<oc::RealVectorControlSpace>()->getBounds();
         std::vector<double> low = bounds.low;
         std::vector<double> high = bounds.high;
-        std::vector<double>::iterator l_it;
-        std::vector<double>::iterator h_it;
 
         out_file << "Control Space bounds: " << std::endl; 
-        unsigned int counter = 0;
-        for (l_it = low.begin(), h_it = high.begin(); 
-            (l_it != low.end()) && (h_it != high.end()); 
-            l_it++, h_it++)
+        for (unsigned int i=0; i<low.size(); i++)
         {
-            out_file << "    Link " << ++counter 
-                << ": Low: " << *l_it 
-                << " High: " << *h_it << std::endl;
+            out_file << "    Link " << i+1 
+                << ": Low: " << low[i]
+                << " High: " << high[i] << std::endl;
         }
 
-        /* Print the configuration space bounds */    
+        /* Print the configuration space bounds */
         const ob::RealVectorBounds cbounds = space->as<ob::RealVectorStateSpace>()->getBounds();
         out_file << "The Configuration bounds are: " << std::endl;
         std::vector<double> clow = cbounds.low;
         std::vector<double> chigh = cbounds.high;
-        std::vector<double>::iterator bl_it;
-        std::vector<double>::iterator bh_it;
-        unsigned int config_counter = 0;
-        for (bl_it = clow.begin(), bh_it = chigh.begin(); 
-            (bl_it != clow.end()) && (bh_it != chigh.end()); 
-             bl_it++,bh_it++)
+        for (unsigned int i=0; i<clow.size(); i++)
         {
-            out_file << "    Dof" << ++config_counter 
-                << ": Low: " << *bl_it 
-                << " High: " << *bh_it << std::endl; 
+            out_file << "    Dof" << i+1
+                << ": Low: " << clow[i]
+                << " High: " << chigh[i] << std::endl;
         }
 
         /* Print information about how the planner will interface with the dynamics engine */
@@ -463,7 +453,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         /* Print information about the ODE Solver */
         out_file << "The ODE Step size is: " << odeSolver.getIntegrationStepSize() << std::endl;
     }
-    
+
     bool solve_status = false;
     if (ss.solve(sets.max_sol_time))
     {
