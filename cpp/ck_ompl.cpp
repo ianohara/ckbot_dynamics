@@ -16,7 +16,11 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*
+ * This code implements the functions needed by differential (control) planners
+ * in OMPL.
+ *
+ */
 #include"ckbot.hpp"
 #include"ck_ompl.hpp"
 #include<ompl/control/ODESolver.h>
@@ -33,12 +37,14 @@ ckbot::CK_ompl::stateValidityChecker(const ompl::base::State *s)
 }
 
 void
-ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot)
+ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
+                         const oc::Control* con,
+                         oc::ODESolver::StateType& sdot)
 {
     const int N = c.num_links();
-    const double *input = con->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+    const double *input = con->as<oc::RealVectorControlSpace::ControlType>()->values;
     std::vector<double> T(N);
-    
+
     for (int i = 0; i < N; i++)
     {
         /*
@@ -50,18 +56,21 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* c
 
     std::vector<double> sdot_vec(2*N);
     sdot_vec = calc_rate(static_cast<std::vector<double> >(s), T);
-    
+
     for (int i = 0; i < 2*N; i++)
     {
         sdot[i] = sdot_vec[i];
     }
-}    
+}
 
 void
-ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot, ckbot::chain_rate& ch_r)
+ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s,
+                    const oc::Control* con,
+                    oc::ODESolver::StateType& sdot,
+                    ckbot::chain_rate& ch_r)
 {
     const int N = ch_r.get_chain().num_links();
-    const double *input = con->as<ompl::control::RealVectorControlSpace::ControlType>()->values;
+    const double *input = con->as<oc::RealVectorControlSpace::ControlType>()->values;
     std::vector<double> T(N);
     for (int i = 0; i < N; i++)
     {
@@ -71,11 +80,11 @@ ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s, const oc::Control* con, o
 
     std::vector<double> sdot_vec(2*N);
     sdot_vec = ch_r.calc_rate(static_cast<std::vector<double> >(s), T);
-    
+
     for (int i = 0; i < 2*N; i++)
     {
         sdot[i] = sdot_vec[i];
-    } 
+    }
 };
 
 
