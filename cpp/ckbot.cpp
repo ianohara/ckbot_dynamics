@@ -16,16 +16,20 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* TODO: Almost every 'int' declaration in here should be 'unsigned int' */
 
 #ifndef _CKBOT_CPP
 #define _CKBOT_CPP
 
-#include<vector>
-#include<eigen3/Eigen/Dense>
-#include<iostream>
-#include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
+#include<vector>
+#include<iostream>
+#include<fstream>
+
+#include<eigen3/Eigen/Dense>
+#include<json/json.h>
+
 #include"ckbot.hpp"
 
 struct ckbot::module_description _ZERO_MODULE = {0.0,
@@ -53,7 +57,7 @@ ckbot::rotY(double phi)
 Eigen::Matrix3d 
 ckbot::rotZ(double phi)
 {
-    std::cout << "Getting rotZ (phi=" << phi << "...\n";
+    /*std::cout << "Getting rotZ (phi=" << phi << ")...\n";*/
     Eigen::Matrix3d Rz;
     Rz << cos(phi), -sin(phi), 0,
           sin(phi),  cos(phi), 0,
@@ -85,6 +89,67 @@ ckbot::get_body_trans(Eigen::Vector3d r)
            Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
 
     return phi;
+}
+
+
+bool
+ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
+{
+    ckbot::module_description this_module_desc;
+    double damping = json_mod["damping"].asDouble();
+    double mass = json_mod["mass"].asDouble();
+    double joint_max = json_mod["joint_max"].asDouble();
+    double joint_min = json_mod["joint_min"].asDouble();
+    double torque_max = json_mod["torque_max"].asDouble();
+
+    Eigen::Vector3d forward_joint_axis;
+    Eigen::Vector3d r_ip1; 
+    Eigen::Vector3d r_im1;
+    if ((json_mod["f_jt_axis"].size() != 3)
+            || (json_mod["r_im1"].size() != 3)
+            || (json_mod["r_ip1"].size() != 3))
+    {
+        return false;
+    }
+    for (unsigned int m=0; m<3; ++m)
+    {
+        /*Need 0u as index to distinguish from operator[] which takes a string*/
+        forward_joint_axis(m) = ((json_mod["f_jt_axis"])[m])[0u].asDouble();
+        r_im1(m) = ((json_mod["r_im1"])[m])[0u].asDouble();
+        r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
+    } 
+
+    Eigen::Matrix3d I_cm;
+    Eigen::Matrix3d R_jts;
+    Eigen::Matrix3d init_rotation;
+    /* TODO: Check that the json for these 3 are 3x3 arrays!!! */ 
+    for (unsigned int m=0; m < 3; ++m)
+    {
+        for (unsigned int n=0; n<3; ++n)
+        {
+            I_cm(m,n) = json_mod["I_cm"][m][n].asDouble();
+            R_jts(m,n) = json_mod["R_jts"][m][n].asDouble();
+            init_rotation(m,n) = json_mod["init_rotation"][m][n].asDouble();
+        }
+    }
+
+    this_module_desc.damping = damping;
+    this_module_desc.m = mass;
+    this_module_desc.joint_max = joint_max;
+    this_module_desc.joint_min = joint_min;
+    this_module_desc.torque_max = torque_max;
+    this_module_desc.forward_joint_axis = forward_joint_axis;
+    this_module_desc.r_im1 = r_im1;
+    this_module_desc.r_ip1 = r_ip1;
+    this_module_desc.I_cm = I_cm;
+    this_module_desc.R_jts = R_jts;
+    this_module_desc.init_rotation = init_rotation;
+
+    ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
+    /* TODO: This doesn't really make sense.  Should make module pointer point to the newly allocated memory, not copy the newly allocated memory */
+    *module = *this_module;
+
+    return true;
 }
 
 /* The void constructor is needed in order to 

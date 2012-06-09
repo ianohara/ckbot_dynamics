@@ -46,8 +46,6 @@ bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s0, 
                          std::vector<double>& s_fin);
 bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
-bool fill_module(const Json::Value&, ckbot::module_link*);
-ckbot::CK_ompl setup_ckbot(Json::Value& chain_root, std::ostream& out_file);
 bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file);
 bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
 
@@ -241,32 +239,6 @@ int main(int ac, char* av[])
 }
 
 /*
- * Take a json chain subtree, which is an array of module dictionaries,
- * and turn it into a usable chain object populated by the module defined
- * in the module dictionaries.
- */
-ckbot::CK_ompl 
-setup_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
-{
-    Json::Value chain_array = chain_root["chain"];
-    int num_modules = chain_array.size();
-    /* This will never be explicitly freed, just let program end do it. */
-    ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
-    for (unsigned int link=0; link<num_modules; ++link)
-    {
-        out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
-        if (! fill_module(chain_array[link], &modules_for_chain[link]))
-        {
-            throw "Error"; /* TODO: Make this more descriptive and useful/correct */
-        }
-    }
-    /* Again, never explictly freed.  Let the program run till death! */
-    ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
-    ckbot::CK_ompl rate_machine(*ch);
-    return rate_machine;
-}
-
-/*
  * Load a simulation from files containing json descriptions of the chain, 
  * and start and goal positions.
  * Then run and save the results for later. 
@@ -308,10 +280,10 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
      * we now have. Also, while we're at it, output the chain description
      * to the result file.
      */
-    ckbot::CK_ompl rate_machine = setup_ckbot(chain_root);
+    ckbot::CK_ompl rate_machine = ckbot::setup_ompl_ckbot(chain_root);
     rate_machine.get_chain().describe_self(result_file);
     result_file << "," << std::endl;
-    
+
     /* For reference when setting up OMPL */
     int num_modules = rate_machine.get_chain().num_links();
     ckbot::module_link first_module = rate_machine.get_chain().get_link(0u);
@@ -383,7 +355,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
-    
+
     /* Tell SimpleSetup that we've given it all of the info, and that
      * it should distribute parameters to the different components 
      * (mostly, fill in the planner parameters.) 
@@ -519,7 +491,7 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
                 }
             }
             out_file << "]," << std::endl;
-            
+
             out_file << "\"start_time\":" << time[i-1] << "," << std::endl;
             out_file << "\"end_time\":" << time[i] << "," << std::endl;
             out_file << "\"dt\":" << dt[i-1] << "," << std::endl;
@@ -557,67 +529,6 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
     data.print(out_file);
     /* Wow, that was easy... */
 }
-
-bool
-fill_module(const Json::Value& json_mod, ckbot::module_link* module)
-{
-    ckbot::module_description this_module_desc;
-    double damping = json_mod["damping"].asDouble();
-    double mass = json_mod["mass"].asDouble();
-    double joint_max = json_mod["joint_max"].asDouble();
-    double joint_min = json_mod["joint_min"].asDouble();
-    double torque_max = json_mod["torque_max"].asDouble();
-
-    Eigen::Vector3d forward_joint_axis;
-    Eigen::Vector3d r_ip1; 
-    Eigen::Vector3d r_im1;
-    if ((json_mod["f_jt_axis"].size() != 3)
-            || (json_mod["r_im1"].size() != 3)
-            || (json_mod["r_ip1"].size() != 3))
-    {
-        return false;
-    }
-    for (unsigned int m=0; m<3; ++m)
-    {
-        /*Need 0u as index to distinguish from operator[] which takes a string*/
-        forward_joint_axis(m) = ((json_mod["f_jt_axis"])[m])[0u].asDouble();
-        r_im1(m) = ((json_mod["r_im1"])[m])[0u].asDouble();
-        r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
-    } 
-
-    Eigen::Matrix3d I_cm;
-    Eigen::Matrix3d R_jts;
-    Eigen::Matrix3d init_rotation;
-    /* TODO: Check that the json for these 3 are 3x3 arrays!!! */ 
-    for (unsigned int m=0; m < 3; ++m)
-    {
-        for (unsigned int n=0; n<3; ++n)
-        {
-            I_cm(m,n) = json_mod["I_cm"][m][n].asDouble();
-            R_jts(m,n) = json_mod["R_jts"][m][n].asDouble();
-            init_rotation(m,n) = json_mod["init_rotation"][m][n].asDouble();
-        }
-    }
-
-    this_module_desc.damping = damping;
-    this_module_desc.m = mass;
-    this_module_desc.joint_max = joint_max;
-    this_module_desc.joint_min = joint_min;
-    this_module_desc.torque_max = torque_max;
-    this_module_desc.forward_joint_axis = forward_joint_axis;
-    this_module_desc.r_im1 = r_im1;
-    this_module_desc.r_ip1 = r_ip1;
-    this_module_desc.I_cm = I_cm;
-    this_module_desc.R_jts = R_jts;
-    this_module_desc.init_rotation = init_rotation;
-
-    ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
-    /* TODO: This doesn't really make sense.  Should make module pointer point to the newly allocated memory, not copy the newly allocated memory */
-    *module = *this_module;
-
-    return true;
-}
-
 bool
 fill_start_and_goal(const Json::Value& sim_root, 
                     std::vector<double>& s0, 
