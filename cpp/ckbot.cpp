@@ -53,7 +53,7 @@ ckbot::rotY(double phi)
 Eigen::Matrix3d 
 ckbot::rotZ(double phi)
 {
-    /*std::cout << "Getting rotZ...\n";*/
+    std::cout << "Getting rotZ (phi=" << phi << "...\n";
     Eigen::Matrix3d Rz;
     Rz << cos(phi), -sin(phi), 0,
           sin(phi),  cos(phi), 0,
@@ -433,6 +433,13 @@ ckbot::chain::get_current_R(int i)
     Eigen::Matrix3d R;
     R = links_[0].get_init_rotation();
 
+    /* Each module's joint angle is wrt the joint toward link 0
+     * and each module's R_jts is the rotation matrix that
+     * takes the vector of its base joint (the joint at which
+     * its joint angle is measured) to its tip joint
+     *
+     * This explains the ordering of rotation matrix multiplications here.
+     */
     for (int j = 0; j <= i; ++j)
     {
         R = R*rotZ(links_[j].get_q())*links_[j].get_R_jts();
@@ -446,13 +453,13 @@ ckbot::chain::num_links(void)
     return N_;
 }
 
-/* 
+/*
  * If the propogate function needs to be thread safe, this method of
  * updating a chain's state (q,qd) needs to be changed.  Any
  * method that uses links_[] to get these two must then be changed to accept
  * references to vectors of q and qd.
  */
-void 
+void
 ckbot::chain::propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd)
 {
     for (int i=0; i<N_; ++i)
@@ -526,7 +533,7 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
 
     tip_base_step(s, T);
     qdd = base_tip_step(s, T);
-    
+ 
     for (int i=0; i < N; ++i)
     {
         /* Rate of change of positions are already in our state */
@@ -540,11 +547,11 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
     return sd;
 }
 
-void 
+void
 ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
 {
     int N = c.num_links();
-    
+
     std::vector<double> q(N);
     std::vector<double> qd(N);
 
@@ -555,8 +562,13 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
     }
 
     /* Declare and initialized all of the loop variables */
+
+    /* TODO: Can we allocate all of this on the heap *once* for a particular
+     * rate object, and then just use pointers to them after?  Would this be fast?
+     * Re-initializing these every time through here has to be slow...
+     */
     Eigen::VectorXd grav(6);
-    grav << 0,0,0,0,0,9.81; 
+    grav << 0,0,0,0,0,9.81;
     Eigen::MatrixXd pp(6,6);
     pp = Eigen::MatrixXd::Zero(6,6);
 
@@ -573,14 +585,14 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
     Eigen::MatrixXd phi_cm(6,6);
 
     Eigen::MatrixXd p_cur(6,6);
-    
+
     Eigen::VectorXd H_b_frame_star(6);
     Eigen::VectorXd H_w_frame_star(6);
     Eigen::RowVectorXd H(6);
 
     double D = 0.0;
     Eigen::VectorXd G(6);
-    
+
     Eigen::MatrixXd tau_tilde(6,6);
 
     Eigen::Vector3d omega(0,0,0);
@@ -590,7 +602,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
     Eigen::VectorXd b(6);
 
     Eigen::VectorXd z(6);
-    
+
     double C = 0.0;
     double epsilon = 0.0;
 
@@ -603,7 +615,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         R_cur = c.get_current_R(i);
         r_i_ip = R_cur*(cur.get_r_ip1() - cur.get_r_im1());
         phi = get_body_trans(r_i_ip);
-        
+
         r_i_cm = R_cur*(-cur.get_r_im1());
 
         phi_cm = get_body_trans(r_i_cm);
@@ -625,26 +637,26 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
 
         /* std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n"; */
         H_w_frame_star = tmp_6x6*H_b_frame_star;
-        
+
         H = H_w_frame_star.transpose();
 
-        D = H*p_cur*H.transpose();
+        D = H*p_cur*H.transpose(); /* TODO:Could use H_w_frame_star..but..clarity */
         G = p_cur*H.transpose()*(1.0/D);
 
         tau_tilde = Eigen::MatrixXd::Identity(6,6) - G*H;
 
         /* pp for the next time around the loop */
         pp = tau_tilde*p_cur;
-        
+
         omega = c.get_angular_velocity(i);
         omega_cross = get_cross_mat(omega);
 
         b.topLeftCorner(3,1) = omega_cross*cur.get_I_cm()*omega;
         b.bottomLeftCorner(3,1) = cur.get_mass()*omega_cross*omega_cross*(-cur.get_r_im1());
-        
+
         a.topLeftCorner(3,1) << 0,0,0;
         a.bottomLeftCorner(3,1) = omega_cross*omega_cross*(-cur.get_r_im1());
-        
+
         z = phi*zp + p_cur*a + b + phi_cm*cur.get_mass()*grav;
 
         C = -cur.get_damping()*qd[i];
@@ -683,7 +695,7 @@ std::vector<double>
 ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
 {
     int N = c.num_links();
-    
+
     std::vector<double> q(N);
     std::vector<double> qd(N);
     std::vector<double> qdd(N);
@@ -693,7 +705,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         q[i] = s[i];
         qd[i] = s[N+i];
     }
-    
+
     Eigen::Matrix3d R_cur;
     Eigen::Vector3d r_i_ip;
     Eigen::MatrixXd phi(6,6);
@@ -703,7 +715,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
     Eigen::VectorXd alpha_p(6);
     Eigen::VectorXd G(6);
     Eigen::VectorXd a(6);
-     
+
     Eigen::VectorXd H_b_frame_star(6);
     Eigen::VectorXd H_w_frame_star(6);
     Eigen::RowVectorXd H(6);
@@ -715,7 +727,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         R_cur = c.get_current_R(i);
         r_i_ip = R_cur*(cur.get_r_ip1() - cur.get_r_im1());
         phi = get_body_trans(r_i_ip);
-        
+
         alpha_p = phi.transpose()*alpha;
 
         int cur_index = 0;                
@@ -729,7 +741,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         qdd[i] = mu_all[i] - G.transpose()*alpha_p;
 
         H_b_frame_star = cur.get_joint_matrix().transpose();
-        
+
         Eigen::MatrixXd tmp_6x6(6,6);
         tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
                    Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
