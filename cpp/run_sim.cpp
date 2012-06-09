@@ -16,29 +16,29 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include<eigen3/Eigen/Dense>
 #include<vector>
 #include<iostream>
 #include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
-#include<boost/bind.hpp>
+
+#include<boost/bind.hpp> /* www.boost.org */
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
 
-#include<ompl/control/SimpleSetup.h>
+#include<eigen3/Eigen/Dense> /* http://eigen.tuxfamily.org/ */
+#include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
 #include<ompl/control/planners/kpiece/KPIECE1.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
-#include<ompl/control/Control.h>
-
-namespace ob = ompl::base;
-namespace oc = ompl::control;
-
-#include<json/json.h>
+#include<ompl/control/Control.h> 
+#include<json/json.h> /* http://jsoncpp.sourceforge.net/ */
 
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
+
+namespace ob = ompl::base;
+namespace oc = ompl::control;
 
 const char DELIMITER = '/';
 
@@ -254,11 +254,10 @@ setup_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout)
     ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        
         out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
         if (! fill_module(chain_array[link], &modules_for_chain[link]))
         {
-            throw "Error";
+            throw "Error"; /* TODO: Make this more descriptive and useful/correct */
         }
     }
     /* Again, never explictly freed.  Let the program run till death! */
