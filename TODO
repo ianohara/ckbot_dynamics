@@ -1,0 +1,50 @@
+Project TODO list:
+  1. matlab/tests/cpp_sim_verify.m
+        This function is meant to load solutions given by cpp/run_sim.cpp (in the 
+    form of json result files) and run the control inputs through the matlab 
+    simulator for the chain configuration specified.  Theoretically, each 
+    intermediate state specified in the solution by OMPL should be hit by 
+    running the OMPL specified controls through the matlab sim.
+        This is a nice way of identifying the existence of a problem, although
+    it doesn't give us too much of an idea of where the problem is because
+    the entire system is involved.
+
+2. Dynamics Verification (Energy)
+        For both the matlab sim and the c++ sim, we need to verify
+    that for an undamped system with no torque inputs, the energy
+    is constant.
+        With this we should see blatant errors in the simulator (manifesting,
+    hopefully, as huge energy discrepencies) and integrator problems.
+    
+3. Look into the integrator the C++ sim is using with boost
+        I already know there's one error in the integrator (We should
+    figure out who to report this to?), so we might need to do something
+    about this if it proves to be a problem.
+        There's a good chance that it isn't a problemf for us, because
+    the duration that OMPL asks the integrator to simulate for might
+    be shorter than one timestep. (Now that I think about it,
+    we should make sure that in the case that duration < timestep
+    the integrator doesn't still simulate for timestep)
+
+4. Planner Visualization
+        We need a nice way to visualize planning trees in the high
+    dimensional space we're dealing with.  I've started a branch 
+    "python_vis_tree" with python code that loads json result 
+    files and makes the planning tree available in an easy format.
+
+5. Hardware 1
+        Assembly of the 3 modules we have. Also, we need to get
+    4 same model XBees running and figure out how they work
+    in the one to many mode.
+
+6. Hardware 2
+        We need to figure out how to modify/redesign the current modules
+    so that wire routing is clean and contained within the module.  It 
+    would also be nice to remove any excess material, since we're torque
+    limited.
+
+7. Hardware 3
+        We need to figure out the specific physical properties of any
+    modules we want to run physical tests with.  This includes,
+    in the parlance of the simulator, r_im1 and r_ip1, m, and the
+    inertia matrix I.
