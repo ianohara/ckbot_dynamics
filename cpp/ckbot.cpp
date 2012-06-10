@@ -232,7 +232,7 @@ void
 ckbot::module_link::describe_self(std::ostream& out)
 {
     out << " {" << std::endl << 
-        "\"mem_location\": " << this << "," << std::endl <<
+        "\"mem_location\": \"" << this << "\"," << std::endl <<
         "\"mass\": " << m_ << "," << std::endl <<
         "\"damping\": " << damping_ << "," << std::endl <<
         "\"joint_max\": " << joint_max_ << "," << std::endl <<

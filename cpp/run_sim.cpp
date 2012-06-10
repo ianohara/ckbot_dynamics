@@ -432,7 +432,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         save_sol(ss, result_file);
         if (sets.save_full_tree)
         {
-            save_full_tree(ss, out_file); /* DEBUG: replace out_file with result_file after this works */
+            save_full_tree(ss, result_file); 
         }
     } 
 
@@ -442,19 +442,40 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 }
 
 
-/* 
+/*
  * Output solution to file in json format
  */
-bool 
+bool
 save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
 {
+
+    const ob::PlannerPtr planner = ss.getPlanner();
+    const ob::ProblemDefinitionPtr prob_def = planner->getProblemDefinition();
+    const ob::RealVectorStateSpace::StateType *start = prob_def->getStartState(0u)->as<ob::RealVectorStateSpace::StateType>();
+    const ob::GoalPtr& goal_ptr = prob_def->getGoal();
+    /*
+    //const ob::RealVectorStateSpace *state_spate = ss.getStateSpace()->as<ob::RealVectorStateSpace>();
+    unsigned int dimension = ss.getStateSpace()->as<ob::RealVectorStateSpace>()->getDimension();
+    */
+    //out_file <<"\"start\": \"" << std::endl;
+
+    //out_file <<"\"," << std::endl; 
+
+    /* I cannot for the god damn life of me figure out how to get the goal state
+     * out in a form so that I can loop over the RealVectorStateSpace::StateType
+     * that it really is and print out in json array form.
+     */
+    //out_file << "\"goal\": \"";
+    //goal_ptr->print();
+    //out_file <<"\"," << std::endl;
+
     const oc::PathControl& sol_path(ss.getSolutionPath());
     unsigned int num_modules = (*(ss.getStateSpace())).as<ob::RealVectorStateSpace>()->getDimension()/2;
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
 
-    /* Note: We're assuming that we're already in a dictionary */
-    out_file << "\"control\": [" << std::endl;   
+    /* Note: We're assuming that we're already in a json dictionary */
+    out_file << "\"control\": [" << std::endl;
 
     time[0] = 0.0;
     for (unsigned int i=0; i < sol_path.getStateCount(); ++i)
@@ -516,7 +537,7 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
             out_file << std::endl;
         }
     }
-    out_file << "]" << std::endl;
+    out_file << "]," << std::endl;
     return true;
 }
 
@@ -526,25 +547,71 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
     oc::KPIECE1 *kPlanner = ss.getPlanner()->as<oc::KPIECE1>();
     oc::PlannerData data;
     kPlanner->getPlannerData(data);
-    data.print(out_file);
-    /* Wow, that was easy... */
+
+    out_file << "\"tree\": {" << std::endl;
+    out_file << "\"states\": [" << std::endl;
+
+    unsigned int dimension = data.si->getStateDimension();
+    std::vector<const ob::State*> state_vec = data.states;
+    for (unsigned int i=0; i < state_vec.size(); i++)
+    {
+        out_file << "[";
+        const ob::RealVectorStateSpace::StateType *real_state = (state_vec[i])->as<ob::RealVectorStateSpace::StateType>();
+        for (unsigned int j=0; j < dimension; j++)
+        {
+            out_file << (*real_state)[j];
+            if (j < dimension-1)
+            {
+                out_file << ", ";
+            }
+        }
+        out_file << "]" << std::endl;
+        if (i < state_vec.size()-1)
+        {
+            out_file << "," << std::endl;
+        }
+    }
+    out_file << "], " << std::endl;
+    out_file << "\"connections\": [" << std::endl;
+    unsigned int edge_indicies = data.edges.size();
+    for (unsigned int i=0; i < edge_indicies; i++)
+    {
+        unsigned int edge_count = (data.edges[i]).size();
+        out_file << "[";
+        for (unsigned int j=0; j < edge_count; j++)
+        {
+            out_file << data.edges[i][j];
+            if (j < edge_count-1)
+            {
+                out_file << ", ";
+            }
+        }
+        out_file << "]" << std::endl;
+        if (i < edge_indicies-1)
+        {
+            out_file << "," << std::endl;
+        }
+    }
+    out_file << "]}" << std::endl;
 }
+
 bool
-fill_start_and_goal(const Json::Value& sim_root, 
-                    std::vector<double>& s0, 
+fill_start_and_goal(const Json::Value& sim_root,
+                    std::vector<double>& s0,
                     std::vector<double>& s_fin)
 {
-    if((! sim_root["start"].isArray()) || 
+    if((! sim_root["start"].isArray()) ||
        (! sim_root["goal"].isArray()))
     {
         std::cerr << "In simulation file the start and " <<
                      "goal positions must be Json arrays." << std::endl;
         return false;
     }
-    if ((sim_root["start"].size() != s0.size()) || 
+
+    if ((sim_root["start"].size() != s0.size()) ||
         (sim_root["goal"].size() != s_fin.size()))
     {
-        std::cerr << "The start and goal positions in the sim file " << 
+        std::cerr << "The start and goal positions in the sim file " <<
                      "must have the same dimension as the chain " <<
                      "suggests (ie: #modules*2)." << std::endl;
         return false;
