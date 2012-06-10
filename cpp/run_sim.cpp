@@ -550,7 +550,8 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
 
     out_file << "\"tree\": {" << std::endl;
     out_file << "\"states\": [" << std::endl;
-
+    
+    /* An array of the nodes (states) in the planng tree */
     unsigned int dimension = data.si->getStateDimension();
     std::vector<const ob::State*> state_vec = data.states;
     for (unsigned int i=0; i < state_vec.size(); i++)
@@ -572,6 +573,10 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
         }
     }
     out_file << "], " << std::endl;
+
+    /* For each i, an array of the states it connects to in the planning tree.
+     * The 'i's here correspond to the same 'i's in the states array before this.
+     */
     out_file << "\"connections\": [" << std::endl;
     unsigned int edge_indicies = data.edges.size();
     for (unsigned int i=0; i < edge_indicies; i++)
