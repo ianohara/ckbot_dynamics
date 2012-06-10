@@ -27,7 +27,9 @@
 #include<iostream>
 #include<fstream>
 
+#include<eigen3/Eigen/Core>
 #include<eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Geometry>
 #include<json/json.h>
 
 #include"ckbot.hpp"
@@ -45,23 +47,27 @@ struct ckbot::module_description _ZERO_MODULE = {0.0,
         0.0};
 
 
-Eigen::Matrix3d 
+Eigen::Matrix3d
+ckbot::rotX(double phi)
+{
+    Eigen::Matrix3d Rx;
+    Rx = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitX());
+    return Rx;
+}
+
+Eigen::Matrix3d
 ckbot::rotY(double phi)
 {
     Eigen::Matrix3d Ry;
-    Ry << cos(phi), 0.0, sin(phi),
-          0.0,      1.0, 0.0,
-         -sin(phi), 0.0, 0.0;
+    Ry = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitY());
     return Ry;
 }
-Eigen::Matrix3d 
+
+Eigen::Matrix3d
 ckbot::rotZ(double phi)
 {
-    /*std::cout << "Getting rotZ (phi=" << phi << ")...\n";*/
     Eigen::Matrix3d Rz;
-    Rz << cos(phi), -sin(phi), 0,
-          sin(phi),  cos(phi), 0,
-          0.0,       0.0,      1.0;
+    Rz = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
     return Rz;
 }
 

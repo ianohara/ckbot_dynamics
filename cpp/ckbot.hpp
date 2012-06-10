@@ -26,8 +26,9 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 
-#include<eigen3/Eigen/Dense>
 #include<eigen3/Eigen/Core>
+#include<eigen3/Eigen/Dense>
+#include<eigen3/Eigen/Geometry>
 #include <json/json.h>
 
 namespace ckbot
@@ -73,7 +74,7 @@ namespace ckbot
         out << "]" << std::endl;
     }
 
-
+    Eigen::Matrix3d rotX(double phi);
     Eigen::Matrix3d rotY(double phi);
     Eigen::Matrix3d rotZ(double phi);
     Eigen::Matrix3d get_cross_mat(Eigen::Vector3d r);
