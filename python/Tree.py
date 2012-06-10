@@ -22,13 +22,12 @@
 
 import json
 
-class Vis( object ):
+class Tree( object ):
     def __init__(self, file=None):
         with open(file, 'r') as f:
             self._tree = json.loads(f.read())["tree"]
         self._nodes = self._tree["states"]
         self._edges = self._tree["connections"]
-
         """ TODO: Add more assertions here to check the input. """
         assert all([len(self._nodes[0]) == len(n) for n in self._nodes]), 'Length of all state vectors (nodes) should be equal.'
         assert len(self._nodes) == len(self._edges), 'Each node needs a description of its edges, even if an empty description.'
@@ -36,4 +35,51 @@ class Vis( object ):
     def _raw_json(self):
         print json.dumps(self._tree, sort_keys=True, indent=4)
 
+    def controlFromTo(self, f, t):
+        """
+        Get the control that brings node f to node t. 
 
+        Arguments:
+          f - number of node to start from
+          t - number of node to go to from node f
+
+        Returns:
+          If these two nodes are connected along the directed edge f to t:
+            A list of length self.dimension that brings the system from the state
+            at node f to the state at node t
+          Otherwise:
+            None
+        """
+        if not self.connected(f,t):
+            return None
+        return self.getEdge(f, t)['control']
+
+    def getEdge(self, f, t):
+        """
+        If edge f is directionally connected to t, 
+        return the edge dictionary.
+        """
+        for e in self._edges[f]:
+            if e["state"] == t:
+                return e
+        return None
+
+    def connected(self, f, t):
+        """
+        See if node f is connected to t by a directed edge from f to t.
+        
+        (ie: if t is connected to f along a directed edge from t to f, this
+         returns False).
+
+        Arguments:
+          f - number of node to start from
+          t - number of node to go to from node f
+
+        Returns:
+          True if f is connected to t in that direction
+          False otherwise
+        """
+        if any([t == e["state"] for e in self._edges[f]]):
+            return True
+        else:
+            return False
