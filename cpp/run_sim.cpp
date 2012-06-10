@@ -541,6 +541,14 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
     return true;
 }
 
+
+/* Write everything needed to re-construct the planner exploration tree, with controls, 
+ * to an output file.
+ *
+ * TODO: Re-write this function.  Make a nice function for outputting a state vector in
+ *       json format, or something.  Half of this function in it's current form is
+ *       repetition of the same code on a different structure.
+ */
 bool
 save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
 {
@@ -574,7 +582,11 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
     }
     out_file << "], " << std::endl;
 
-    /* For each i, an array of the states it connects to in the planning tree.
+    /* For each i, an array of the dictionaries of the format
+     * {state: <num>, control: [control array]}
+     * where <num> is the state to which i is connected and
+     * [control array] is the control that brings the system from
+     * state i to state <num>.
      * The 'i's here correspond to the same 'i's in the states array before this.
      */
     out_file << "\"connections\": [" << std::endl;
@@ -585,7 +597,18 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
         out_file << "[";
         for (unsigned int j=0; j < edge_count; j++)
         {
-            out_file << data.edges[i][j];
+            out_file << "{\"state\": " << data.edges[i][j] << ", \"control\": [";
+            const oc::RealVectorControlSpace::ControlType *control = (data.controls[i][j])->as<oc::RealVectorControlSpace::ControlType>();
+            unsigned int control_dim = ss.getSpaceInformation()->getControlSpace()->getDimension();
+            for (unsigned int k=0; k < control_dim; k++)
+            {
+                out_file << (*control)[k];
+                if (k < control_dim-1)
+                {
+                    out_file << ", ";
+                }
+            }
+            out_file << "]}";
             if (j < edge_count-1)
             {
                 out_file << ", ";
