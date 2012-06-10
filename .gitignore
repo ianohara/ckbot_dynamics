@@ -1,4 +1,7 @@
 *.o
 *.m~
 *.out
+*.pyc
+*.swp
+*.SWP
 
