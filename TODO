@@ -15,7 +15,7 @@ Project TODO list:
     is constant.
         With this we should see blatant errors in the simulator (manifesting,
     hopefully, as huge energy discrepencies) and integrator problems.
-    
+
 3. Look into the integrator the C++ sim is using with boost
         I already know there's one error in the integrator (We should
     figure out who to report this to?), so we might need to do something
@@ -26,7 +26,7 @@ Project TODO list:
     we should make sure that in the case that duration < timestep
     the integrator doesn't still simulate for timestep)
 
-4. Planner Visualization
+(IAN WORKING) 4. Planner Visualization
         We need a nice way to visualize planning trees in the high
     dimensional space we're dealing with.  I've started a branch 
     "python_vis_tree" with python code that loads json result 
