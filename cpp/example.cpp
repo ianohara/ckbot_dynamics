@@ -16,7 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include<vector>
 #include<iostream>
 #include<fstream>

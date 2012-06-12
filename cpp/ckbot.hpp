@@ -26,9 +26,9 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 
-#include<eigen3/Eigen/Core>
-#include<eigen3/Eigen/Dense>
-#include<eigen3/Eigen/Geometry>
+#include<Eigen/Core>
+#include<Eigen/Dense>
+#include<Eigen/Geometry>
 #include <json/json.h>
 
 namespace ckbot

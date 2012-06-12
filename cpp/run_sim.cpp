@@ -26,7 +26,7 @@
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
 
-#include<eigen3/Eigen/Dense> /* http://eigen.tuxfamily.org/ */
+#include<Eigen/Dense> /* http://eigen.tuxfamily.org/ */
 #include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
 #include<ompl/control/planners/kpiece/KPIECE1.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
