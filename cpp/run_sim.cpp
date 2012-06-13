@@ -28,7 +28,7 @@
 
 #include<Eigen/Dense> /* http://eigen.tuxfamily.org/ */
 #include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
-#include<ompl/control/planners/kpiece/KPIECE1.h>
+#include<ompl/control/planners/rrt/RRT.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
 #include<ompl/control/Control.h> 
@@ -361,7 +361,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
     ss.setStartAndGoalStates(start, goal);
 
-    ob::PlannerPtr planner(new oc::KPIECE1(ss.getSpaceInformation()));
+    ob::PlannerPtr planner(new oc::RRT(ss.getSpaceInformation()));
     ss.setPlanner(planner);
     /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
@@ -567,7 +567,7 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets)
 bool
 save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
 {
-    oc::KPIECE1 *kPlanner = ss.getPlanner()->as<oc::KPIECE1>();
+    oc::RRT *kPlanner = ss.getPlanner()->as<oc::RRT>();
     oc::PlannerData data;
     kPlanner->getPlannerData(data);
 
