@@ -42,13 +42,6 @@ namespace oc = ompl::control;
 
 const char DELIMITER = '/';
 
-bool fill_start_and_goal(const Json::Value& sim_root, 
-                         std::vector<double>& s0, 
-                         std::vector<double>& s_fin);
-bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
-bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file);
-bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
-
 struct sim_settings {
     std::string sim_dir;
     std::string desc_path;
@@ -69,16 +62,15 @@ struct sim_settings {
     bool save_full_tree;
 };
 
-int main(int ac, char* av[])
-{
-    std::string sim_dir("");
-    std::string desc_path("description.txt");
-    std::string chain_path("chain.txt");
-    std::string sim_path("sim.txt");
-    std::string result_dir("results/");
-    std::string result_path("results.txt");
+/* For use both as the default initializer for settings structs
+ * and as the default parameter in function prototypes that take
+ * settings.  NOTE:  Defaults could be dangerous here, because
+ * forgetting to pass sim settings into a function won't halt
+ * the sim, but will just run that portion of it with the wrong
+ * settings!
+ */
 
-    struct sim_settings sets = {
+struct sim_settings _DEFAULT_SETS = {
         "",
         "description.txt",
         "chain.txt",
@@ -95,7 +87,26 @@ int main(int ac, char* av[])
         30,     /* Solution search timeout in [s] */
         1,      /* Debugging output? */
         true    /* Save the full planning tree? */
-    };
+};
+
+bool fill_start_and_goal(const Json::Value& sim_root, 
+                         std::vector<double>& s0, 
+                         std::vector<double>& s_fin);
+bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
+bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets=_DEFAULT_SETS);
+bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
+
+
+int main(int ac, char* av[])
+{
+    std::string sim_dir("");
+    std::string desc_path("description.txt");
+    std::string chain_path("chain.txt");
+    std::string sim_path("sim.txt");
+    std::string result_dir("results/");
+    std::string result_path("results.txt");
+
+    struct sim_settings sets = _DEFAULT_SETS;
 
     /* Parse options and execute options */
     namespace po = boost::program_options;
@@ -446,7 +457,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
  * Output solution to file in json format
  */
 bool
-save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
+save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets)
 {
 
     const ob::PlannerPtr planner = ss.getPlanner();
@@ -470,6 +481,10 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file)
     //out_file <<"\"," << std::endl;
 
     const oc::PathControl& sol_path(ss.getSolutionPath());
+    if (sets.debug)
+    {
+        sol_path.print(std::cout);
+    }
     unsigned int num_modules = (*(ss.getStateSpace())).as<ob::RealVectorStateSpace>()->getDimension()/2;
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
