@@ -21,6 +21,7 @@
 """
 
 import json
+import numpy
 
 class Tree( object ):
     def __init__(self, file=None):
@@ -29,8 +30,8 @@ class Tree( object ):
         self._tree = self.__results["tree"]    
         self._nodes = self._tree["states"]
         self._edges = self._tree["connections"]
-        self.start = self.__results["start"]
-        self.goal = self.__results["goal"]
+        self.start = numpy.array(self.__results["start"])
+        self.goal = numpy.array(self.__results["goal"])
         """ TODO: Add more assertions here to check the input. """
         assert all([len(self._nodes[0]) == len(n) for n in self._nodes]), 'Length of all state vectors (nodes) should be equal.'
         assert len(self._nodes) == len(self._edges), 'Each node needs a description of its edges, even if an empty description.'
@@ -74,8 +75,8 @@ class Tree( object ):
 
     def edges(self):
         """
-        A generator that returns a tuple of ordered pairs (tuple of tuples!)
-        in the form ((x1,x2,x3,...,xn), (y1,y2,y3,...,yn)) where an edge starts
+        A generator that returns a tuple of ordered pairs (tuple of numpy arrays!)
+        in the form (array[x1,x2,x3,...,xn], array[y1,y2,y3,...,yn]) where an edge starts
         at the point x_vec = (x1,x2,x3,...,xn) and ends at y_vec = (y1, y2, y3,...,yn)
 
         NOTE/TODO: This doesn't let us figure out which edge we're getting.  Nice
@@ -83,12 +84,18 @@ class Tree( object ):
         """
         for ind, parent in enumerate(self._nodes):
             for e in self._edges[ind]:
-                yield (tuple(parent), tuple(self._nodes[e["state"]]))
+                yield (numpy.array(parent), numpy.array(self._nodes[e["state"]]))
+    def nodes(self):
+        """
+        A generator that returns the nodes, as numpy.arrays, in order.
+        """
+        for n in self._nodes:
+            yield numpy.array(n)
 
     def connected(self, f, t):
         """
         See if node f is connected to t by a directed edge from f to t.
-        
+
         (ie: if t is connected to f along a directed edge from t to f, this
          returns False).
 
