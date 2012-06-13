@@ -317,6 +317,29 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
 
+    /* Output the start and goal to the result file */
+    /* TODO: Write a function for outputting standard vectors in json */
+    result_file << "\"start\": [";
+    for (unsigned int i=0; i < s0.size(); i++)
+    {
+        result_file << s0[i];
+        if (i < s0.size()-1)
+        {
+            result_file << ",";
+        }
+    }
+    result_file << "]," << std::endl;
+
+    result_file << "\"goal\": [";
+    for (unsigned int i=0; i < s_fin.size(); i++)
+    {
+        result_file << s_fin[i];
+        if (i < s_fin.size()-1)
+        {
+            result_file << ",";
+        }
+    }
+    result_file << "]," << std::endl;
     /*****
      * Setup OMPL 
      *****/
