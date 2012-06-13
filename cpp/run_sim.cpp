@@ -94,7 +94,7 @@ int main(int ac, char* av[])
 
         30,     /* Solution search timeout in [s] */
         1,      /* Debugging output? */
-        false   /* Save the full planning tree? */
+        true    /* Save the full planning tree? */
     };
 
     /* Parse options and execute options */
@@ -112,7 +112,7 @@ int main(int ac, char* av[])
             ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
             ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
             ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
-            ("tree", "Save the entire planning tree.")
+            ("no_tree", "Don't the entire planning tree.")
         ;
 
         po::variables_map vm;
@@ -152,9 +152,9 @@ int main(int ac, char* av[])
         {
             sets.min_torque = vm["min_torque"].as<double>();
         }
-        if (vm.count("tree"))
+        if (vm.count("no_tree"))
         {
-            sets.save_full_tree = true;
+            sets.save_full_tree = false;
         }
     }
     catch (std::exception& e)
