@@ -29,6 +29,7 @@
 #include<Eigen/Dense> /* http://eigen.tuxfamily.org/ */
 #include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
 #include<ompl/control/planners/rrt/RRT.h>
+#include<ompl/control/planners/kpiece/KPIECE1.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
 #include<ompl/control/Control.h> 
@@ -42,6 +43,8 @@ namespace oc = ompl::control;
 
 const char DELIMITER = '/';
 
+enum planners {RRT=0, KPIECE1};
+
 struct sim_settings {
     std::string sim_dir;
     std::string desc_path;
@@ -49,6 +52,8 @@ struct sim_settings {
     std::string sim_path;
     std::string result_dir;
     std::string result_path;
+
+    enum planners planner;
 
     unsigned int min_control_steps;
     unsigned int max_control_steps;
@@ -78,6 +83,8 @@ struct sim_settings _DEFAULT_SETS = {
         "results/",
         "results.txt",
 
+        RRT,
+
         1,      /* OMPL min control steps */
         1,      /* OMPL max control steps */
         0.05,   /* OMPL timestep resolution */
@@ -95,6 +102,7 @@ bool fill_start_and_goal(const Json::Value& sim_root,
 bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
 bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets=_DEFAULT_SETS);
 bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
+ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
 
 
 int main(int ac, char* av[])
@@ -124,6 +132,7 @@ int main(int ac, char* av[])
             ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
             ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
             ("no_tree", "Don't the entire planning tree.")
+            ("planner", po::value<unsigned int>(), "Set the planner: (0=RRT, 1=KPIECE)")
         ;
 
         po::variables_map vm;
@@ -134,6 +143,10 @@ int main(int ac, char* av[])
         {
             std::cout << desc << std::endl;
             return 1;
+        }
+        if (vm.count("planner"))
+        {
+            sets.planner = static_cast<enum planners>(vm["planner"].as<unsigned int>());
         }
         if (vm.count("dir")) 
         {
@@ -384,8 +397,11 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
     ss.setStartAndGoalStates(start, goal);
 
-    ob::PlannerPtr planner(new oc::RRT(ss.getSpaceInformation()));
+    /* Initialize the correct planner (possibly specified on cmd line) */
+    ob::PlannerPtr planner;
+    planner = get_planner(ss.getSpaceInformation(), sets.planner);
     ss.setPlanner(planner);
+
     /* Allow this range of number of steps in our solution */
     ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
@@ -473,6 +489,24 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     result_file << "}" << std::endl;
     result_file.close();   
     return solve_status;
+}
+
+ob::PlannerPtr
+get_planner(oc::SpaceInformationPtr si, enum planners plan)
+{
+    ob::PlannerPtr planner;
+    if (plan == RRT)
+    {
+        ob::PlannerPtr p_temp(new oc::RRT(si));
+        planner = p_temp;
+    }
+    else if (plan == KPIECE1)
+    {
+        ob::PlannerPtr p_temp(new oc::KPIECE1(si));
+        planner = p_temp;
+    }
+    
+    return planner;
 }
 
 

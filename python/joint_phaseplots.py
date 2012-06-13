@@ -23,12 +23,12 @@ def comps(vec, dims):
 def dist(v1, v2):
     return numpy.sqrt(numpy.dot((v2-v1),(v2-v1)))
 
-def color(v1, v2, m):
+def color(v1, v2, m, cmap=cm.jet):
     """
     Return color based on distance between two vectors with m 
     being the max possible distance.
     """
-    return cm.jet(int(float(256)*(dist(v1, v2)/(float(m)))))
+    return cmap(int(float(256)*(dist(v1, v2)/(float(m)))))
 
 pp.figure(1)
 pp.subplot(121)
