@@ -31,6 +31,9 @@ class Tree( object ):
         """ TODO: Add more assertions here to check the input. """
         assert all([len(self._nodes[0]) == len(n) for n in self._nodes]), 'Length of all state vectors (nodes) should be equal.'
         assert len(self._nodes) == len(self._edges), 'Each node needs a description of its edges, even if an empty description.'
+        
+        self.dim = len(self._nodes[0])
+        assert self.dim % 2 == 0, 'The dimensionality should be even, because two DOF are added per joint.'
 
     def _raw_json(self):
         print json.dumps(self._tree, sort_keys=True, indent=4)
@@ -63,6 +66,19 @@ class Tree( object ):
             if e["state"] == t:
                 return e
         return None
+
+    def edges(self):
+        """
+        A generator that returns a tuple of ordered pairs (tuple of tuples!)
+        in the form ((x1,x2,x3,...,xn), (y1,y2,y3,...,yn)) where an edge starts
+        at the point x_vec = (x1,x2,x3,...,xn) and ends at y_vec = (y1, y2, y3,...,yn)
+
+        NOTE/TODO: This doesn't let us figure out which edge we're getting.  Nice
+        for plotting just the edges themselves, but not for also labelling.
+        """
+        for ind, parent in enumerate(self._nodes):
+            for e in self._edges[ind]:
+                yield (tuple(parent), tuple(self._nodes[e["state"]]))
 
     def connected(self, f, t):
         """
