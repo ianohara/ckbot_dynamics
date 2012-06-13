@@ -25,15 +25,20 @@ import json
 class Tree( object ):
     def __init__(self, file=None):
         with open(file, 'r') as f:
-            self._tree = json.loads(f.read())["tree"]
+            self.__results = json.loads(f.read())
+        self._tree = self.__results["tree"]    
         self._nodes = self._tree["states"]
         self._edges = self._tree["connections"]
+        self.start = self.__results["start"]
+        self.goal = self.__results["goal"]
         """ TODO: Add more assertions here to check the input. """
         assert all([len(self._nodes[0]) == len(n) for n in self._nodes]), 'Length of all state vectors (nodes) should be equal.'
         assert len(self._nodes) == len(self._edges), 'Each node needs a description of its edges, even if an empty description.'
         
         self.dim = len(self._nodes[0])
         assert self.dim % 2 == 0, 'The dimensionality should be even, because two DOF are added per joint.'
+        assert len(self.goal) == len(self.start), "Start and goal vectors must have the same dimensionality"
+        assert len(self.start) == self.dim, "Start and goal must have same dimensionality as the tree nodes."
 
     def _raw_json(self):
         print json.dumps(self._tree, sort_keys=True, indent=4)
