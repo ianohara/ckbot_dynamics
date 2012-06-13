@@ -53,7 +53,14 @@ for e in t.edges():
     pp.plot([e[0][0], e[1][0]], [e[0][t.dim/2], e[1][t.dim/2]], color=e_col)
     pp.subplot(122)
     pp.plot([e[0][1], e[1][1]], [e[0][t.dim/2 + 1], e[1][t.dim/2 + 1]], color=e_col)
-    print "%f: %s" % (dist(t.goal, e[1]), e_col)
+
+pp.subplot(121)
+pp.plot([t.start[0]], [t.start[2]], 'ro')
+pp.plot([t.goal[0]], [t.goal[2]], 'bo')
+
+pp.subplot(122)
+pp.plot([t.start[1]], [t.start[3]], 'ro')
+pp.plot([t.goal[1]],[t.goal[3]], 'bo')
 
 pp.savefig("images/joint_phaseplots_2dof_%d.png" % int(time.time()), dpi=480)
 pp.show()
