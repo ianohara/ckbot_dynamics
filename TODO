@@ -9,7 +9,7 @@ Project TODO list:
     it doesn't give us too much of an idea of where the problem is because
     the entire system is involved.
 
-2. Dynamics Verification (Energy)
+(IAN WORKING) 2. Dynamics Verification (Energy)
         For both the matlab sim and the c++ sim, we need to verify
     that for an undamped system with no torque inputs, the energy
     is constant.
