@@ -32,7 +32,7 @@
 #include<ompl/control/planners/kpiece/KPIECE1.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
-#include<ompl/control/Control.h> 
+#include<ompl/control/Control.h>
 #include<json/json.h> /* http://jsoncpp.sourceforge.net/ */
 
 #include "ckbot.hpp"
@@ -283,7 +283,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     Json::Reader chain_reader;
     Json::Value sim_root;
     Json::Reader sim_reader;
-    
+
     /* No reason to run if we can't open our result file, 
      * so let the exceptions flow up.
      */
@@ -298,7 +298,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         std::cerr << "Couldn't parse chain file." << std::endl;
         return false;
     }
-   
+
     /*
      * Load the chain and initialize an ODE solver for it from the JSON tree
      * we now have. Also, while we're at it, output the chain description
