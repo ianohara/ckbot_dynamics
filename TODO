@@ -1,5 +1,5 @@
 Project TODO list:
-  1. matlab/tests/cpp_sim_verify.m
+1. matlab/tests/cpp_sim_verify.m
         This function is meant to load solutions given by cpp/run_sim.cpp (in the 
     form of json result files) and run the control inputs through the matlab 
     simulator for the chain configuration specified.  Theoretically, each 
@@ -26,7 +26,7 @@ Project TODO list:
     we should make sure that in the case that duration < timestep
     the integrator doesn't still simulate for timestep)
 
-(IAN WORKING) 4. Planner Visualization
+4. Planning Graph Visualization
         We need a nice way to visualize planning trees in the high
     dimensional space we're dealing with.  I've started a branch 
     "python_vis_tree" with python code that loads json result 
@@ -48,3 +48,47 @@ Project TODO list:
     modules we want to run physical tests with.  This includes,
     in the parlance of the simulator, r_im1 and r_ip1, m, and the
     inertia matrix I.
+
+8. Simulation/Planning result visualizer
+        For both Matlab and C++ dynamics sims, it would be nice
+    to have a "pretty" visualizer for playing back planning solutions
+    (both their kinematics, and running torques through the dynamics sims
+    to make sure that the result is the same as what OMPL thinks it should
+    be)
+
+9. Test Stand
+        For our initial tests (with 3 modules) we need a test stand onto which
+    we can mount the modules.
+
+10. Add 6 DOF joint to "base" of module chain in dynamics sims
+        The final "goal" is to have a chain of modules jump off of
+    a table into a tube (Parkour jump off of ledge and dive/tuck into
+    drainage pipe, or something?).  With the dynamics sim as it is now,
+    the base module must rotate around a fixed axis, which doesn't
+    allow a chain to "jump".  The sim supports arbitrary 6 DOF joints
+    between rigid bodies, so the capability is there.  It just needs 
+    to be put in.
+
+11. Add "take off" collision support.
+        To avoid having to build full collision support into the dynamics
+    sim, we can just assume the base module (with a 6 DOF joint connecting
+    it to the ground) does not slide and cannot penetrate the table.  However,
+    when the normal force with the table reaches 0 we can allow the module
+    to leave the table. This allows us to "jump".
+
+12. Motor characteristics and model
+        We're probably going to need a motor model in the dynamics sim to
+    get good results.  This needs to be added in whatever degree of 
+    fidelity proven necessary.  We also need to get the full characterization
+    of the motors we're using (Matt probably has this for us).
+
+13. Brain Board + Motor Controller
+        We need to figure out how to use the Brain board and Motor controller.
+
+14. Write code for sending the torque to the modules.
+        With planning results from OMPL, we need to "play" the 
+    torques onto the module chain.  Since the results are
+    outputted to results.txt in json format, we can do
+    this in whatever language we want (python!).
+
+
