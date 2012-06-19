@@ -16,6 +16,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* TODO: Re-work the result file output.  Right now there are random
+ *       printouts to the result file spread all over, which makes
+ *       breaking the json output by reorganizing code almost
+ *       ineveitable.
+ */
+
 #include<vector>
 #include<iostream>
 #include<fstream>
@@ -92,18 +98,24 @@ struct sim_settings _DEFAULT_SETS = {
         1.0,    /* Max link torque */
 
         30,     /* Solution search timeout in [s] */
-        1,      /* Debugging output? */
+        0,      /* Debugging output? */
         true    /* Save the full planning tree? */
 };
 
-bool fill_start_and_goal(const Json::Value& sim_root, 
-                         std::vector<double>& s0, 
+bool fill_start_and_goal(const Json::Value& sim_root,
+                         std::vector<double>& s0,
                          std::vector<double>& s_fin);
-bool load_and_run_simulation(std::ostream& out_file, struct sim_settings sets);
-bool save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets=_DEFAULT_SETS);
-bool save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file);
+boost::shared_ptr<ckbot::CK_ompl> load_ckbot_rate_machine(struct sim_settings sets,
+                                                          std::ostream& out_file=std::cout);
+boost::shared_ptr<oc::SimpleSetup> load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
+                                                   std::ostream& out_file,
+                                                   struct sim_settings sets);
+bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,
+              std::ostream& out_file,
+              struct sim_settings sets=_DEFAULT_SETS);
+bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file);
+bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets);
 ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
-
 
 int main(int ac, char* av[])
 {
@@ -133,6 +145,7 @@ int main(int ac, char* av[])
             ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
             ("no_tree", "Don't the entire planning tree.")
             ("planner", po::value<unsigned int>(), "Set the planner: (0=RRT, 1=KPIECE)")
+            ("debug", "Turn on debugging output.")
         ;
 
         po::variables_map vm;
@@ -179,6 +192,10 @@ int main(int ac, char* av[])
         if (vm.count("no_tree"))
         {
             sets.save_full_tree = false;
+        }
+        if (vm.count("debug"))
+        {
+            sets.debug = 1;
         }
     }
     catch (std::exception& e)
@@ -252,51 +269,48 @@ int main(int ac, char* av[])
         }
         std::cout << "Success!" << std::endl;
     }
-
-    bool sim_status = load_and_run_simulation(std::cout, sets);
-    if (! sim_status)
+    std::ofstream result_file;
+    result_file.open((char*)sets.result_path.c_str());
+    result_file << "{" << std::endl;
+    result_file.close();
+    std::cout << "DEBUG: making rate machine pointer..." << std::endl;
+    boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
+    rate_machine_p = load_ckbot_rate_machine(sets);
+    std::cout << "DEBUG: Finished making rate machine pointer..." << std::endl;
+    boost::shared_ptr<oc::SimpleSetup> ss_p;
+    std::cout << "DEBUG: Now entering load_simulation..." << std::endl;
+    ss_p = load_simulation(rate_machine_p, std::cout, sets);
+    if (!ss_p)
     {
-        std::cout << "Error during simulation..exiting." << std::endl;
+        std::cerr << "Error loading simulation...exiting." << std::endl;
+        return 1;
+    }
+
+    bool sim_status = run_planner(ss_p, sets);
+    if (!sim_status)
+    {
+        std::cerr << "Error during simulation..exiting." << std::endl;
         return 1;
     }
     return 0;
 }
 
-/*
- * Load a simulation from files containing json descriptions of the chain, 
- * and start and goal positions.
- * Then run and save the results for later. 
- */
-bool
-load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
+boost::shared_ptr<ckbot::CK_ompl>
+load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
 {
-    /*****
-    * Load both the CKBot chain simulator and the start and end goals
-    * While loading the chain description, start outputing the description
-    * to the result file.  Using only one file for the results guarantees
-    * nothing gets mixed up (ie: One file describes it all).
-    *****/
-    std::ifstream chain_file;
-    std::ifstream sim_file;
     std::ofstream result_file;
-    Json::Value chain_root;
-    Json::Reader chain_reader;
-    Json::Value sim_root;
-    Json::Reader sim_reader;
-
-    /* No reason to run if we can't open our result file, 
-     * so let the exceptions flow up.
-     */
     result_file.open((char*)sets.result_path.c_str());
-    result_file << "{" << std::endl;
 
+    std::ifstream chain_file;
     chain_file.open((char*)sets.chain_path.c_str());
+    Json::Reader chain_reader;
+    Json::Value chain_root;
     bool parsingSuccessful = chain_reader.parse(chain_file, chain_root);
     chain_file.close();
     if (!parsingSuccessful)
     {
         std::cerr << "Couldn't parse chain file." << std::endl;
-        return false;
+        return boost::shared_ptr<ckbot::CK_ompl>();
     }
 
     /*
@@ -304,13 +318,42 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
      * we now have. Also, while we're at it, output the chain description
      * to the result file.
      */
-    ckbot::CK_ompl rate_machine = ckbot::setup_ompl_ckbot(chain_root);
-    rate_machine.get_chain().describe_self(result_file);
+    boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
+    rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
+    rate_machine_p->get_chain().describe_self(result_file);
     result_file << "," << std::endl;
+    result_file.close();
+    return rate_machine_p;
+}
+/*
+ * Load a simulation from files containing json descriptions of the chain, 
+ * and start and goal positions.
+ * Then run and save the results for later. 
+ */
+boost::shared_ptr<oc::SimpleSetup>
+load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets)
+{
+    /*****
+    * Load both the CKBot chain simulator and the start and end goals
+    * While loading the chain description, start outputing the description
+    * to the result file.  Using only one file for the results guarantees
+    * nothing gets mixed up (ie: One file describes it all).
+    *****/
+    std::ifstream sim_file;
+    std::ofstream result_file;
+    Json::Value sim_root;
+    Json::Reader sim_reader;
+
+    /* No reason to run if we can't open our result file, 
+     * so let the exceptions flow up.
+     */
+    result_file.open((char*)sets.result_path.c_str());
 
     /* For reference when setting up OMPL */
-    int num_modules = rate_machine.get_chain().num_links();
-    ckbot::module_link first_module = rate_machine.get_chain().get_link(0u);
+    std::cout << "DEBUG: getting number of modules..." << std::endl;
+    int num_modules = rate_machine_p->get_chain().num_links();
+    std::cout << "DEBUG: getting first module..." << std::endl;
+    ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
 
     /* The start and goal positions are in a separate file. 
      * Hopefully this allows easy re-use of config parts
@@ -322,7 +365,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     if (!sim_parse_success)
     {
         std::cerr << "Couldn't parse sim file." << std::endl;
-        return false;
+        return boost::shared_ptr<oc::SimpleSetup>();
     }
 
     /* Fill the start and goal positions from the sim JSON tree */
@@ -354,7 +397,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     }
     result_file << "]," << std::endl;
     /*****
-     * Setup OMPL 
+     * Setup OMPL
      *****/
     /* Make our configuration space and set the bounds on each module's angles */
     ob::StateSpacePtr space(new ob::RealVectorStateSpace(2*num_modules));
@@ -367,50 +410,57 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     cbounds.setHigh(sets.max_torque);
     cspace->as<oc::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
 
-    /* 
+    /*
      * Use OMPL's built in setup mechanism instead of allocating state space information
      * and problem defintion pointers on my own
      */
-    oc::SimpleSetup ss(cspace);
+    boost::shared_ptr<oc::SimpleSetup> ss_p(new oc::SimpleSetup(cspace));
+    std::cout << "DEBUG: Describing chain from pointer..." << std::endl;
+    rate_machine_p->get_chain().describe_self(std::cout); /* DEBUG */
 
+    std::cout << "DEBUG: binding state validity checker..." << std::endl;
     // TODO: Write an actual state validity checker!
-    ss.setStateValidityChecker(boost::bind<bool>(&ckbot::CK_ompl::stateValidityChecker, 
-                                                 rate_machine, 
+    ss_p->setStateValidityChecker(boost::bind(&ckbot::CK_ompl::stateValidityChecker,
+                                                 rate_machine_p.get(),
                                                  _1));
 
+    std::cout << "DEBUG: Binding ODE solver..." << std::endl;
     /* Setup and get the dynamics of our system into the planner */
-    oc::ODEBasicSolver<> odeSolver(ss.getSpaceInformation(), 
-                                              boost::bind<void>(&ckbot::CK_ompl::CKBotODE, 
-                                                                rate_machine, _1, _2, _3));
-    ss.setStatePropagator(odeSolver.getStatePropagator());
+    oc::ODEBasicSolver<> odeSolver(ss_p->getSpaceInformation(),
+                                              boost::bind(&ckbot::CK_ompl::CKBotODE,
+                                                               rate_machine_p.get(), _1, _2, _3));
+
+    std::cout << "DEBUG: Setting state propagator..." << std::endl;
+    ss_p->setStatePropagator(odeSolver.getStatePropagator());
 
     /* Define the start and end configurations */
-    ob::ScopedState<ob::RealVectorStateSpace> start(ss.getSpaceInformation());
-    ob::ScopedState<ob::RealVectorStateSpace> goal(ss.getSpaceInformation());
+    ob::ScopedState<ob::RealVectorStateSpace> start(ss_p->getSpaceInformation());
+    ob::ScopedState<ob::RealVectorStateSpace> goal(ss_p->getSpaceInformation());
     for (int i = 0; i < 2*num_modules; ++i)
     {
         start[i] = s0[i];
         goal[i] = s_fin[i];
     }
+    std::cout << "DEBUG: Before start and goal print." << std::endl;
     start.print(std::cout);
     goal.print(std::cout);
 
-    ss.setStartAndGoalStates(start, goal);
+    ss_p->setStartAndGoalStates(start, goal);
 
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
-    planner = get_planner(ss.getSpaceInformation(), sets.planner);
-    ss.setPlanner(planner);
+    planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
+    ss_p->setPlanner(planner);
 
     /* Allow this range of number of steps in our solution */
-    ss.getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
-    ss.getSpaceInformation()->setPropagationStepSize(sets.dt);
+    ss_p->getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
+    ss_p->getSpaceInformation()->setPropagationStepSize(sets.dt);
 
     /* Tell SimpleSetup that we've given it all of the info, and that
      * it should distribute parameters to the different components 
      * (mostly, fill in the planner parameters.) 
      */
-    ss.setup();
+    ss_p->setup();
 
     /* Debug printing section for information having to do with the setup
      * of the planner and any of its components.
@@ -419,7 +469,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
     if (sets.debug)
     {
         /* Have the chain in our rate machine describe itself */
-        rate_machine.get_chain().describe_self(out_file);
+        rate_machine_p->get_chain().describe_self(out_file);
 
         /* Print the planner start and goal states */
         out_file << "Planner Start and Goal states: " << std::endl;
@@ -438,7 +488,7 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
         }
 
         /* Print the control space bounds */
-        const oc::ControlSpacePtr pControl = ss.getControlSpace();
+        const oc::ControlSpacePtr pControl = ss_p->getControlSpace();
         const ob::RealVectorBounds bounds = pControl->as<oc::RealVectorControlSpace>()->getBounds();
         std::vector<double> low = bounds.low;
         std::vector<double> high = bounds.high;
@@ -465,29 +515,41 @@ load_and_run_simulation(std::ostream& out_file, struct sim_settings sets)
 
         /* Print information about how the planner will interface with the dynamics engine */
         out_file << "The progagationStepSize is: " 
-            << ss.getSpaceInformation()->getPropagationStepSize()
+            << ss_p->getSpaceInformation()->getPropagationStepSize()
             << std::endl << "    The Minimum number of steps is: " 
-            << ss.getSpaceInformation()->getMinControlDuration() << std::endl 
+            << ss_p->getSpaceInformation()->getMinControlDuration() << std::endl 
             << "    The Max number of steps is: " 
-            << ss.getSpaceInformation()->getMaxControlDuration() << std::endl;
+            << ss_p->getSpaceInformation()->getMaxControlDuration() << std::endl;
 
         /* Print information about the ODE Solver */
         out_file << "The ODE Step size is: " << odeSolver.getIntegrationStepSize() << std::endl;
     }
 
+    result_file.close();
+    return ss_p;
+}
+
+bool
+run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets)
+{
+    std::ofstream result_file;
+    /* No reason to run if we can't open our result file, 
+     * so let the exceptions flow up.
+     */
+    result_file.open((char*)sets.result_path.c_str());
+
     bool solve_status = false;
-    if (ss.solve(sets.max_sol_time))
+    if (ss_p->solve(sets.max_sol_time))
     {
         solve_status = true;
-        save_sol(ss, result_file);
+        save_sol(ss_p, result_file);
         if (sets.save_full_tree)
         {
-            save_full_tree(ss, result_file); 
+            save_full_tree(ss_p, result_file); 
         }
-    } 
-
+    }
     result_file << "}" << std::endl;
-    result_file.close();   
+    result_file.close();
     return solve_status;
 }
 
@@ -505,7 +567,7 @@ get_planner(oc::SpaceInformationPtr si, enum planners plan)
         ob::PlannerPtr p_temp(new oc::KPIECE1(si));
         planner = p_temp;
     }
-    
+
     return planner;
 }
 
@@ -514,35 +576,18 @@ get_planner(oc::SpaceInformationPtr si, enum planners plan)
  * Output solution to file in json format
  */
 bool
-save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets)
+save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file, struct sim_settings sets)
 {
-
-    const ob::PlannerPtr planner = ss.getPlanner();
+    const ob::PlannerPtr planner = ss_p->getPlanner();
     const ob::ProblemDefinitionPtr prob_def = planner->getProblemDefinition();
     const ob::RealVectorStateSpace::StateType *start = prob_def->getStartState(0u)->as<ob::RealVectorStateSpace::StateType>();
     const ob::GoalPtr& goal_ptr = prob_def->getGoal();
-    /*
-    //const ob::RealVectorStateSpace *state_spate = ss.getStateSpace()->as<ob::RealVectorStateSpace>();
-    unsigned int dimension = ss.getStateSpace()->as<ob::RealVectorStateSpace>()->getDimension();
-    */
-    //out_file <<"\"start\": \"" << std::endl;
-
-    //out_file <<"\"," << std::endl; 
-
-    /* I cannot for the god damn life of me figure out how to get the goal state
-     * out in a form so that I can loop over the RealVectorStateSpace::StateType
-     * that it really is and print out in json array form.
-     */
-    //out_file << "\"goal\": \"";
-    //goal_ptr->print();
-    //out_file <<"\"," << std::endl;
-
-    const oc::PathControl& sol_path(ss.getSolutionPath());
+    const oc::PathControl& sol_path(ss_p->getSolutionPath());
     if (sets.debug)
     {
         sol_path.print(std::cout);
     }
-    unsigned int num_modules = (*(ss.getStateSpace())).as<ob::RealVectorStateSpace>()->getDimension()/2;
+    unsigned int num_modules = (*(ss_p->getStateSpace())).as<ob::RealVectorStateSpace>()->getDimension()/2;
     std::vector<double> time(sol_path.getStateCount());
     std::vector<double> dt(sol_path.getStateCount()-1);
 
@@ -622,9 +667,9 @@ save_sol(oc::SimpleSetup& ss, std::ostream& out_file, struct sim_settings sets)
  *       repetition of the same code on a different structure.
  */
 bool
-save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
+save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file)
 {
-    oc::RRT *kPlanner = ss.getPlanner()->as<oc::RRT>();
+    oc::RRT *kPlanner = ss_p->getPlanner()->as<oc::RRT>();
     oc::PlannerData data;
     kPlanner->getPlannerData(data);
 
@@ -671,7 +716,7 @@ save_full_tree(oc::SimpleSetup& ss, std::ostream& out_file)
         {
             out_file << "{\"state\": " << data.edges[i][j] << ", \"control\": [";
             const oc::RealVectorControlSpace::ControlType *control = (data.controls[i][j])->as<oc::RealVectorControlSpace::ControlType>();
-            unsigned int control_dim = ss.getSpaceInformation()->getControlSpace()->getDimension();
+            unsigned int control_dim = ss_p->getSpaceInformation()->getControlSpace()->getDimension();
             for (unsigned int k=0; k < control_dim; k++)
             {
                 out_file << (*control)[k];
