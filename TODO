@@ -91,7 +91,7 @@ Project TODO list:
     outputted to results.txt in json format, we can do
     this in whatever language we want (python!).
 
-15. Re-factor the solution outputting to use jsoncpp's output mechanism
+(IMO: 2012/06/23) 15. Re-factor the solution outputting to use jsoncpp's output mechanism
         Right now the json output is completely manual, and as a result
     there are random result_file << "}" << std::endl and such sprinkled
     everywhere.  This means that moving anything around almost definitely
