@@ -129,10 +129,7 @@ main(int ac, char* av[])
         std::cout << "Success!" << std::endl;
     }
 
-    std::ofstream result_file;
-    result_file.open((char*)sets.result_path.c_str());
-    result_file << "{" << std::endl;
-    result_file.close();
+    Json::Value result_root;
 
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = load_ckbot_rate_machine(sets);
@@ -144,14 +141,18 @@ main(int ac, char* av[])
         std::cerr << "Error loading simulation...exiting." << std::endl;
         return 1;
     }
+    /* Write the results to file in Json format */
+    std::ofstream result_file;
+    result_file.open((char*)sets.result_path.c_str());
+    result_file << result_root;
+    result_file.close();
+
     return 0;
 }
 
 boost::shared_ptr<ckbot::CK_ompl>
-load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
+load_ckbot_rate_machine(struct sim_settings sets, Json::Value res_root)
 {
-    std::fstream result_file;
-    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
 
     std::ifstream chain_file;
     chain_file.open((char*)sets.chain_path.c_str());
@@ -167,14 +168,12 @@ load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
 
     /*
      * Load the chain and initialize an ODE solver for it from the JSON tree
-     * we now have. Also, while we're at it, output the chain description
-     * to the result file.
+     * we now have. Also, while we're at it, put the chain into our result
+     * JSON object
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
-    rate_machine_p->get_chain().describe_self(result_file);
-    result_file << "," << std::endl;
-    result_file.close();
+    rate_machine_p->get_chain().describe_self(res_root);
     return rate_machine_p;
 }
 /*
@@ -183,23 +182,16 @@ load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
  * Then run and save the results for later. 
  */
 boost::shared_ptr<oc::SimpleSetup>
-load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets)
+load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets, Json::Value res_root)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
     * While loading the chain description, start outputing the description
-    * to the result file.  Using only one file for the results guarantees
-    * nothing gets mixed up (ie: One file describes it all).
+    * to the result json object. 
     *****/
     std::ifstream sim_file;
-    std::fstream result_file;
     Json::Value sim_root;
     Json::Reader sim_reader;
-
-    /* No reason to run if we can't open our result file, 
-     * so let the exceptions flow up.
-     */
-    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
 
     /* For reference when setting up OMPL */
     int num_modules = rate_machine_p->get_chain().num_links();
@@ -223,29 +215,10 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
 
-    /* Output the start and goal to the result file */
-    /* TODO: Write a function for outputting standard vectors in json */
-    result_file << "\"start\": [";
-    for (unsigned int i=0; i < s0.size(); i++)
-    {
-        result_file << s0[i];
-        if (i < s0.size()-1)
-        {
-            result_file << ",";
-        }
-    }
-    result_file << "]," << std::endl;
+    /* Get the start and goal into the json result object */
+    res_root["start"] = s0;
+    res_root["goal"] = s_fin;
 
-    result_file << "\"goal\": [";
-    for (unsigned int i=0; i < s_fin.size(); i++)
-    {
-        result_file << s_fin[i];
-        if (i < s_fin.size()-1)
-        {
-            result_file << ",";
-        }
-    }
-    result_file << "]," << std::endl;
     /*****
      * Setup OMPL
      *****/
@@ -372,7 +345,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
         out_file << "The ODE Step size is: " << odeSolver.getIntegrationStepSize() << std::endl;
     }
 
-    result_file.close();
     if (!run_planner(ss_p, sets))
     {
         std::cerr << "Error running simulation!" << std::endl;
@@ -383,27 +355,19 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 }
 
 bool
-run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets)
+run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value res_root)
 {
-    std::fstream result_file;
-    /* No reason to run if we can't open our result file, 
-     * so let the exceptions flow up.
-     */
-    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
-
 
     bool solve_status = false;
     if (ss_p->solve(sets.max_sol_time))
     {
         solve_status = true;
-        save_sol(ss_p, result_file);
+        save_sol(ss_p, res_root);
         if (sets.save_full_tree)
         {
             save_full_tree(ss_p, result_file); 
         }
     }
-    result_file << "}" << std::endl;
-    result_file.close();
     return solve_status;
 }
 
@@ -430,7 +394,7 @@ get_planner(oc::SpaceInformationPtr si, enum planners plan)
  * Output solution to file in json format
  */
 bool
-save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file, struct sim_settings sets)
+save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root, struct sim_settings sets)
 {
     const ob::PlannerPtr planner = ss_p->getPlanner();
     const ob::ProblemDefinitionPtr prob_def = planner->getProblemDefinition();
