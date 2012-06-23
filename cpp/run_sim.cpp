@@ -16,12 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* TODO: Re-work the result file output.  Right now there are random
- *       printouts to the result file spread all over, which makes
- *       breaking the json output by reorganizing code almost
- *       ineveitable.
- */
-
 #include<vector>
 #include<iostream>
 #include<fstream>
