@@ -266,6 +266,7 @@ ckbot::module_link::describe_self(std::ostream& out)
 
 ckbot::module_link::~module_link(void)
 {
+    std::cout << "DEBUG: Destroying module_link..." << std::endl;
 }
 
 double
@@ -461,6 +462,7 @@ ckbot::chain::chain(module_link chain_modules[], int num_modules) : N_(num_modul
 
 ckbot::chain::~chain(void)
 {
+    std::cout << "DEBUG: Destroying chain..." << std::endl;
 }
 
 /*

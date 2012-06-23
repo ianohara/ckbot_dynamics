@@ -81,7 +81,7 @@ bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s_fin);
 boost::shared_ptr<ckbot::CK_ompl> load_ckbot_rate_machine(struct sim_settings sets,
                                                           std::ostream& out_file=std::cout);
-boost::shared_ptr<oc::SimpleSetup> load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
+boost::shared_ptr<oc::SimpleSetup> load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
                                                    std::ostream& out_file,
                                                    struct sim_settings sets);
 bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,

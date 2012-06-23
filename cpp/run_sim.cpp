@@ -110,7 +110,7 @@ main(int ac, char* av[])
     if (! boost::filesystem::is_directory(sets.result_dir))
     {
         std::cout << "The result directory doesn't exist yet...creating...";
-        try 
+        try
         {
             boost::filesystem::create_directory(sets.result_dir);
             std::cout << "Last char is: " 
@@ -128,6 +128,7 @@ main(int ac, char* av[])
         }
         std::cout << "Success!" << std::endl;
     }
+
     std::ofstream result_file;
     result_file.open((char*)sets.result_path.c_str());
     result_file << "{" << std::endl;
@@ -135,20 +136,15 @@ main(int ac, char* av[])
     std::cout << "DEBUG: making rate machine pointer..." << std::endl;
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = load_ckbot_rate_machine(sets);
+    std::cout << "DEBUG: Describing chain at highest level..." << std::endl; 
+    rate_machine_p->get_chain().describe_self(std::cout);
     std::cout << "DEBUG: Finished making rate machine pointer..." << std::endl;
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     std::cout << "DEBUG: Now entering load_simulation..." << std::endl;
-    ss_p = load_simulation(rate_machine_p, std::cout, sets);
+    ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets);
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;
-        return 1;
-    }
-
-    bool sim_status = run_planner(ss_p, sets);
-    if (!sim_status)
-    {
-        std::cerr << "Error during simulation..exiting." << std::endl;
         return 1;
     }
     return 0;
@@ -190,7 +186,7 @@ load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
  * Then run and save the results for later. 
  */
 boost::shared_ptr<oc::SimpleSetup>
-load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets)
+load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
@@ -280,14 +276,17 @@ load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& 
     std::cout << "DEBUG: binding state validity checker..." << std::endl;
     // TODO: Write an actual state validity checker!
     ss_p->setStateValidityChecker(boost::bind(&ckbot::CK_ompl::stateValidityChecker,
-                                                 rate_machine_p.get(),
+                                                 &(*rate_machine_p),
                                                  _1));
 
     std::cout << "DEBUG: Binding ODE solver..." << std::endl;
     /* Setup and get the dynamics of our system into the planner */
     oc::ODEBasicSolver<> odeSolver(ss_p->getSpaceInformation(),
                                               boost::bind(&ckbot::CK_ompl::CKBotODE,
-                                                               rate_machine_p.get(), _1, _2, _3));
+                                                               &(*rate_machine_p), _1, _2, _3));
+
+
+
 
     std::cout << "DEBUG: Setting state propagator..." << std::endl;
     ss_p->setStatePropagator(odeSolver.getStatePropagator());
@@ -303,18 +302,22 @@ load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& 
     std::cout << "DEBUG: Before start and goal print." << std::endl;
     start.print(std::cout);
     goal.print(std::cout);
-
+    
+    std::cout << "DEBUG: Setting start and goal..." << std::endl;
     ss_p->setStartAndGoalStates(start, goal);
 
+    std::cout << "DEBUG: Setting Planner..." << std::endl;
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
     ss_p->setPlanner(planner);
 
+    std::cout << "DEBUG: Setting state space information..." << std::endl;
     /* Allow this range of number of steps in our solution */
     ss_p->getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss_p->getSpaceInformation()->setPropagationStepSize(sets.dt);
 
+    std::cout << "DEBUG: Telling simple setup that we've given it the info..." << std::endl;
     /* Tell SimpleSetup that we've given it all of the info, and that
      * it should distribute parameters to the different components 
      * (mostly, fill in the planner parameters.) 
@@ -385,6 +388,13 @@ load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& 
     }
 
     result_file.close();
+    std::cout << "DEBUG: Leaving planner setup..." << std::endl;
+    if (!run_planner(ss_p, sets))
+    {
+        std::cout << "Error running simulation!" << std::endl;
+        return boost::shared_ptr<oc::SimpleSetup>();
+    }
+
     return ss_p;
 }
 
@@ -396,6 +406,8 @@ run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets)
      * so let the exceptions flow up.
      */
     result_file.open((char*)sets.result_path.c_str());
+
+    std::cout << "DEBUG: Inside of run_planner." << std::endl;
 
     bool solve_status = false;
     if (ss_p->solve(sets.max_sol_time))
