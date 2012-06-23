@@ -43,81 +43,10 @@
 
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
+#include "run_sim.hpp"
 
-namespace ob = ompl::base;
-namespace oc = ompl::control;
-
-const char DELIMITER = '/';
-
-enum planners {RRT=0, KPIECE1};
-
-struct sim_settings {
-    std::string sim_dir;
-    std::string desc_path;
-    std::string chain_path;
-    std::string sim_path;
-    std::string result_dir;
-    std::string result_path;
-
-    enum planners planner;
-
-    unsigned int min_control_steps;
-    unsigned int max_control_steps;
-    double dt;
-    double min_torque;
-    double max_torque;
-
-    float max_sol_time;
-
-    unsigned int debug;
-    bool save_full_tree;
-};
-
-/* For use both as the default initializer for settings structs
- * and as the default parameter in function prototypes that take
- * settings.  NOTE:  Defaults could be dangerous here, because
- * forgetting to pass sim settings into a function won't halt
- * the sim, but will just run that portion of it with the wrong
- * settings!
- */
-
-struct sim_settings _DEFAULT_SETS = {
-        "",
-        "description.txt",
-        "chain.txt",
-        "sim.txt",
-        "results/",
-        "results.txt",
-
-        RRT,
-
-        1,      /* OMPL min control steps */
-        1,      /* OMPL max control steps */
-        0.05,   /* OMPL timestep resolution */
-        -1.0,   /* Minimum link torque */
-        1.0,    /* Max link torque */
-
-        30,     /* Solution search timeout in [s] */
-        0,      /* Debugging output? */
-        true    /* Save the full planning tree? */
-};
-
-bool fill_start_and_goal(const Json::Value& sim_root,
-                         std::vector<double>& s0,
-                         std::vector<double>& s_fin);
-boost::shared_ptr<ckbot::CK_ompl> load_ckbot_rate_machine(struct sim_settings sets,
-                                                          std::ostream& out_file=std::cout);
-boost::shared_ptr<oc::SimpleSetup> load_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
-                                                   std::ostream& out_file,
-                                                   struct sim_settings sets);
-bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,
-              std::ostream& out_file,
-              struct sim_settings sets=_DEFAULT_SETS);
-bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file);
-bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets);
-ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
-
-int main(int ac, char* av[])
+int
+main(int ac, char* av[])
 {
     std::string sim_dir("");
     std::string desc_path("description.txt");
@@ -127,108 +56,36 @@ int main(int ac, char* av[])
     std::string result_path("results.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
+    boost::program_options::variables_map vm;
 
-    /* Parse options and execute options */
-    namespace po = boost::program_options;
-    try 
+    if (!parse_options(ac, av, vm, sets))
     {
-        po::options_description desc("Usage:");
-        desc.add_options()
-            ("help", "Give non-sensical help.")
-            ("dir", po::value<std::string>(), 
-               "Set the directory in which the simulation to run exists")
-            ("time", po::value<double>(), "Set the maximum runtime of the solver")
-            ("min_control_steps", po::value<unsigned int>(), "Set the minimum number of steps OMPL applies controls for")
-            ("max_control_steps", po::value<unsigned int>(), "Set the maximum number of steps OMPL applies controls for")
-            ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
-            ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
-            ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
-            ("no_tree", "Don't the entire planning tree.")
-            ("planner", po::value<unsigned int>(), "Set the planner: (0=RRT, 1=KPIECE)")
-            ("debug", "Turn on debugging output.")
-        ;
-
-        po::variables_map vm;
-        po::store(po::parse_command_line(ac, av, desc), vm);
-        po::notify(vm);
-
-        if (vm.count("help"))
-        {
-            std::cout << desc << std::endl;
-            return 1;
-        }
-        if (vm.count("planner"))
-        {
-            sets.planner = static_cast<enum planners>(vm["planner"].as<unsigned int>());
-        }
-        if (vm.count("dir")) 
-        {
-            sets.sim_dir = vm["dir"].as<std::string>();
-        }
-        if (vm.count("time"))
-        {
-            sets.max_sol_time = vm["time"].as<double>();
-        }
-        if (vm.count("dt"))
-        {
-            sets.dt = vm["dt"].as<double>();
-        }
-        if (vm.count("min_control_steps"))
-        {
-            sets.min_control_steps = vm["min_control_steps"].as<unsigned int>();
-        }
-        if (vm.count("max_control_steps"))
-        {
-            sets.max_control_steps = vm["max_control_steps"].as<unsigned int>();
-        }
-        if (vm.count("max_torque"))
-        {
-            sets.max_torque = vm["max_torque"].as<double>();
-        }
-        if (vm.count("min_torque"))
-        {
-            sets.min_torque = vm["min_torque"].as<double>();
-        }
-        if (vm.count("no_tree"))
-        {
-            sets.save_full_tree = false;
-        }
-        if (vm.count("debug"))
-        {
-            sets.debug = 1;
-        }
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-    catch (...)
-    {
-        std::cerr << "Exception of unknown type!" << std::endl;
+        return 1;
     }
 
     /* Check to make sure the simulation directory and all of its components
      * exist
      */
-    if (  (sets.sim_dir.length() == 0) 
+    if (  (sets.sim_dir.length() == 0)
        || (! boost::filesystem::is_directory(sets.sim_dir)))
     {
-        std::cout << "The simululation directory ('" 
-                  << sets.sim_dir 
-                  << "') specified by --dir must exist!" << std::endl;   
+        std::cout << "The simululation directory ('"
+                  << sets.sim_dir
+                  << "') specified by --dir must exist!" << std::endl;
         return 1;
     }
+
     /* Make sure the directory path ends with a path delimeter */
     if (! (sets.sim_dir.at(sets.sim_dir.length()-1) == DELIMITER))
     {
         sets.sim_dir.push_back(DELIMITER);
     }
-
     sets.desc_path = sets.sim_dir + sets.desc_path;
     sets.chain_path = sets.sim_dir + sets.chain_path;
     sets.sim_path = sets.sim_dir + sets.sim_path;
     sets.result_dir = sets.sim_dir + sets.result_dir;
     sets.result_path = sets.result_dir + sets.result_path;
+
     if (! boost::filesystem::is_regular_file(sets.desc_path)) 
     {
         std::cout << "The description file does not exist. (" 
@@ -262,10 +119,12 @@ int main(int ac, char* av[])
         catch (std::exception& e)
         {
             std::cerr << "Error: " << e.what() << std::endl;
+            return 1;
         }
         catch (...)
         {
             std::cerr << "Unknown error occured while creating directory" << std::endl;
+            return 1;
         }
         std::cout << "Success!" << std::endl;
     }
@@ -766,6 +625,91 @@ fill_start_and_goal(const Json::Value& sim_root,
     {
        s0[i] = sim_root["start"][i].asDouble();
        s_fin[i] = sim_root["goal"][i].asDouble();
+    }
+    return true;
+}
+
+bool
+parse_options(int ac, char* av[], boost::program_options::variables_map& vm, struct sim_settings& sets)
+{
+    /* Parse options and execute options */
+    namespace po = boost::program_options;
+    try
+    {
+        po::options_description desc("Usage:");
+        desc.add_options()
+            ("help", "Give non-sensical help.")
+            ("dir", po::value<std::string>(), 
+               "Set the directory in which the simulation to run exists")
+            ("time", po::value<double>(), "Set the maximum runtime of the solver")
+            ("min_control_steps", po::value<unsigned int>(), "Set the minimum number of steps OMPL applies controls for")
+            ("max_control_steps", po::value<unsigned int>(), "Set the maximum number of steps OMPL applies controls for")
+            ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
+            ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
+            ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
+            ("no_tree", "Don't the entire planning tree.")
+            ("planner", po::value<unsigned int>(), "Set the planner: (0=RRT, 1=KPIECE)")
+            ("debug", "Turn on debugging output.")
+        ;
+
+        po::store(po::parse_command_line(ac, av, desc), vm);
+        po::notify(vm);
+
+        if (vm.count("help"))
+        {
+            std::cout << desc << std::endl;
+            return 1;
+        }
+        if (vm.count("planner"))
+        {
+            sets.planner = static_cast<enum planners>(vm["planner"].as<unsigned int>());
+        }
+        if (vm.count("dir")) 
+        {
+            sets.sim_dir = vm["dir"].as<std::string>();
+        }
+        if (vm.count("time"))
+        {
+            sets.max_sol_time = vm["time"].as<double>();
+        }
+        if (vm.count("dt"))
+        {
+            sets.dt = vm["dt"].as<double>();
+        }
+        if (vm.count("min_control_steps"))
+        {
+            sets.min_control_steps = vm["min_control_steps"].as<unsigned int>();
+        }
+        if (vm.count("max_control_steps"))
+        {
+            sets.max_control_steps = vm["max_control_steps"].as<unsigned int>();
+        }
+        if (vm.count("max_torque"))
+        {
+            sets.max_torque = vm["max_torque"].as<double>();
+        }
+        if (vm.count("min_torque"))
+        {
+            sets.min_torque = vm["min_torque"].as<double>();
+        }
+        if (vm.count("no_tree"))
+        {
+            sets.save_full_tree = false;
+        }
+        if (vm.count("debug"))
+        {
+            sets.debug = 1;
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return false;
+    }
+    catch (...)
+    {
+        std::cerr << "Exception of unknown type!" << std::endl;
+        return false;
     }
     return true;
 }
