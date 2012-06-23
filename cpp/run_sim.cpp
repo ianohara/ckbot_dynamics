@@ -132,10 +132,10 @@ main(int ac, char* av[])
     Json::Value result_root;
 
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
-    rate_machine_p = load_ckbot_rate_machine(sets);
+    rate_machine_p = load_ckbot_rate_machine(sets, result_root);
 
     boost::shared_ptr<oc::SimpleSetup> ss_p;
-    ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets);
+    ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;
@@ -151,7 +151,7 @@ main(int ac, char* av[])
 }
 
 boost::shared_ptr<ckbot::CK_ompl>
-load_ckbot_rate_machine(struct sim_settings sets, Json::Value res_root)
+load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::ostream& out_file)
 {
 
     std::ifstream chain_file;
@@ -173,7 +173,7 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value res_root)
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
-    rate_machine_p->get_chain().describe_self(res_root);
+    res_root["chain"] = rate_machine_p->get_chain().describe_self();
     return rate_machine_p;
 }
 /*
@@ -182,7 +182,7 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value res_root)
  * Then run and save the results for later. 
  */
 boost::shared_ptr<oc::SimpleSetup>
-load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets, Json::Value res_root)
+load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets, Json::Value& res_root)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
@@ -216,8 +216,18 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     fill_start_and_goal(sim_root, s0, s_fin);
 
     /* Get the start and goal into the json result object */
-    res_root["start"] = s0;
-    res_root["goal"] = s_fin;
+    Json::Value start_node(Json::arrayValue);
+    for (unsigned int i = 0; i < s0.size(); i++)
+    {
+        start_node.append(s0[i]);
+    }
+    res_root["start"] = start_node;
+    Json::Value goal_node(Json::arrayValue);
+    for (unsigned int i=0; i < s_fin.size(); i++)
+    {
+        goal_node.append(s_fin[i]);
+    }
+    res_root["goal"] = goal_node;
 
     /*****
      * Setup OMPL
@@ -289,7 +299,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     if (sets.debug)
     {
         /* Have the chain in our rate machine describe itself */
-        rate_machine_p->get_chain().describe_self(out_file);
+        out_file << rate_machine_p->get_chain().describe_self();
 
         /* Print the planner start and goal states */
         out_file << "Planner Start and Goal states: " << std::endl;
@@ -345,7 +355,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
         out_file << "The ODE Step size is: " << odeSolver.getIntegrationStepSize() << std::endl;
     }
 
-    if (!run_planner(ss_p, sets))
+    if (!run_planner(ss_p, sets, res_root))
     {
         std::cerr << "Error running simulation!" << std::endl;
         return boost::shared_ptr<oc::SimpleSetup>();
@@ -355,7 +365,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 }
 
 bool
-run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value res_root)
+run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value& res_root)
 {
 
     bool solve_status = false;
@@ -365,7 +375,7 @@ run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, J
         save_sol(ss_p, res_root);
         if (sets.save_full_tree)
         {
-            save_full_tree(ss_p, result_file); 
+            save_full_tree(ss_p, res_root); 
         }
     }
     return solve_status;
@@ -410,69 +420,52 @@ save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root, struct 
     std::vector<double> dt(sol_path.getStateCount()-1);
 
     /* Note: We're assuming that we're already in a json dictionary */
-    out_file << "\"control\": [" << std::endl;
+    Json::Value controls(Json::arrayValue);
 
     time[0] = 0.0;
     for (unsigned int i=0; i < sol_path.getStateCount(); ++i)
     {
         if (i != 0)
         {
-            out_file << "{" << std::endl;
+            Json::Value this_control(Json::objectValue);
             const ob::RealVectorStateSpace::StateType& s_minus = *sol_path.getState(i-1)->as<ob::RealVectorStateSpace::StateType>();
             const ob::RealVectorStateSpace::StateType& s = *sol_path.getState(i)->as<ob::RealVectorStateSpace::StateType>();
 
             dt[i-1] = sol_path.getControlDuration(i-1); // Control Duration to go from state i-1 to i;
             time[i] = time[i-1]+dt[i-1]; // Time at this step
-            out_file << "\"start_state_index\":" << i-1 << "," << std::endl;
-            out_file << "\"end_state_index\":" << i << "," << std::endl;
+            this_control["start_state_index"] = Json::Value(i-1);
+            this_control["end_state_index"] = Json::Value(i);
 
-            out_file << "\"start_state\": [";
+            Json::Value start(Json::arrayValue);
             for (unsigned int j=0; j<2*num_modules; ++j)
             {
-                out_file << s_minus[j];
-                if (j+1 < 2*num_modules)
-                {
-                    out_file << ", ";
-                }
+                start.append(Json::Value(s_minus[j]));
             }
-            out_file << "]," << std::endl;
 
-            out_file << "\"end_state\": [";
+            Json::Value end_state(Json::arrayValue);
             for (unsigned int j=0; j<2*num_modules; ++j)
             {
-                out_file  << s[j];
-                if (j+1 < 2*num_modules)
-                {
-                    out_file << ", ";
-                }
+                end_state.append(Json::Value(s[j]));
             }
-            out_file << "]," << std::endl;
 
-            out_file << "\"start_time\":" << time[i-1] << "," << std::endl;
-            out_file << "\"end_time\":" << time[i] << "," << std::endl;
-            out_file << "\"dt\":" << dt[i-1] << "," << std::endl;
+            this_control["start_state"] = start;
+            this_control["end_state"] = end_state;
+            this_control["start_time"] = Json::Value(time[i-1]);
+            this_control["end_time"] = Json::Value(time[i]);
+            this_control["dt"] = Json::Value(dt[i-1]);
+
             const double* c = sol_path.getControl(i-1)->as<oc::RealVectorControlSpace::ControlType>()->values;
-            out_file << "\"control\": [";
+            Json::Value this_control_vals(Json::arrayValue);
             for (unsigned int j=0; j<num_modules; ++j)
             {
-                out_file << " " << c[j];
-                if (j+1 < num_modules)
-                {
-                    out_file << ", ";
-                }
+                this_control_vals.append(Json::Value(c[j]));
             }
-            out_file << "]";
 
-            /* End this control dictionary and prepare for another, if needed */
-            out_file << "}";
-            if (i+1 < sol_path.getStateCount())
-            {
-                out_file << ",";
-            }
-            out_file << std::endl;
+            controls.append(this_control);
         }
     }
-    out_file << "]," << std::endl;
+
+    res_root["controls"] = controls;
     return true;
 }
 
@@ -485,37 +478,28 @@ save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root, struct 
  *       repetition of the same code on a different structure.
  */
 bool
-save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file)
+save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root)
 {
     oc::RRT *kPlanner = ss_p->getPlanner()->as<oc::RRT>();
     oc::PlannerData data;
     kPlanner->getPlannerData(data);
+    Json::Value tree(Json::objectValue);
 
-    out_file << "\"tree\": {" << std::endl;
-    out_file << "\"states\": [" << std::endl;
-    
+    Json::Value states(Json::arrayValue);
+
     /* An array of the nodes (states) in the planng tree */
     unsigned int dimension = data.si->getStateDimension();
     std::vector<const ob::State*> state_vec = data.states;
     for (unsigned int i=0; i < state_vec.size(); i++)
     {
-        out_file << "[";
+        Json::Value this_state(Json::arrayValue);
         const ob::RealVectorStateSpace::StateType *real_state = (state_vec[i])->as<ob::RealVectorStateSpace::StateType>();
         for (unsigned int j=0; j < dimension; j++)
         {
-            out_file << (*real_state)[j];
-            if (j < dimension-1)
-            {
-                out_file << ", ";
-            }
+            this_state.append(Json::Value((*real_state)[j]));
         }
-        out_file << "]" << std::endl;
-        if (i < state_vec.size()-1)
-        {
-            out_file << "," << std::endl;
-        }
+        states.append(this_state);
     }
-    out_file << "], " << std::endl;
 
     /* For each i, an array of the dictionaries of the format
      * {state: <num>, control: [control array]}
@@ -524,38 +508,33 @@ save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file)
      * state i to state <num>.
      * The 'i's here correspond to the same 'i's in the states array before this.
      */
-    out_file << "\"connections\": [" << std::endl;
+    Json::Value conns(Json::arrayValue);
     unsigned int edge_indicies = data.edges.size();
     for (unsigned int i=0; i < edge_indicies; i++)
     {
+        Json::Value i_to_j_edges(Json::arrayValue);
         unsigned int edge_count = (data.edges[i]).size();
-        out_file << "[";
         for (unsigned int j=0; j < edge_count; j++)
         {
-            out_file << "{\"state\": " << data.edges[i][j] << ", \"control\": [";
+            Json::Value this_conn(Json::objectValue);
+            this_conn["state"] = Json::Value(data.edges[i][j]);
+            Json::Value this_control(Json::arrayValue);
             const oc::RealVectorControlSpace::ControlType *control = (data.controls[i][j])->as<oc::RealVectorControlSpace::ControlType>();
             unsigned int control_dim = ss_p->getSpaceInformation()->getControlSpace()->getDimension();
             for (unsigned int k=0; k < control_dim; k++)
             {
-                out_file << (*control)[k];
-                if (k < control_dim-1)
-                {
-                    out_file << ", ";
-                }
+                this_control.append(Json::Value((*control)[k]));
             }
-            out_file << "]}";
-            if (j < edge_count-1)
-            {
-                out_file << ", ";
-            }
+            this_conn["control"] = this_control;
+            i_to_j_edges.append(this_conn);
         }
-        out_file << "]" << std::endl;
-        if (i < edge_indicies-1)
-        {
-            out_file << "," << std::endl;
-        }
+        conns.append(i_to_j_edges);
     }
-    out_file << "]}" << std::endl;
+
+    tree["states"] = states;
+    tree["connections"] = conns;
+    res_root["tree"] = tree;
+    return true;
 }
 
 bool

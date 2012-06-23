@@ -80,15 +80,17 @@ bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s0,
                          std::vector<double>& s_fin);
 boost::shared_ptr<ckbot::CK_ompl> load_ckbot_rate_machine(struct sim_settings sets,
+                                                          Json::Value& result_root,
                                                           std::ostream& out_file=std::cout);
 boost::shared_ptr<oc::SimpleSetup> load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
                                                    std::ostream& out_file,
-                                                   struct sim_settings sets);
+                                                   struct sim_settings sets,
+                                                   Json::Value& res_root);
 bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,
-              std::ostream& out_file,
+              Json::Value& res_root,
               struct sim_settings sets=_DEFAULT_SETS);
-bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, std::ostream& out_file);
-bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets);
+bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root);
+bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value& res_root);
 ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
 bool parse_options(int ac, char* av[], boost::program_options::variables_map& vm, struct sim_settings& sets);
 
