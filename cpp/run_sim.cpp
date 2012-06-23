@@ -69,7 +69,7 @@ main(int ac, char* av[])
     if (  (sets.sim_dir.length() == 0)
        || (! boost::filesystem::is_directory(sets.sim_dir)))
     {
-        std::cout << "The simululation directory ('"
+        std::cerr << "The simululation directory ('"
                   << sets.sim_dir
                   << "') specified by --dir must exist!" << std::endl;
         return 1;
@@ -88,20 +88,20 @@ main(int ac, char* av[])
 
     if (! boost::filesystem::is_regular_file(sets.desc_path)) 
     {
-        std::cout << "The description file does not exist. (" 
+        std::cerr << "The description file does not exist. (" 
                   << sets.desc_path 
                   << ")" << std::endl;
         return 1;
     }
     if (! boost::filesystem::is_regular_file(sets.chain_path))
     {
-        std::cout << "The chain file does not exist. ( " <<
+        std::cerr << "The chain file does not exist. ( " <<
            sets.chain_path << ")" << std::endl;
         return 1;
     }
     if (! boost::filesystem::is_regular_file(sets.sim_path))
     {
-        std::cout << "The simulation file does not exist. ( " <<
+        std::cerr << "The simulation file does not exist. ( " <<
            sets.sim_path << ")" << std::endl;
         return 1;
     }
@@ -109,11 +109,11 @@ main(int ac, char* av[])
     /* Verify and (if needed) create the result directory */
     if (! boost::filesystem::is_directory(sets.result_dir))
     {
-        std::cout << "The result directory doesn't exist yet...creating...";
+        std::cerr << "The result directory doesn't exist yet...creating...";
         try
         {
             boost::filesystem::create_directory(sets.result_dir);
-            std::cout << "Last char is: " 
+            std::cerr << "Last char is: " 
                       << sets.sim_dir.at(sets.sim_dir.length()-1) << std::endl;
         }
         catch (std::exception& e)
@@ -133,14 +133,11 @@ main(int ac, char* av[])
     result_file.open((char*)sets.result_path.c_str());
     result_file << "{" << std::endl;
     result_file.close();
-    std::cout << "DEBUG: making rate machine pointer..." << std::endl;
+
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = load_ckbot_rate_machine(sets);
-    std::cout << "DEBUG: Describing chain at highest level..." << std::endl; 
-    rate_machine_p->get_chain().describe_self(std::cout);
-    std::cout << "DEBUG: Finished making rate machine pointer..." << std::endl;
+
     boost::shared_ptr<oc::SimpleSetup> ss_p;
-    std::cout << "DEBUG: Now entering load_simulation..." << std::endl;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets);
     if (!ss_p)
     {
@@ -205,9 +202,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     result_file.open((char*)sets.result_path.c_str());
 
     /* For reference when setting up OMPL */
-    std::cout << "DEBUG: getting number of modules..." << std::endl;
     int num_modules = rate_machine_p->get_chain().num_links();
-    std::cout << "DEBUG: getting first module..." << std::endl;
     ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
 
     /* The start and goal positions are in a separate file. 
@@ -270,16 +265,12 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
      * and problem defintion pointers on my own
      */
     boost::shared_ptr<oc::SimpleSetup> ss_p(new oc::SimpleSetup(cspace));
-    std::cout << "DEBUG: Describing chain from pointer..." << std::endl;
-    rate_machine_p->get_chain().describe_self(std::cout); /* DEBUG */
 
-    std::cout << "DEBUG: binding state validity checker..." << std::endl;
     // TODO: Write an actual state validity checker!
     ss_p->setStateValidityChecker(boost::bind(&ckbot::CK_ompl::stateValidityChecker,
                                                  &(*rate_machine_p),
                                                  _1));
 
-    std::cout << "DEBUG: Binding ODE solver..." << std::endl;
     /* Setup and get the dynamics of our system into the planner */
     oc::ODEBasicSolver<> odeSolver(ss_p->getSpaceInformation(),
                                               boost::bind(&ckbot::CK_ompl::CKBotODE,
@@ -288,7 +279,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 
 
 
-    std::cout << "DEBUG: Setting state propagator..." << std::endl;
     ss_p->setStatePropagator(odeSolver.getStatePropagator());
 
     /* Define the start and end configurations */
@@ -299,25 +289,20 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
         start[i] = s0[i];
         goal[i] = s_fin[i];
     }
-    std::cout << "DEBUG: Before start and goal print." << std::endl;
     start.print(std::cout);
     goal.print(std::cout);
     
-    std::cout << "DEBUG: Setting start and goal..." << std::endl;
     ss_p->setStartAndGoalStates(start, goal);
 
-    std::cout << "DEBUG: Setting Planner..." << std::endl;
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
     ss_p->setPlanner(planner);
 
-    std::cout << "DEBUG: Setting state space information..." << std::endl;
     /* Allow this range of number of steps in our solution */
     ss_p->getSpaceInformation()->setMinMaxControlDuration(sets.min_control_steps, sets.max_control_steps);
     ss_p->getSpaceInformation()->setPropagationStepSize(sets.dt);
 
-    std::cout << "DEBUG: Telling simple setup that we've given it the info..." << std::endl;
     /* Tell SimpleSetup that we've given it all of the info, and that
      * it should distribute parameters to the different components 
      * (mostly, fill in the planner parameters.) 
@@ -388,10 +373,9 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     }
 
     result_file.close();
-    std::cout << "DEBUG: Leaving planner setup..." << std::endl;
     if (!run_planner(ss_p, sets))
     {
-        std::cout << "Error running simulation!" << std::endl;
+        std::cerr << "Error running simulation!" << std::endl;
         return boost::shared_ptr<oc::SimpleSetup>();
     }
 
@@ -407,7 +391,6 @@ run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets)
      */
     result_file.open((char*)sets.result_path.c_str());
 
-    std::cout << "DEBUG: Inside of run_planner." << std::endl;
 
     bool solve_status = false;
     if (ss_p->solve(sets.max_sol_time))
