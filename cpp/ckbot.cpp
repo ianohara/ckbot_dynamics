@@ -232,7 +232,6 @@ Json::Value
 ckbot::module_link::describe_self(void)
 {
     Json::Value mod(Json::objectValue);
-    mod["mem_location"] = this;
     mod["mass"] = m_;
     mod["damping"] = damping_;
     mod["joint_max"] = joint_max_;
