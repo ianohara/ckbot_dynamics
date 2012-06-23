@@ -150,8 +150,8 @@ main(int ac, char* av[])
 boost::shared_ptr<ckbot::CK_ompl>
 load_ckbot_rate_machine(struct sim_settings sets, std::ostream& out_file)
 {
-    std::ofstream result_file;
-    result_file.open((char*)sets.result_path.c_str());
+    std::fstream result_file;
+    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
 
     std::ifstream chain_file;
     chain_file.open((char*)sets.chain_path.c_str());
@@ -192,14 +192,14 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     * nothing gets mixed up (ie: One file describes it all).
     *****/
     std::ifstream sim_file;
-    std::ofstream result_file;
+    std::fstream result_file;
     Json::Value sim_root;
     Json::Reader sim_reader;
 
     /* No reason to run if we can't open our result file, 
      * so let the exceptions flow up.
      */
-    result_file.open((char*)sets.result_path.c_str());
+    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
 
     /* For reference when setting up OMPL */
     int num_modules = rate_machine_p->get_chain().num_links();
@@ -385,11 +385,11 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 bool
 run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets)
 {
-    std::ofstream result_file;
+    std::fstream result_file;
     /* No reason to run if we can't open our result file, 
      * so let the exceptions flow up.
      */
-    result_file.open((char*)sets.result_path.c_str());
+    result_file.open((char*)sets.result_path.c_str(), std::fstream::out | std::fstream::app);
 
 
     bool solve_status = false;
