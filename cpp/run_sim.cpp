@@ -39,8 +39,6 @@
 #include "ck_ompl.hpp"
 #include "sim_util.hpp"
 
-extern struct sim_settings _DEFAULT_SETS; /* Defined in sim_util.cpp */
-
 int
 main(int ac, char* av[])
 {

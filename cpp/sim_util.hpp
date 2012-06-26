@@ -39,7 +39,6 @@ const char DELIMITER = '/';
 
 enum planners {RRT=0, KPIECE1};
 
-
 struct sim_settings {
     std::string sim_dir;
     std::string desc_path;
@@ -61,6 +60,9 @@ struct sim_settings {
     unsigned int debug;
     bool save_full_tree;
 };
+
+extern struct sim_settings _DEFAULT_SETS;
+
 bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s0,
                          std::vector<double>& s_fin);
