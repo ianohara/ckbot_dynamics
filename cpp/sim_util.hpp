@@ -61,36 +61,6 @@ struct sim_settings {
     unsigned int debug;
     bool save_full_tree;
 };
-
-/* For use both as the default initializer for settings structs
- * and as the default parameter in function prototypes that take
- * settings.  NOTE:  Defaults could be dangerous here, because
- * forgetting to pass sim settings into a function won't halt
- * the sim, but will just run that portion of it with the wrong
- * settings!
- */
-
-struct sim_settings _DEFAULT_SETS = {
-        "",
-        "description.txt",
-        "chain.txt",
-        "sim.txt",
-        "results/",
-        "results.txt",
-
-        RRT,
-
-        1,      /* OMPL min control steps */
-        1,      /* OMPL max control steps */
-        0.05,   /* OMPL timestep resolution */
-        -1.0,   /* Minimum link torque */
-        1.0,    /* Max link torque */
-
-        30,     /* Solution search timeout in [s] */
-        0,      /* Debugging output? */
-        true    /* Save the full planning tree? */
-};
-
 bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s0,
                          std::vector<double>& s_fin);
@@ -102,8 +72,8 @@ boost::shared_ptr<oc::SimpleSetup> load_and_run_simulation(boost::shared_ptr<ckb
                                                    struct sim_settings sets,
                                                    Json::Value& res_root);
 bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,
-              Json::Value& res_root,
-              struct sim_settings sets=_DEFAULT_SETS);
+              struct sim_settings sets,
+              Json::Value& res_root);
 bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root);
 bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value& res_root);
 ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
