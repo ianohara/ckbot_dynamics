@@ -228,40 +228,22 @@ ckbot::module_link::operator=(module_link& source)
 }
 
 /* Have a module describe itself, in valid json form, to a stream */
-void
-ckbot::module_link::describe_self(std::ostream& out)
+Json::Value
+ckbot::module_link::describe_self(void)
 {
-    out << " {" << std::endl << 
-        "\"mem_location\": \"" << this << "\"," << std::endl <<
-        "\"mass\": " << m_ << "," << std::endl <<
-        "\"damping\": " << damping_ << "," << std::endl <<
-        "\"joint_max\": " << joint_max_ << "," << std::endl <<
-        "\"joint_min\": " << joint_min_ << "," << std::endl << 
-        "\"torque_max\": " << torque_max_ << "," << std::endl <<
-        "\"f_jt_axis\":" << std::endl;
-    eigen_json_print(out, forward_joint_axis_);
-    out << "," << std::endl;
-
-    out << "\"r_ip1\":" << std::endl;
-    eigen_json_print(out, r_ip1_);
-    out << "," << std::endl;
-
-    out << "\"r_im1\":" << std::endl;
-    eigen_json_print(out, r_im1_); 
-    out << "," << std::endl;
-
-    out << "\"I_cm\":" << std::endl;
-    eigen_json_print(out, I_cm_);
-    out << "," << std::endl;
-
-    out << "\"R_jts\":" << std::endl;
-    eigen_json_print(out, R_jts_);
-    out << "," << std::endl;
-
-    out << "\"init_rotation\":" << std::endl;
-    eigen_json_print(out, init_rotation_);
-    
-    out << "}" << std::endl;
+    Json::Value mod(Json::objectValue);
+    mod["mass"] = m_;
+    mod["damping"] = damping_;
+    mod["joint_max"] = joint_max_;
+    mod["joint_min"] = joint_min_;
+    mod["torque_max"] = torque_max_;
+    mod["f_jt_axis"] = eigen_to_json(forward_joint_axis_);
+    mod["r_ip1"] = eigen_to_json(r_ip1_);
+    mod["r_im1"] = eigen_to_json(r_im1_);
+    mod["I_cm"] = eigen_to_json(I_cm_);
+    mod["R_jts"] = eigen_to_json(R_jts_);
+    mod["init_rotation"] = eigen_to_json(init_rotation_);
+    return mod;
 }
 
 ckbot::module_link::~module_link(void)
@@ -466,19 +448,15 @@ ckbot::chain::~chain(void)
 /*
  * Tell each module on the chain to describe itself (in chain order from base to tip)
  */
-void 
-ckbot::chain::describe_self(std::ostream& out)
+Json::Value
+ckbot::chain::describe_self(void)
 {
-    out << "\"chain\": [" << std::endl;
+    Json::Value ch_root(Json::arrayValue);
     for (int i=0; i<N_; ++i)
     {
-        links_[i].describe_self(out);
-        if (i+1 < N_) 
-        {
-            out << "," << std::endl;
-        }
+        ch_root.append(links_[i].describe_self());
     }
-    out << "]" << std::endl;
+    return ch_root;
 }
 
 

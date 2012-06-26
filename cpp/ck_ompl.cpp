@@ -16,6 +16,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include<iostream>
+
 /*
  * This code implements the functions needed by differential (control) planners
  * in OMPL.
@@ -36,7 +38,7 @@ namespace oc = ompl::control;
  * and turn it into a usable chain object populated by the module defined
  * in the module dictionaries.
  */
-ckbot::CK_ompl
+boost::shared_ptr<ckbot::CK_ompl>
 ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
 {
     Json::Value chain_array = chain_root["chain"];
@@ -57,8 +59,8 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
      * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
      * isn't passed as a copy, but instead as a reference.  Think that's right... 
      */
-    ckbot::CK_ompl rate_machine(*ch);
-    return rate_machine;
+    boost::shared_ptr<ckbot::CK_ompl> rate_machine_p(new ckbot::CK_ompl(*ch));
+    return rate_machine_p;
 };
 
 bool
@@ -78,10 +80,6 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
 
     for (int i = 0; i < N; i++)
     {
-        /*
-        std::cout << "Input " << i << " is " << input[i] << "\n";
-        std::cout << "State is: " << s[2*i] << ", " << s[2*i+1] << "\n";
-        */
         T[i] = input[i];
     }
 
@@ -94,6 +92,7 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
+/* Currently Unused */
 void
 ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s,
                     const oc::Control* con,

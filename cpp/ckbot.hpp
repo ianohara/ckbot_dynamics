@@ -48,30 +48,20 @@ namespace ckbot
     };
 
     template <typename Derived>
-    void
-    eigen_json_print(std::ostream & out, const Eigen::EigenBase<Derived>& mat)
+    Json::Value
+    eigen_to_json(const Eigen::EigenBase<Derived>& mat)
     {
-        out << "[";
+        Json::Value outer(Json::arrayValue);
         for (int m=0; m < mat.rows(); ++m)
         {
-            out << "[";
+            Json::Value inner(Json::arrayValue);
             for (int n=0; n < mat.cols(); ++n)
             {
-                out << (mat.derived())(m,n);
-                if (n+1 < mat.cols())
-                {
-                    out << ", ";
-                }
+                inner.append((mat.derived())(m,n));
             }
-            if (m+1 < mat.rows())
-            {
-                out << "]," << std::endl;
-            } else
-            {
-                out << "]";
-            }
+            outer.append(inner);
         }
-        out << "]" << std::endl;
+        return outer;
     }
 
     Eigen::Matrix3d rotX(double phi);
@@ -93,7 +83,7 @@ namespace ckbot
             Eigen::MatrixXd get_spatial_inertia_mat(void);
             Eigen::RowVectorXd get_joint_matrix(void) const;
 
-            void describe_self(std::ostream& out);
+            Json::Value describe_self(void);
 
             double get_q(void) const;
             double get_qd(void) const;
@@ -148,7 +138,7 @@ namespace ckbot
         int num_links(void);
         void propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd);
         Eigen::Vector3d get_angular_velocity(int i);
-        void describe_self(std::ostream &);
+        Json::Value describe_self(void);
     };
     class chain_rate
     {
