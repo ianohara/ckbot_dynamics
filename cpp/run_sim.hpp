@@ -17,6 +17,21 @@
 */
 #ifndef _RUN_SIM_HPP
 #define _RUN_SIM_HPP
+
+#include<vector>
+#include<iostream>
+#include<string>
+#include<fstream>
+#define _USE_MATH_DEFINES
+#include<math.h>
+
+#include<boost/program_options.hpp>
+
+#include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
+#include<ompl/base/spaces/RealVectorStateSpace.h>
+#include<ompl/control/Control.h>
+#include<json/json.h> /* http://jsoncpp.sourceforge.net/ */
+
 namespace ob = ompl::base;
 namespace oc = ompl::control;
 
