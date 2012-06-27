@@ -18,19 +18,18 @@
 
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
-//#include<boost/numeric/odeint.hpp>
+#include<boost/bind.hpp>
 
 /* BLARGG!  This is a ridiculous hack.  OMPL packages odeint with its source, and so
  * links to it in a funky way.
  */
-namespace ode = boost::numeric::omplext_odeint; 
+#include<omplext_odeint/boost/numeric/odeint.hpp>
+namespace ode = boost::numeric::omplext_odeint;
 
 #include "ckbot.hpp"
+#include "ck_odeint.hpp"
 #include "ck_ompl.hpp"
 #include "sim_util.hpp"
-
-namespace oc = ompl::control;
-namespace ob = ompl::base;
 
 int
 main(int ac, char* av[])
@@ -173,7 +172,7 @@ main(int ac, char* av[])
     if (!sim_parse_success)
     {
         std::cerr << "Couldn't parse sim file." << std::endl;
-        return boost::shared_ptr<oc::SimpleSetup>();
+        return 1;
     }
 
     /* Fill the start and goal positions from the sim JSON tree */
@@ -196,6 +195,8 @@ main(int ac, char* av[])
         std::vector<double> T(num_modules);
         std::fill(T.begin(), T.end(), 0.0);
 
+        ckbot::odeConstTorque chain_integrator(ch, T);
+
         std::vector<double> s_cur(s0);
 
         ode::runge_kutta4< std::vector< double > > stepper;
@@ -203,8 +204,13 @@ main(int ac, char* av[])
         const double sim_time = 1;
         for (double t = 0.0; t < sim_time; t += dt)
         {
-            stepper.do_step(boost::bind(&ckbot::CK_ompl::CKBotODEIntSignature, &(*rate_machine_p), _1, _2, _3, T), s_cur, t, dt);
-            std::cout << "At: " << t << " we have " << s_cur << std::endl;
+            stepper.do_step(chain_integrator, s_cur, t, dt);
+            std::cout << "At: " << t << " we have: ";
+            for (int i=0; i < s_cur.size(); i++)
+            {
+                std::cout << s_cur[i] << ", ";
+            }
+            std::cout << std::endl;
         }
     }
 }
