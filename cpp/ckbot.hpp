@@ -91,6 +91,7 @@ namespace ckbot
             double get_mass(void) const;
             void set_q(double q);
             void set_qd(double qd);
+            void set_damping(double damping);
 
             Eigen::Vector3d get_forward_joint_axis(void) const;
             Eigen::Vector3d get_r_im1(void) const;
@@ -140,6 +141,7 @@ namespace ckbot
         Eigen::Vector3d get_angular_velocity(int i);
         Json::Value describe_self(void);
     };
+
     class chain_rate
     {
     protected:

@@ -34,18 +34,25 @@ namespace ckbot
     class CK_ompl: public chain_rate
     {
         public:
-            CK_ompl(chain& ch): chain_rate(ch){}; 
+            CK_ompl(chain& ch): chain_rate(ch){};
             ~CK_ompl(void){};
-            void CKBotODE(const oc::ODESolver::StateType& s, const oc::Control* con, oc::ODESolver::StateType& sdot);
+            void CKBotODE(const oc::ODESolver::StateType& s,
+                          const oc::Control* con,
+                           oc::ODESolver::StateType& sdot);
+            void CKBotODEIntSignature(const std::vector< double > &s,
+                                      std::vector< double > &sdot,
+                                      const double t,
+                                      std::vector< double > T);
             bool stateValidityChecker(const ompl::base::State *s);
     };
 
-    boost::shared_ptr<ckbot::CK_ompl> setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file=std::cout);
+    boost::shared_ptr<ckbot::CK_ompl> setup_ompl_ckbot(Json::Value& chain_root, 
+                                                       std::ostream& out_file=std::cout);
+
     void CKBotODEFunc(const oc::ODESolver::StateType& s,
                       const oc::Control* con,
                       oc::ODESolver::StateType& sdot,
                       ckbot::chain_rate& ch_r);
 };
-
 
 #endif

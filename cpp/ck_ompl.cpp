@@ -92,6 +92,22 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
+/* boost::numeric::ODEInt requires explicit time dependence in the function signature. It also
+ * doesn't appear to allow the use of explicit controls (I guess this would need to be
+ * executed as a parametric function of time since a control is really just a sort
+ * of time dependence)
+ *
+ * I still want to pass in a torque, so I'm just going to use boost::bind for now.
+ */
+void
+ckbot::CK_ompl::CKBotODEIntSignature(const std::vector< double > &s,
+                                     std::vector< double > &sdot,
+                                     const double t,
+                                     std::vector< double > T)
+{
+    sdot = calc_rate(s, T);
+}
+
 /* Currently Unused */
 void
 ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s,

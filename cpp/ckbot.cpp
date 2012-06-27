@@ -429,6 +429,12 @@ ckbot::module_link::set_qd(double qd)
     qd_ = qd;
 }
 
+/* Set a module's damping */
+void
+ckbot::module_link::set_damping(double damping)
+{
+    damping_ = damping;
+}
 
 /* Form a new chain of modules.  The array of module_links, chain_modules,
  * needs to a length of num_modules.
