@@ -541,9 +541,74 @@ ckbot::chain::get_angular_velocity(int i)
     {
         tmp3vec << 0,0, links_[cur].get_qd();
         omega += R*tmp3vec;
+        /* Updating R happens after updating omega, because each
+         * module rotates about its base joint which does
+         * not depend on this module's joint angle.
+         */
         R = R*rotZ(links_[cur].get_q())*links_[cur].get_R_jts();
     }
     return omega;
+}
+
+/* Get the 3vector from the base module to this module's base */
+Eigen::Vector3d
+ckbot::chain::get_link_r_base(int i)
+{
+    Eigen::Vector3d r_base(0,0,0);
+    Eigen::Matrix3d R;
+    Eigen::Vector3d r_incr(0,0,0);
+
+    for (int cur=0; cur < i; ++cur)
+    {
+        R = get_current_R(cur);
+        r_incr = R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1());
+        r_base += r_incr;
+    }
+    return r_base;
+}
+
+/* Get the 3vector from the base module to this module's CM */
+Eigen::Vector3d
+ckbot::chain::get_link_r_cm(int i)
+{
+    return get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1());
+}
+
+
+/* Get the 3vector from the base module to this module's tip */
+Eigen::Vector3d
+ckbot::chain::get_link_r_tip(int i)
+{
+    Eigen::Vector3d r_i_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
+    return get_link_r_base(i) + get_current_R(i)*(r_i_ip);
+}
+
+/* Get the 3 vector corresponding to the linear velocity of
+ * this module's CM
+ */
+Eigen::Vector3d
+ckbot::chain::get_linear_velocity(int i)
+{
+    Eigen::Vector3d v_cm(0,0,0);
+    Eigen::Vector3d v_incr(0,0,0);
+    Eigen::Vector3d omega_cur(0,0,0);
+    Eigen::Matrix3d R;
+
+    for (int cur=0; cur <= i; ++cur)
+    {
+        R = get_current_R(cur);
+        omega_cur = get_angular_velocity(cur);
+        if (cur < i)
+        {
+            v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
+        }
+        else
+        {
+           v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1()));
+        }
+        v_cm += v_incr;
+    }
+    return v_cm;
 }
 
 ckbot::chain_rate::chain_rate(chain& ch) :

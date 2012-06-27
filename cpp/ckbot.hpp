@@ -69,7 +69,7 @@ namespace ckbot
     Eigen::Matrix3d rotZ(double phi);
     Eigen::Matrix3d get_cross_mat(Eigen::Vector3d r);
     Eigen::MatrixXd get_body_trans(Eigen::Vector3d r);
-
+    
     class module_link
     {
         public:
@@ -138,7 +138,13 @@ namespace ckbot
         Eigen::Matrix3d get_current_R(int i);
         int num_links(void);
         void propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd);
+
         Eigen::Vector3d get_angular_velocity(int i);
+        Eigen::Vector3d get_linear_velocity(int i);
+        Eigen::Vector3d get_link_r_cm(int i);
+        Eigen::Vector3d get_link_r_tip(int i);
+        Eigen::Vector3d get_link_r_base(int i);
+
         Json::Value describe_self(void);
     };
 
