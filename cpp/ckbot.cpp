@@ -502,7 +502,7 @@ ckbot::chain::get_current_R(int i)
     return R;
 }
 
-int 
+int
 ckbot::chain::num_links(void)
 {
     return N_;
@@ -529,7 +529,7 @@ ckbot::chain::propogate_angles_and_rates(std::vector<double> q, std::vector<doub
  * the world frame) and then returning the compound angular velocity
  * of the i-th module that results.
  */
-Eigen::Vector3d 
+Eigen::Vector3d
 ckbot::chain::get_angular_velocity(int i)
 {
     Eigen::Vector3d omega(0,0,0);
@@ -543,10 +543,11 @@ ckbot::chain::get_angular_velocity(int i)
         omega += R*tmp3vec;
         R = R*rotZ(links_[cur].get_q())*links_[cur].get_R_jts();
     }
+    return omega;
 }
 
-ckbot::chain_rate::chain_rate(chain& ch) : 
-    c(ch), 
+ckbot::chain_rate::chain_rate(chain& ch) :
+    c(ch),
     G_all(6*ch.num_links()),
     mu_all(ch.num_links()),
     a_all(6*ch.num_links()),
@@ -573,10 +574,8 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
     std::vector<double> q(N);
     std::vector<double> qd(N);
 
-    // std::cout << "Separating out the state into its parts: \n";
     for(int i=0; i<N; ++i)
     {
-       // std::cout<< "Link " << i << ": q=" << s[i] << " qd=" << s[N+i] << "\n";
         q[i] = s[i];
         qd[i] = s[N+i];
     }
