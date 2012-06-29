@@ -236,9 +236,10 @@ main(int ac, char* av[])
                 Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
 
                 double ke_cur = ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
+                std::cout << "KE subparts: " << std::endl << "    Rot= " << ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j)) << std::endl << "    Lin= " << (0.5)*m.get_mass()*(cur_vel.dot(cur_vel)) << std::endl;
                 ke += ke_cur;
 
-                /* DEBUG */
+                /* DEBUG 
                 Eigen::Vector3d cur_r = ch.get_link_r_cm(j);
                 std::cout << "Link " << j << " Summary: " << std::endl;
                 std::cout << " r_cm = " << std::endl;
@@ -246,7 +247,7 @@ main(int ac, char* av[])
                 std::cout << " angular Vel: " << std::endl << omega_j << std::endl; 
                 std::cout << " v_cm = " << std::endl << cur_vel << std::endl;
                 std::cout << " R=" << std::endl << ch.get_current_R(j) << std::endl;
-                /* END DEBUG */
+                END DEBUG */
                 //std::cout << "Link " << j << "Q=" << m.get_q() << std::endl << " Vec: " << ch.get_link_r_cm(j) << std::endl;
                 //std::cout << "Link " << j << " Rot Mat: " << std::endl << ch.get_current_R(j) << std::endl;
                 pe += ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;

@@ -17,7 +17,7 @@ class ETree( object ):
         self.time = [s['time'] for s in self._verifications]
 
         assert len(self.states) > 1, 'This makes no sense without states!'
-        assert self.states[0] % 2 == 0, 'The number of states must be even (ie: module_count*2)'
+        assert len(self.states[0]) % 2 == 0, 'The number of states must be even (ie: module_count*2)'
         assert all([len(s) == len(self.states) for s in [self.energy, self.ke, self.pe, self.time]]), "Number of states, energy, ke, pe, and time entries in 'verifications' root level dictionary of json result file must be the same."
 
         self.module_count = len(self.states[0])
