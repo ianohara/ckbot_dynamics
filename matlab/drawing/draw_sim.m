@@ -68,7 +68,7 @@ while (i<nargin)
         case 'make_movie'
             props.make_movie = 1;
         otherwise
-            fprintf('Unknown option: %s',varargin{i});
+            fprintf('Unknown option in draw_sim(): %s\n', varargin{i});
     end
     i = i+1;
 end

@@ -56,6 +56,7 @@ struct sim_settings {
     double max_torque;
 
     float max_sol_time;
+    double custom_angle; /* For use in dynamics_verifier.cpp */
 
     unsigned int debug;
     bool save_full_tree;

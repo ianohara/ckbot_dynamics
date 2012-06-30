@@ -6,6 +6,7 @@ function sim = cpp_sim_verify(varargin)
 result_file = 'results/results_upright_600s.txt';
 step_splits = 3;
 overlay = 0;
+save_dir = 0;
 
 % Note: All options are 'key', value options. 
 if (mod(nargin, 2) ~= 0)
@@ -22,8 +23,10 @@ for i = 1:2:nargin-1
            step_splits = val;
        case 'overlay'
            overlay = val;
+       case 'save_plots'
+           save_dir = val;
        otherwise
-           error('Unknown option: %s', opt);
+           error('Unknown option: %s\n', opt);
    end
 end
 
@@ -128,8 +131,7 @@ if (overlay)
    title('Time History of C++ Planned System','FontSize', 14);
    xlabel('Time [s]','FontSize', 14);
    ylabel('Joint Angle [rad]','FontSize',14);
-   plot(t_cpp,q_cpp,'LineWidth',2);
-   legend(legend_strs);
+   plot(t_cpp,q_cpp,'LineWidth',2);   
    
    
    subplot(212);
@@ -139,6 +141,7 @@ if (overlay)
    ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
    plot(t_cpp, qd_cpp,'LineWidth',2);
    legend(legend_strs);
+   
    
    torque_fig = figure(3); % Overlay on the matlab sim torque plot %
    torque_sp = 111;
@@ -160,4 +163,17 @@ if (overlay)
    
 end
 
+if (save_dir)
+    if (~exist(save_dir,'dir'))
+        error('The save_dir directory does not exist: %s', save_dir);
+    end
+    if (save_dir(end) ~= '/')
+        save_dir = strcat(save_dir, '/');
+    end
+    figs = findall(0,'type','figure');
+    for i=1:length(figs)
+        save_file = sprintf('%sfigure_%d.png', save_dir, i);
+        print(figure(figs(i)), '-dpng', save_file);
+    end
+end
 end
