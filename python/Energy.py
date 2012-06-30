@@ -7,7 +7,7 @@ class ETree( object ):
     def __init__(self, file=None):
         with open(file, 'r') as f:
             self.__results = json.loads(f.read())
-        
+
         self._verifications = self.__results["verifications"][0]
 
         self.states = [s['state'] for s in self._verifications]
@@ -20,7 +20,7 @@ class ETree( object ):
         assert len(self.states[0]) % 2 == 0, 'The number of states must be even (ie: module_count*2)'
         assert all([len(s) == len(self.states) for s in [self.energy, self.ke, self.pe, self.time]]), "Number of states, energy, ke, pe, and time entries in 'verifications' root level dictionary of json result file must be the same."
 
-        self.module_count = len(self.states[0]) % 2
+        self.module_count = len(self.states[0]) / 2
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
