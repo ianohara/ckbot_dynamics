@@ -30,6 +30,7 @@ namespace ode = boost::numeric::omplext_odeint;
 #include "ck_odeint.hpp"
 #include "ck_ompl.hpp"
 #include "sim_util.hpp"
+#include "util.hpp"
 
 int
 main(int ac, char* av[])
@@ -236,9 +237,19 @@ main(int ac, char* av[])
                 Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
 
                 double ke_cur = ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
+                /* DEBUG
                 std::cout << "KE subparts: " << std::endl << "    Rot= " << ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j)) << std::endl << "    Lin= " << (0.5)*m.get_mass()*(cur_vel.dot(cur_vel)) << std::endl;
                 ke += ke_cur;
 
+                std::cout << "  Omega = ";
+                util::flat_print(omega_j);
+                std::cout << "  V = ";
+                util::flat_print(cur_vel);
+                std::cout << "  r = ";
+                util::flat_print(ch.get_link_r_cm(j));
+                std::cout << " I = " << m.get_I_cm() << std::endl;
+                std::cout << " m = " << m.get_mass() << std::endl;
+                END DEBUG */
                 /* DEBUG 
                 Eigen::Vector3d cur_r = ch.get_link_r_cm(j);
                 std::cout << "Link " << j << " Summary: " << std::endl;
