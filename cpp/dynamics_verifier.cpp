@@ -16,6 +16,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define _USE_MATH_DEFINES
+#include<math.h>
+
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
 #include<boost/bind.hpp>
@@ -31,6 +34,8 @@ namespace ode = boost::numeric::omplext_odeint;
 #include "ck_ompl.hpp"
 #include "sim_util.hpp"
 #include "util.hpp"
+
+const static double EPS = 0.0001;
 
 int
 main(int ac, char* av[])
@@ -53,6 +58,7 @@ main(int ac, char* av[])
           ("help", "Prints this help message...")
           ("dir", po::value<std::string>())
           ("time", po::value<double>(), "Length of time to simulate for.")
+          ("angle", po::value<double>(), "Initial angle of each module (ie: ignore those specified in sim.txt)")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -73,6 +79,10 @@ main(int ac, char* av[])
         if (vm.count("time"))
         {
             sets.max_sol_time = vm["time"].as<double>();
+        }
+        if (vm.count("angle"))
+        {
+           sets.custom_angle = vm["angle"].as<double>();
         }
     }
     catch (std::exception& e)
@@ -186,6 +196,14 @@ main(int ac, char* av[])
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
 
+    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
+    {
+        for (int i=0; i < num_modules; i++)
+        {
+            s0[i] = sets.custom_angle;
+        }
+        std::cout << "Using a custom initial joint angle for the modules (" << sets.custom_angle << ")." << std::endl;
+    }
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
      * arrays of dictionaries. The outer array contains
@@ -237,22 +255,26 @@ main(int ac, char* av[])
                 Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
 
                 double ke_cur = ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
-                /* DEBUG
-                std::cout << "KE subparts: " << std::endl << "    Rot= " << ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j)) << std::endl << "    Lin= " << (0.5)*m.get_mass()*(cur_vel.dot(cur_vel)) << std::endl;
                 ke += ke_cur;
-
-                std::cout << "  Omega = ";
+                double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
+                pe += pe_cur;
+                /* DEBUG */
+                std::cout << "Link " << j << " Summary: " << std::endl;
+                std::cout << "    q=" << m.get_q() << std::endl;
+                std::cout << "    qd=" << m.get_qd() << std::endl;
+                std::cout << "  KE subparts: " << std::endl << "    Rot= " << ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j)) << std::endl << "    Lin= " << (0.5)*m.get_mass()*(cur_vel.dot(cur_vel)) << std::endl;
+                std::cout << "    PE=" << pe_cur << std::endl;
+                std::cout << "   Omega = ";
                 util::flat_print(omega_j);
-                std::cout << "  V = ";
+                std::cout << "   V = ";
                 util::flat_print(cur_vel);
-                std::cout << "  r = ";
+                std::cout << "   r = ";
                 util::flat_print(ch.get_link_r_cm(j));
-                std::cout << " I = " << m.get_I_cm() << std::endl;
-                std::cout << " m = " << m.get_mass() << std::endl;
-                END DEBUG */
+                std::cout << "    I = " << m.get_I_cm() << std::endl;
+                std::cout << "    m = " << m.get_mass() << std::endl;
+                /* END DEBUG */
                 /* DEBUG 
                 Eigen::Vector3d cur_r = ch.get_link_r_cm(j);
-                std::cout << "Link " << j << " Summary: " << std::endl;
                 std::cout << " r_cm = " << std::endl;
                 std::cout << cur_r << std::endl;
                 std::cout << " angular Vel: " << std::endl << omega_j << std::endl; 
@@ -261,10 +283,12 @@ main(int ac, char* av[])
                 END DEBUG */
                 //std::cout << "Link " << j << "Q=" << m.get_q() << std::endl << " Vec: " << ch.get_link_r_cm(j) << std::endl;
                 //std::cout << "Link " << j << " Rot Mat: " << std::endl << ch.get_current_R(j) << std::endl;
-                pe += ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
             }
 
             //std::cout << "Energy: " << ke+pe << "ke: " << ke << " pe: " << pe << std::endl;
+            std::cout << "TOTALS: " << std::endl;
+            std::cout << "    KE_tot=" << ke << std::endl;
+            std::cout << "    PE_tot=" << pe << std::endl;
             this_step["ke"] = ke;
             this_step["pe"] = pe;
             this_step["energy"] = ke+pe;

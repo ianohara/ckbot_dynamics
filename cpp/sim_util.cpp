@@ -57,6 +57,10 @@ struct sim_settings _DEFAULT_SETS = {
         1.0,    /* Max link torque */
 
         30,     /* Solution search timeout in [s] */
+        1337.0, /* Unused in run_sim.  This is for specifying custom initial 
+                 *  joint angle in dynamics_verifier.cpp. Any value over pi
+                 *  is nonsense, so the default is just a large value to
+                 *  signify that it should be ignored. */
         0,      /* Debugging output? */
         true    /* Save the full planning tree? */
 };
