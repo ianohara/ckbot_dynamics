@@ -237,6 +237,8 @@ main(int ac, char* av[])
         const double sim_time = sets.max_sol_time;
         for (double t = 0.0; t < sim_time; t += dt)
         {
+            stepper.do_step(chain_integrator, s_cur, t, dt);
+
             Json::Value this_step(Json::objectValue);
             Json::Value this_state(Json::arrayValue);
 
@@ -294,14 +296,7 @@ main(int ac, char* av[])
             this_step["energy"] = ke+pe;
             this_step["state"] = this_state;
             this_ver.append(this_step);
-            /* We'll store this step next time through. Note this
-             * means we don't store the last step here, so we need
-             * to outside the loop
-             */
-            stepper.do_step(chain_integrator, s_cur, t, dt);
         }
-        /* TODO: Store last step in this_ver here.
-         * Right now we just miss the last step */
         verifications.append(this_ver);
     }
     result_root["verifications"] = verifications;

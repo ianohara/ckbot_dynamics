@@ -82,7 +82,7 @@ ckbot::get_cross_mat(Eigen::Vector3d r)
     return r_cross;
 }
 
-Eigen::MatrixXd 
+Eigen::MatrixXd
 ckbot::get_body_trans(Eigen::Vector3d r)
 {
     /*std::cout << "Getting body trans...\n";*/
@@ -279,7 +279,8 @@ ckbot::module_link::get_spatial_inertia_mat(void)
 
     Eigen::Matrix3d L_tilde;
     L_tilde = get_cross_mat(-r_im1_);
-
+    //TODO: check the sign of r_im1_ here.  
+    //L_tilde = get_cross_mat(r_im1_); // DEBUG: I think this is supposed to b the vector from cm to base joint, not -
     Jo = I_cm_ - m_*L_tilde*L_tilde;
     M_spat << Jo, m_*L_tilde,
              -m_*L_tilde, m_*(Eigen::Matrix3d::Identity());
@@ -293,7 +294,7 @@ ckbot::module_link::get_spatial_inertia_mat(void)
  * in the body z-axis of the previous module (ie: rotation around
  * the base joint axis)
  */
-Eigen::RowVectorXd 
+Eigen::RowVectorXd
 ckbot::module_link::get_joint_matrix(void) const 
 {
     Eigen::Vector3d Hprev(0,0,1);
@@ -301,16 +302,16 @@ ckbot::module_link::get_joint_matrix(void) const
     Ht = R_jts_.transpose()*Hprev;
 
     Eigen::RowVectorXd H(6);
-    
+
     H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
     return H;
 }
 
-/* Relative of a module with respect to its base side neighbor
+/* Joint angle of a module with respect to its base side neighbor
  * in Radians.
  * [rad]
  */
-double 
+double
 ckbot::module_link::get_q(void) const
 {
     return q_;
@@ -320,7 +321,7 @@ ckbot::module_link::get_q(void) const
  * base side neighbor. In radians/second.
  * [rad/s]
  */
-double 
+double
 ckbot::module_link::get_qd(void) const
 {
     return qd_;
@@ -368,7 +369,8 @@ ckbot::module_link::get_I_cm(void) const
     return I_cm_;
 }
 
-/* TODO: Comment
+/* The rotation matrix from a module's base joint vector
+ * to its tip joint vector.
  */
 Eigen::Matrix3d 
 ckbot::module_link::get_R_jts(void) const
@@ -482,7 +484,7 @@ ckbot::chain::get_link(int i)
  * the rotation matrix that brings the i-th module from
  * its module frame to the world frame.
  */
-Eigen::Matrix3d 
+Eigen::Matrix3d
 ckbot::chain::get_current_R(int i)
 {
     Eigen::Matrix3d R;
@@ -497,7 +499,11 @@ ckbot::chain::get_current_R(int i)
      */
     for (int j = 0; j <= i; ++j)
     {
-        R = R*rotZ(links_[j].get_q())*links_[j].get_R_jts();
+        R *= rotZ(links_[j].get_q());
+        if (j != i)
+        {
+            R *= links_[j].get_R_jts();
+        }
     }
     return R;
 }
@@ -539,6 +545,7 @@ ckbot::chain::get_angular_velocity(int i)
     Eigen::Vector3d tmp3vec(0,0,0);
     for (int cur=0; cur <= i; ++cur)
     {
+        /* 6DOF Update needed */
         tmp3vec << 0,0, links_[cur].get_qd();
         omega += R*tmp3vec;
         /* Updating R happens after updating omega, because each
@@ -567,11 +574,14 @@ ckbot::chain::get_link_r_base(int i)
     return r_base;
 }
 
-/* Get the 3vector from the base module to this module's CM */
+/* Get the 3vector from the base module to this module's CM
+ * in the world frame.
+ */
 Eigen::Vector3d
 ckbot::chain::get_link_r_cm(int i)
 {
-    return get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1());
+//    std::cout << "DEBUG: For link " << i << "getting r_cm: \n\tr_base = " << get_link_r_base(i) << "\n\t i's R=" << get_current_R(i) << std::endl;
+    return (get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1()));
 }
 
 
@@ -579,8 +589,8 @@ ckbot::chain::get_link_r_cm(int i)
 Eigen::Vector3d
 ckbot::chain::get_link_r_tip(int i)
 {
-    Eigen::Vector3d r_i_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
-    return get_link_r_base(i) + get_current_R(i)*(r_i_ip);
+    Eigen::Vector3d r_im_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
+    return get_link_r_base(i) + get_current_R(i)*(r_im_ip);
 }
 
 /* Get the 3 vector corresponding to the linear velocity of
@@ -594,20 +604,14 @@ ckbot::chain::get_linear_velocity(int i)
     Eigen::Vector3d omega_cur(0,0,0);
     Eigen::Matrix3d R;
 
-    for (int cur=0; cur <= i; ++cur)
+    for (int cur=0; cur < i; cur++)
     {
         R = get_current_R(cur);
         omega_cur = get_angular_velocity(cur);
-        if (cur < i)
-        {
-            v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
-        }
-        else
-        {
-           v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1()));
-        }
+        v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
         v_cm += v_incr;
     }
+    v_cm += omega_cur.cross(R*(-links_[i].get_r_im1()));
     return v_cm;
 }
 
@@ -686,13 +690,14 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
      * rate object, and then just use pointers to them after?  Would this be fast?
      * Re-initializing these every time through here has to be slow...
      */
-    Eigen::VectorXd grav(6);
-    grav << 0,0,0,0,0,9.81;
     Eigen::MatrixXd pp(6,6);
     pp = Eigen::MatrixXd::Zero(6,6);
 
     Eigen::VectorXd zp(6);
     zp << 0,0,0,0,0,0;
+
+    Eigen::VectorXd grav(6);
+    grav << 0,0,0,0,0,9.81;
 
     Eigen::Matrix3d R_cur;
     Eigen::MatrixXd M_cur(6,6);
@@ -825,6 +830,9 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         qd[i] = s[N+i];
     }
 
+    Eigen::VectorXd grav(6);
+    grav << 0,0,0,0,0,9.81;
+
     Eigen::Matrix3d R_cur;
     Eigen::Vector3d r_i_ip;
     Eigen::MatrixXd phi(6,6);
@@ -849,7 +857,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
 
         alpha_p = phi.transpose()*alpha;
 
-        int cur_index = 0;                
+        int cur_index = 0;
         for (int k = (6*i); k <= (6*(i+1)-1); ++k, ++cur_index)
         {
             /* std::cout << "k is: " << k << " cur_index is: " << cur_index << "\n";*/
@@ -857,7 +865,11 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
             a[cur_index] = a_all[k];
         }
 
-        qdd[i] = mu_all[i] - G.transpose()*alpha_p;
+        /* Add in gravity.  From pg 130 of "Robot and Multibody Dynamics: Analysis and Algorithms" 
+         * by Abhinandan Jain (on google books
+         */
+        double mu_tilde = mu_all[i];// DEBUG - G.transpose()*grav;
+        qdd[i] = mu_tilde - G.transpose()*alpha_p;
 
         H_b_frame_star = cur.get_joint_matrix().transpose();
 
