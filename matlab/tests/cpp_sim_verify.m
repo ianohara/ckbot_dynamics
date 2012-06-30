@@ -31,7 +31,7 @@ end
 fprintf('Reading control from ''%s''.', result_file);
 result_json = parse_json(fileread(result_file));
 
-json = result_json{1};
+json = result_json; % Artifact from using a different json_parser
 
 N = size(json.chain, 2);
 chain(N) = new_link('HT1');
@@ -60,21 +60,26 @@ end
 
 % The control steps tend to be pretty long timewise, so 
 % split them into equal parts for the simulator steps.
-dt = zeros(size(json.control,2)*step_splits, 1);
-T = zeros(N, size(json.control,2)*step_splits);
-t = zeros(size(json.control,2)*step_splits+1,1);
-for i = 1:(size(json.control,2))
+dt = zeros(size(json.controls,2)*step_splits, 1);
+T = zeros(N, size(json.controls,2)*step_splits);
+
+for i = 1:(size(json.controls,2))
     fprintf('From %d to %d for i=%d\n', ((i-1)*step_splits + 1), ((i-1)*step_splits+1)+step_splits-1, i);
     expanded_steps = ((i-1)*step_splits + 1):((i-1)*step_splits+1)+step_splits-1;
-    dt(expanded_steps) = repmat(json.control{i}.dt/step_splits,step_splits,1);
-    T_vec = cell2mat(json.control{i}.control)';
+    dt(expanded_steps) = repmat(json.controls{i}.dt/step_splits,step_splits,1);
+    T_vec = cell2mat(json.controls{i}.control)';
     T(:,expanded_steps) = repmat(T_vec, 1, step_splits);
+end
+
+t = zeros(size(json.controls,2)*step_splits+1,1);
+for i = 2:length(t)
+    t(i) = t(i-1)+dt(i-1);
 end
 
 
 t_sim = sum(dt);
 num_s = length(dt);
-s0 = cell2mat(json.control{1}.start_state)';
+s0 = cell2mat(json.controls{1}.start_state)';
 q0 = s0(1:N);
 qd0 = s0(N+1:end);
 
@@ -88,18 +93,27 @@ toc;
 draw_sim(sim,varargin{:})
 
 if (overlay)
-   cpp_len = length(json.control);
+   cpp_len = length(json.controls);
    q_cpp = zeros(N,cpp_len);
    qd_cpp = zeros(N, cpp_len);
    T_cpp = zeros(N, cpp_len);
    t_cpp = zeros(1, cpp_len);
    for i = 1:cpp_len
-       start_time = json.control{i}.start_time;
+       start_time = json.controls{i}.start_time;
        t_cpp(i) = start_time;
-       s_mat = cell2mat(json.control{i}.start_state)'; % Column.
+       s_mat = cell2mat(json.controls{i}.start_state)'; % Column.
        q_cpp(:,i) = s_mat(1:N);
        qd_cpp(:,i) = s_mat(N+1:2*N);
-       T_cpp(:, i) = cell2mat(json.control{i}.control)'; % Column.
+       T_cpp(:, i) = cell2mat(json.controls{i}.control)'; % Column.
+   end
+   
+   % If we split the C++ planned torques to make the torque vector to give
+   % to the matlab sim (T) then size(T) != size(T_cpp).  To plot the error
+   % between the two (which should be zero) we need to make another T_cpp
+   % that has each of its points repeated step_splits times.
+   T_cpp_split = zeros(size(T));
+   for i=1:size(T,2);
+      T_cpp_split(:,i) = T_cpp(:,ceil(i/step_splits)); 
    end
    
    legend_strs = {};
@@ -126,23 +140,29 @@ if (overlay)
    plot(t_cpp, qd_cpp,'LineWidth',2);
    legend(legend_strs);
    
-   torque_fig = figure(3);
+   torque_fig = figure(3); % Overlay on the matlab sim torque plot %
    torque_sp = 111;
    subplot(torque_sp);
    grid on;
    hold on;
-   title('Time History of C++ Planned System','FontSize', 14);
+   title('Time History of both C++ (red) Planned and Matlab (blue) Sim Systems','FontSize', 14);
    xlabel('Time [s]','FontSize', 14);
    ylabel('Joint Torque [Nm]','FontSize',14);
-   plot(t_cpp, T_cpp, '.-','LineWidth', 2);
-   legend(legend_strs);
+   plot(t_cpp, T_cpp, 'r.','LineWidth', 2);
+   
    
    error_fig = figure();
    grid on;
    hold on;
    title('Torque Error between C++ and matlab sims', 'FontSize', 14);
    xlabel('Time [s]', 'FontSize', 14);
-   plot(t_cpp, T-T_cpp, '.');
+   disp('t size is');
+   size(t)
+   disp('t is');
+   t
+   disp('t_cpp is');
+   t_cpp
+   plot(t(1:end-1), T-T_cpp_split, '.');
    
 end
 
