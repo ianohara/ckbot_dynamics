@@ -156,12 +156,6 @@ if (overlay)
    hold on;
    title('Torque Error between C++ and matlab sims', 'FontSize', 14);
    xlabel('Time [s]', 'FontSize', 14);
-   disp('t size is');
-   size(t)
-   disp('t is');
-   t
-   disp('t_cpp is');
-   t_cpp
    plot(t(1:end-1), T-T_cpp_split, '.');
    
 end
