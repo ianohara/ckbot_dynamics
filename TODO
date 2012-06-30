@@ -1,5 +1,5 @@
 Project TODO list:
-1. matlab/tests/cpp_sim_verify.m
+(IMO: 2012/6/30/2012) 1. matlab/tests/cpp_sim_verify.m
         This function is meant to load solutions given by cpp/run_sim.cpp (in the 
     form of json result files) and run the control inputs through the matlab 
     simulator for the chain configuration specified.  Theoretically, each 
