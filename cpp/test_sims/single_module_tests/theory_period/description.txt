@@ -1,0 +1,5 @@
+{
+"chain": {
+"description": "A single module setup for use with dynamics_verifier.  The point here is to check that the period of a single module swinging (ie: a pendulum swinging) is ~2*pi*sqrt(l/g). This is the period of a linearized system, so the initial angle of the module is ~pi/6 (0.52 rad) where trig linearization is only off by about ~5%."
+}
+}

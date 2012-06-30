@@ -160,7 +160,7 @@ hold on;
 title('Time History of CKBot System','FontSize', 14);
 xlabel('Time [s]','FontSize', 14);
 ylabel('Joint Torque [Nm]','FontSize',14);
-plot(step_times, sim.T(props.to_plot,1:end),'LineWidth', 2);
+plot(step_times, sim.T(props.to_plot,1:end), 'o', 'LineWidth', 2);
 grid on;
 hold on;
 

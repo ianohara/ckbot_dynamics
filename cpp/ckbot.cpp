@@ -429,6 +429,12 @@ ckbot::module_link::set_qd(double qd)
     qd_ = qd;
 }
 
+/* Set a module's damping */
+void
+ckbot::module_link::set_damping(double damping)
+{
+    damping_ = damping;
+}
 
 /* Form a new chain of modules.  The array of module_links, chain_modules,
  * needs to a length of num_modules.
@@ -496,7 +502,7 @@ ckbot::chain::get_current_R(int i)
     return R;
 }
 
-int 
+int
 ckbot::chain::num_links(void)
 {
     return N_;
@@ -523,7 +529,7 @@ ckbot::chain::propogate_angles_and_rates(std::vector<double> q, std::vector<doub
  * the world frame) and then returning the compound angular velocity
  * of the i-th module that results.
  */
-Eigen::Vector3d 
+Eigen::Vector3d
 ckbot::chain::get_angular_velocity(int i)
 {
     Eigen::Vector3d omega(0,0,0);
@@ -535,12 +541,78 @@ ckbot::chain::get_angular_velocity(int i)
     {
         tmp3vec << 0,0, links_[cur].get_qd();
         omega += R*tmp3vec;
+        /* Updating R happens after updating omega, because each
+         * module rotates about its base joint which does
+         * not depend on this module's joint angle.
+         */
         R = R*rotZ(links_[cur].get_q())*links_[cur].get_R_jts();
     }
+    return omega;
 }
 
-ckbot::chain_rate::chain_rate(chain& ch) : 
-    c(ch), 
+/* Get the 3vector from the base module to this module's base */
+Eigen::Vector3d
+ckbot::chain::get_link_r_base(int i)
+{
+    Eigen::Vector3d r_base(0,0,0);
+    Eigen::Matrix3d R;
+    Eigen::Vector3d r_incr(0,0,0);
+
+    for (int cur=0; cur < i; ++cur)
+    {
+        R = get_current_R(cur);
+        r_incr = R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1());
+        r_base += r_incr;
+    }
+    return r_base;
+}
+
+/* Get the 3vector from the base module to this module's CM */
+Eigen::Vector3d
+ckbot::chain::get_link_r_cm(int i)
+{
+    return get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1());
+}
+
+
+/* Get the 3vector from the base module to this module's tip */
+Eigen::Vector3d
+ckbot::chain::get_link_r_tip(int i)
+{
+    Eigen::Vector3d r_i_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
+    return get_link_r_base(i) + get_current_R(i)*(r_i_ip);
+}
+
+/* Get the 3 vector corresponding to the linear velocity of
+ * this module's CM
+ */
+Eigen::Vector3d
+ckbot::chain::get_linear_velocity(int i)
+{
+    Eigen::Vector3d v_cm(0,0,0);
+    Eigen::Vector3d v_incr(0,0,0);
+    Eigen::Vector3d omega_cur(0,0,0);
+    Eigen::Matrix3d R;
+
+    for (int cur=0; cur <= i; ++cur)
+    {
+        R = get_current_R(cur);
+        omega_cur = get_angular_velocity(cur);
+        if (cur < i)
+        {
+            v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
+        }
+        else
+        {
+           v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1()));
+        }
+        v_cm += v_incr;
+    }
+    return v_cm;
+}
+
+ckbot::chain_rate::chain_rate(chain& ch) :
+    c(ch),
     G_all(6*ch.num_links()),
     mu_all(ch.num_links()),
     a_all(6*ch.num_links()),
@@ -567,10 +639,8 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
     std::vector<double> q(N);
     std::vector<double> qd(N);
 
-    // std::cout << "Separating out the state into its parts: \n";
     for(int i=0; i<N; ++i)
     {
-       // std::cout<< "Link " << i << ": q=" << s[i] << " qd=" << s[N+i] << "\n";
         q[i] = s[i];
         qd[i] = s[N+i];
     }

@@ -371,6 +371,7 @@ save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json
             {
                 this_control_vals.append(Json::Value(c[j]));
             }
+            this_control["control"] = this_control_vals;
 
             controls.append(this_control);
         }
@@ -562,3 +563,4 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
     }
     return true;
 }
+
