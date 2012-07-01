@@ -32,6 +32,7 @@ if __name__ == "__main__":
     e = ETree(file=res_file)
 
     pp.figure(1)
+    pp.subplot(211)
     pp.hold(True)
     pp.title('Total Energy Over Time (Module Count = %d with q0 = %2.2f [rad])' % (e.module_count, e.states[0][0]))
 
@@ -43,5 +44,13 @@ if __name__ == "__main__":
     pp.xlabel('Time [s]')
     pp.ylabel('Energy [J]')
     pp.grid(True)
+
+    pp.subplot(212)
+    pp.hold(True)
+    pp.plot(e.time, e.energy - e.energy[0]*numpy.ones(len(e.energy)))
+    pp.xlabel('Time [s]')
+    pp.ylabel('Change in Energy [J]')
+    pp.grid(True)
+
     pp.savefig("images/total_energy_plot_mods_%d_q0_eq_%f_epochtime_%d.png" % (e.module_count, e.states[0][0], int(time.time())), dpi=480)
     pp.show()
