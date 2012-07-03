@@ -46,7 +46,6 @@ struct ckbot::module_description _ZERO_MODULE = {0.0,
         0.0,
         0.0};
 
-
 Eigen::Matrix3d
 ckbot::rotX(double phi)
 {
@@ -596,6 +595,7 @@ ckbot::chain::get_link_r_tip(int i)
 /* Get the 3 vector corresponding to the linear velocity of
  * this module's CM
  */
+/*
 Eigen::Vector3d
 ckbot::chain::get_linear_velocity(int i)
 {
@@ -604,15 +604,53 @@ ckbot::chain::get_linear_velocity(int i)
     Eigen::Vector3d omega_cur(0,0,0);
     Eigen::Matrix3d R;
 
-    for (int cur=0; cur < i; cur++)
+    Eigen::Vector3d r_step;
+    r_step = -links_[i].get_r_im1();
+    for (int cur=i; cur >= 0; cur--)
     {
-        R = get_current_R(cur);
+        if (cur > 0)
+        {
+            R = get_current_R(cur-1).transpose()*get_current_R(cur);
+        }
+        else 
+        {
+            R = get_current_R(cur);
+        }
         omega_cur = get_angular_velocity(cur);
-        v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
+        v_incr = omega_cur.cross(R*r_step);
         v_cm += v_incr;
+        
+        if (cur > 0)
+        {
+            r_step = -links_[cur-1].get_r_im1() + links_[cur-1].get_r_ip1();
+        }
     }
-    v_cm += omega_cur.cross(R*(-links_[i].get_r_im1()));
     return v_cm;
+}*/
+
+Eigen::Vector3d
+ckbot::chain::get_linear_velocity(int link_num)
+{
+    Eigen::Vector3d vel(0,0,0);
+    Eigen::Vector3d vel_tip(0,0,0);
+    Eigen::Vector3d v_prev(0,0,0);
+
+    Eigen::Vector3d omega(0,0,0);
+    Eigen::Matrix3d R_prev = Eigen::Matrix3d::Identity();
+    Eigen::Vector3d r_jt_jt(0,0,0);
+    Eigen::Vector3d r_cm(0,0,0);
+    for (int i = 0; i <= link_num; i++)
+    {
+       R_prev = (ckbot::rotZ(links_[i].get_q())*links_[i].get_R_jts()).transpose();
+       r_jt_jt = -links_[i].get_r_im1() + links_[i].get_r_ip1();
+       r_cm = -links_[i].get_r_im1();
+       
+       v_prev = R_prev*vel_tip;
+       omega = R_prev*(omega + Eigen::Vector3d(0,0,links_[i].get_qd())); //6DOF chainge
+       vel_tip = v_prev + omega.cross(r_jt_jt);
+       vel = v_prev + omega.cross(r_cm);
+    }
+    return vel;
 }
 
 ckbot::chain_rate::chain_rate(chain& ch) :

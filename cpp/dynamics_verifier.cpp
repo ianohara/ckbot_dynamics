@@ -24,7 +24,7 @@
 #include<boost/bind.hpp>
 
 /* BLARGG!  This is a ridiculous hack.  OMPL packages odeint with its source, and so
- * links to it in a funky way.
+ * defines its own ompl specific namespace for the odeint code.
  */
 #include<omplext_odeint/boost/numeric/odeint.hpp>
 namespace ode = boost::numeric::omplext_odeint;
@@ -202,7 +202,8 @@ main(int ac, char* av[])
         {
             s0[i] = sets.custom_angle;
         }
-        std::cout << "Using a custom initial joint angle for the modules (" << sets.custom_angle << ")." << std::endl;
+        std::cout << "Using a custom initial joint angle for the modules ("
+                  << sets.custom_angle << ")." << std::endl;
     }
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
