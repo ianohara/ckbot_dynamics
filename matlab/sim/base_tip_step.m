@@ -28,6 +28,8 @@ function qdd = base_tip_step(chain, s, T, G, mu, a)
 %
 N = size(chain,1);
 
+g = [0;0;0;0;0;9.81];
+
 alpha = zeros(6,1);  % The seed acceleration (ie: the base joint does not rotate
                      % wrt the ground, so we use this to seed the base to tip
                      % recursion)
@@ -45,8 +47,8 @@ for i = 1:N
     % Rotation of current link's coordinate frame to the inertial frame
     R_cur = R_chain(:,:,i);
     
-    % Vector from this link's outbound to inbound joint
-    r_i_ip = R_cur*(cur.r_im1 - cur.r_ip1);
+    % Vector from this link's inbound to outbound joint
+    r_i_ip = R_cur*(-cur.r_im1 + cur.r_ip1);
     % Spatial tranformation operator from outbound joint to inbound joint
     phi = get_bod_trans(r_i_ip);
   
@@ -55,6 +57,8 @@ for i = 1:N
     alpha_p = phi'*alpha;  
     
     p_ind = get_block_indicies(i);
+    
+    mu_tilde = mu(i) - G(p_ind)'*g;
     
     qdd(i) = mu(i) - G(p_ind)'*alpha_p;
     

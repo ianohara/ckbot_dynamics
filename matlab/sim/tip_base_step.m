@@ -33,7 +33,7 @@ function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 %   the rest of the chain.
 
 
-grav = [0;0;0;0;0;9.81];
+grav = [0;0;0;0;0;-9.81];
 pp = zeros(6); % Seed for the p+ (ie: p+ at link N+1)
 zp = zeros(6,1);  % Seed for z+ (ie: z+ at link N+1)
 
@@ -51,12 +51,13 @@ a_all = zeros(6*N,1);
 % in the chain.
 chain = propogate_angles_and_rates(chain,q,qd);
 
+%q
 R_chain = get_chain_pos_rot(chain); % Nx3x3 array of rotation matricies for each link in the chain
-M_chain = get_spatial_inertia_mat(chain);
+global counter;
+counter = counter + 1;
 
 % link N = tip, link 1 = base
 for i = N:-1:1
-    
     cur = chain(i);
    
     R_cur = R_chain(:,:,i); % Rotation from current link to inertial
@@ -65,20 +66,30 @@ for i = N:-1:1
     
     % Vector from inbound joint to CM of this link (in inertial coords)
     r_i_cm = R_cur*(-cur.r_im1);
+    
     % Spatial transformation from inbound joint to CM
     phi_cm = get_bod_trans(r_i_cm);
-        
-    M = M_chain(:,:,i);  % 6x6 inertia matrix about inbound joint
+     
+    % Form the 6x6 inertia Matrix about the inbound joint
+    % And the 3x3 inertia matrix about the inbound joint as well
+    L_oc_tilde = get_cross_mat(r_i_cm);
+    J_o = cur.I_cm - cur.m*L_oc_tilde*L_oc_tilde;
+    
+    M = [J_o, cur.m*L_oc_tilde; ...
+         -cur.m*L_oc_tilde, cur.m*eye(3)]; % 6x6 inertia matrix about inbound joint
     
     p_ind = get_block_indicies(i);
     
     % Articulated body spatial inertia of this link
+    % phi transpose is on the RHS because we're bringing
+    % pp from the outbound joint to the inbound joint,
+    % and phi does the opposite.
     p_cur = phi*pp*phi' + M;
     
     % Joint matrix.  H is in the inertial coordinate sys (like everything
     % used in this algorithm should be)
     H_b_frame_star = get_joint_mat(cur)';
-    H_w_frame_star = [R_cur, zeros(3);zeros(3),eye(3)]*H_b_frame_star;
+    H_w_frame_star = [R_cur, zeros(3);zeros(3),R_cur]*H_b_frame_star;
     H = H_w_frame_star';
     
     % Joint "Inertia"
@@ -95,12 +106,12 @@ for i = N:-1:1
     omega_cross = get_cross_mat(omega);
     
     % The Coriolis and Gyroscopic terms
-    b = [omega_cross*chain(i).I_cm*omega;...
-        chain(i).m*omega_cross*omega_cross*(-cur.r_im1)];
-    a = [0; 0; 0; omega_cross*omega_cross*(-cur.r_im1)];
+    b = [omega_cross*J_o*omega;...
+        chain(i).m*omega_cross*omega_cross*r_i_cm];  % pg 5
+    a = [0; 0; 0; omega_cross*omega_cross*r_i_cm]; % pg 4
     
-    % Spatial compensation force
-    z = phi*zp + p_cur*a+b + phi_cm*chain(i).m*grav;
+    % Spatial compensation force at inbound joint.
+    z = phi*zp + p_cur*a + b + phi_cm*chain(i).m*grav;
     
     % Velocity dependent joint force (ie: damping)
     % NOTE: Not in JPL paper.  Added by IMO
@@ -117,7 +128,6 @@ for i = N:-1:1
     % Returned for the base to tip traversal
     G_all(p_ind) = G;
     mu_all(i) = mu;
-    a_all(p_ind) = a;
     
 end
 
