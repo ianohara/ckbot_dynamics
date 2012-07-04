@@ -264,7 +264,6 @@ ckbot::module_link::get_torque_max(void) const
 {
     return torque_max_;
 }
-    
 
 /* Returns a module's 6x6 spatial
  * inertia matrix with respect to
@@ -371,7 +370,7 @@ ckbot::module_link::get_I_cm(void) const
 /* The rotation matrix from a module's base joint vector
  * to its tip joint vector.
  */
-Eigen::Matrix3d 
+Eigen::Matrix3d
 ckbot::module_link::get_R_jts(void) const
 {
     return R_jts_;
@@ -498,11 +497,7 @@ ckbot::chain::get_current_R(int i)
      */
     for (int j = 0; j <= i; ++j)
     {
-        R *= rotZ(links_[j].get_q());
-        if (j != i)
-        {
-            R *= links_[j].get_R_jts();
-        }
+        R *= rotZ(links_[j].get_q())*links_[j].get_R_jts();
     }
     return R;
 }
@@ -819,7 +814,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         a.topLeftCorner(3,1) << 0,0,0;
         a.bottomLeftCorner(3,1) = omega_cross*omega_cross*(-cur.get_r_im1());
 
-        z = phi*zp + p_cur*a + b + phi_cm*cur.get_mass()*grav;
+        z = phi*zp + p_cur*a + b;//DEBUG + phi_cm*cur.get_mass()*grav;
 
         C = -cur.get_damping()*qd[i];
 
@@ -906,7 +901,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         /* Add in gravity.  From pg 130 of "Robot and Multibody Dynamics: Analysis and Algorithms" 
          * by Abhinandan Jain (on google books
          */
-        double mu_tilde = mu_all[i];// DEBUG - G.transpose()*grav;
+        double mu_tilde = mu_all[i]- G.transpose()*grav;
         qdd[i] = mu_tilde - G.transpose()*alpha_p;
 
         H_b_frame_star = cur.get_joint_matrix().transpose();
