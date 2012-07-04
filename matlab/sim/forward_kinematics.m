@@ -16,6 +16,11 @@ function vels = forward_kinematics(chain)
 N = length(chain);
 vels = zeros(3,3,N);
 vels(:,3,1) = [0;0;chain(1).qd];
+R_first = chain(1).init_rotation*(rotZ(chain(1).q))*chain(1).R_jts;
+r_jt_jt = -chain(1).r_im1 + chain(1).r_ip1;
+vels(:,1,1) = R_first*(cross(vels(:,3,1), r_jt_jt));
+vels(:,2,1) = R_first*(cross(vels(:,3,1), -chain(1).r_im1));
+
 for i = 2:N
     % Rotation from the previous link to this link's coordinates
     %  IE: transpose of going from this link to the previous
