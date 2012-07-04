@@ -87,7 +87,7 @@ q0 = s0(1:N);
 qd0 = s0(N+1:end);
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain, ...
-    'torques', T, 'q0', q0, 'qd0', qd0,'dt', dt, 'integrator', @rk4step);
+    'torques', T, 'q0', q0, 'qd0', qd0,'dt', dt, 'integrator', @rk4Step);
 
 tic;
 sim = run_sim(sim, num_s);
