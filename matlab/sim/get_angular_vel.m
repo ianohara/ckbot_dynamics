@@ -15,7 +15,7 @@ function omega = get_angular_vel(chain, n)
 %
 
 omega = [0; 0; 0];
-R = chain(1).init_rotation;
+R = chain(1).init_rotation*rotZ(chain(1).q)*chain(1).R_jts;
 
 for i=1:n
     omega = omega + R*[0; 0; chain(i).qd];

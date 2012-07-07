@@ -58,14 +58,14 @@ for i = 1:N
     
     p_ind = get_block_indicies(i);
     
-    mu_tilde = mu(i) - G(p_ind)'*g;
+    %mu_tilde = mu(i) - G(p_ind)'*g;
     
     qdd(i) = mu(i) - G(p_ind)'*alpha_p;
     
     % Joint matrix.  H is in the inertial coordinate sys (like everything
     % used in this algorithm should be)
     H_b_frame_star = get_joint_mat(cur)';
-    H_w_frame_star = [R_cur, zeros(3);zeros(3),eye(3)]*H_b_frame_star;
+    H_w_frame_star = [R_cur, zeros(3);zeros(3),R_cur]*H_b_frame_star;
     H = H_w_frame_star';
     
     % Spatial acceleration of the link's inbound joint

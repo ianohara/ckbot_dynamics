@@ -33,7 +33,7 @@ function [G_all, mu_all, a_all] = tip_base_step(chain, s, T)
 %   the rest of the chain.
 
 
-grav = [0;0;0;0;0;-9.81];
+grav = [0;0;0;0;0;9.81];
 pp = zeros(6); % Seed for the p+ (ie: p+ at link N+1)
 zp = zeros(6,1);  % Seed for z+ (ie: z+ at link N+1)
 
@@ -108,10 +108,10 @@ for i = N:-1:1
     % The Coriolis and Gyroscopic terms
     b = [omega_cross*J_o*omega;...
         chain(i).m*omega_cross*omega_cross*r_i_cm];  % pg 5
-    a = [0; 0; 0; omega_cross*omega_cross*r_i_cm]; % pg 4
+    a = [0; 0; 0; omega_cross*omega_cross*-r_i_cm]; % pg 4
     
     % Spatial compensation force at inbound joint.
-    z = phi*zp + p_cur*a + b + phi_cm*chain(i).m*grav;
+    z = phi*zp + p_cur*a + b + M*phi_cm'*grav;
     
     % Velocity dependent joint force (ie: damping)
     % NOTE: Not in JPL paper.  Added by IMO
@@ -128,6 +128,7 @@ for i = N:-1:1
     % Returned for the base to tip traversal
     G_all(p_ind) = G;
     mu_all(i) = mu;
+    a_all(p_ind) = a;
     
 end
 
