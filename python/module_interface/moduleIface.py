@@ -20,6 +20,7 @@ from time import time as now, sleep
 from struct import pack, unpack
 from string import find
 
+
 class moduleIface( object ):
 
     NETWORK_MANAGEMENT = '000'
@@ -28,6 +29,12 @@ class moduleIface( object ):
     REQUEST_RESPONSE = '5'
     REQUEST = '6'
     HB = '7'
+
+    PKT_FMT = {
+	'2' : '<' + 'B' + 4*'h', 
+	'5' : '<' + 5*'B' + 2*'h',
+	'7' : '<' + 5*'B' + 2*'h'
+	}
 
     def __init__( self, dev='/dev/ttyUSB0' ):
 	ser = serial.Serial( dev )
@@ -72,7 +79,37 @@ class moduleIface( object ):
 	msg = 'c' + pack('B',len(pkt)).encode('hex').upper() + pkt + '\r'
 	print repr(msg)
 	self.ser.write(msg)
-    
+
+    def discover( self, timeout=2.0 ):
+	'''
+	reads data off of interface for timeout time and returns all modules seen 
+	'''
+	modules = set()
+	t0 = now()
+	while True:
+	    if now()-t0 > timeout:
+		break
+	    pkt = self.read()
+
+	    if pkt is None or pkt[0] != '7':
+		continue
+	    decoded_pkt = self._decode_data( self.PKT_FMT['7'], pkt[1:] )
+	    modules.add( decoded_pkt[0] )
+	return modules	
+
+    def _parse_pkt( self, pkt ):
+	'''
+	Look at first byte of packet to determine msg type then decode 
+	pkt data 
+	'''
+	pass	
+
+    def _decode_data( self, fmt, buf ):
+	return unpack( fmt, buf.lower().decode('hex'))
+
+    def _encode_data( self, fmt, buf ):
+	return pack(fmt, buf).encode('hex').upper()
+
     def set_voltage( self, val ):
 	msg = '120' + pack('<h', val).encode('hex').upper()	
 	self.write( msg ) 
