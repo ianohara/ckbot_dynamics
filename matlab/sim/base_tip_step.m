@@ -1,11 +1,11 @@
-function qdd = base_tip_step(chain, s, T, G, mu, a)
+function qdd = base_tip_step(chain, s, T, G, Mu, a)
 % Calculates the joint accelerations based on the current
-% system state, input torques, G, mu, and 'a' calculated in
+% system state, input torques, G, Mu, and 'a' calculated in
 % the tip_base_step for this step.
 %
 % ARGUMENTS:
 %   chain - array of links
-%   s - Current state [2N x 1]
+%   s - Current state [2N x 1] with [q_cur; qd_cur];
 %   T - Current motor torques [N x 1]
 %   G - G calculated by tip_base_step(...) [6N x 1]
 %   mu - mu calculated by tip_base_step(...) [N x 1]
@@ -21,11 +21,8 @@ function qdd = base_tip_step(chain, s, T, G, mu, a)
 %      and the 3 linear components are second.
 %
 % TODO:
-%   Move get_chain_pos_rot(...) outside of the loop and change it to return
-%   a 3x3N block matrix where each 3x3 block is a rotation matrix for a
-%   link.  Then R_Cur inside the loop can be obtained by indexing this
-%   block matrix.
 %
+
 N = size(chain,1);
 
 g = [0;0;0;0;0;9.81];
@@ -60,17 +57,17 @@ for i = 1:N
     
     %mu_tilde = mu(i) - G(p_ind)'*g;
     
-    qdd(i) = mu(i) - G(p_ind)'*alpha_p;
+    qdd(i) = Mu(i) - G(p_ind)'*alpha_p;
     
     % Joint matrix.  H is in the inertial coordinate sys (like everything
     % used in this algorithm should be)
     H_b_frame_star = get_joint_mat(cur)';
     H_w_frame_star = [R_cur, zeros(3);zeros(3),R_cur]*H_b_frame_star;
+    
     H = H_w_frame_star';
     
     % Spatial acceleration of the link's inbound joint
     alpha = alpha_p + H'*qdd(i) + a(p_ind);
-    %fprintf('  Link %d:\n    Linear Accel: %2.2e, %2.2e, %2.2e\n    Angular Accel: %2.2e, %2.2e, %2.2e\n', i, alpha(4:6), alpha(1:3));
 
 end
 

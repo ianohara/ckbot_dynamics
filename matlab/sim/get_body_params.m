@@ -10,9 +10,9 @@ function props = get_body_params(type)
 
 % Universal geometric and inertial parameters
 props = {};
-props.width = 1;
+props.width = 0.2;
 props.head_len = props.width;
-props.mass = 12;
+props.mass = 0.1;
 props.joint_axis = [0;0;1];
 props.tail_len = props.width;
 props.tail_width = props.width/2;

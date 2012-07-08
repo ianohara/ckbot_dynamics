@@ -4,10 +4,10 @@ function sim = energy_conservation(varargin)
 % no input torques, the total system energy
 % should be constant.
 g = 9.81;
-N = 1;
+N = 4;
 chain(N) = new_link('HT1');
 chain = chain';
-chain(1) = new_link('HT1', 'rotate', rotX(pi/2));
+chain(1) = new_link('HT1', 'rotate', rotY(pi/2));
 
 for i=2:N-1
    chain(i) = new_link('HT1');
@@ -17,14 +17,14 @@ for i=1:N
     chain(i).damping = 0.0;
 end
 
-t_sim = 2; % Time length to simulate
-dt = 0.001;
+t_sim = 4; % Time length to simulate
+dt = 0.01;
 num_s = t_sim/dt;
 
 q0 = zeros(N,1);
-q0(1) = 0;
+q0(1) = pi/2;
 qd0 = zeros(N,1);
-%qd0(1) = 1;
+qd0(1) = 1;
 
 T = zeros(N, num_s);
 
