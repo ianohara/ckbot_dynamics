@@ -18,20 +18,27 @@ close all
 global sim
 
 chain_single = [
-    new_link('HT1','rotate',rotY(pi/2));
+    new_link('HT2','rotate',rotY(pi/2));
     new_link('HT1');
     ];
 
-chain_single(1).damping = 1.0;
+chain_single(1).damping = 0.0;
+chain_single(2).damping = 0.0;
 
 N = size(chain_single, 1);
-t_sim = 10;
-num_s = 1500;
+t_sim = 1.5;
+num_s = 300;
+% DEBUG
+ dt = 0.01;
+ t_sim = 0.02;
+ num_s = 2;
 torque_history = zeros(N, num_s);
 q0 = zeros(N,1);
-q0(2) = pi/2;
+q0(1) = 0;pi/12;
+%q0(2) = -pi/6;
 
 qd0 = zeros(N,1);
+qd0(1) = 1;
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
     'torques', torque_history, 'q0', q0, 'qd0', qd0);
@@ -96,17 +103,18 @@ global sim
 chain_single = [
     new_link('HT1','rotate', rotY(pi/2));
     new_link('HT1');
+    new_link('HT1');
+    new_link('HT1')
     ];
 
 N = size(chain_single, 1);
 
-t_sim = 10;    % Simulate for t_sim [s]
-num_s = 1000;  % Use this many timesteps
+t_sim = 20;    % Simulate for t_sim [s]
+num_s = 2000;  % Use this many timesteps
 
 torque_history = zeros(N,num_s);  % At each timestep, the torque of each motor needs to be specified
 q0 = zeros(N,1);
-q0(1,1) = 0;
-q0(2,1) = pi/6;
+q0(1,1) = pi/2;
 
 qd0 = zeros(N,1);
 

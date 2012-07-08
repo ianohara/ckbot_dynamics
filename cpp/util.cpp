@@ -17,6 +17,7 @@
 */
 
 #include<iostream>
+#include<iomanip>
 
 #include<Eigen/Core>
 #include<Eigen/Dense>
@@ -31,6 +32,8 @@ namespace util
 void
 flat_print(const Eigen::Vector3d &v, std::ostream& out)
 {
-    out << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]" << std::endl;
+    Eigen::IOFormat CleanFmt(4, 0, ", ", ";", "[", "]");
+    out << v.format(CleanFmt) << std::endl;
 }
+
 }

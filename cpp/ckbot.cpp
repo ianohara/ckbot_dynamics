@@ -46,7 +46,6 @@ struct ckbot::module_description _ZERO_MODULE = {0.0,
         0.0,
         0.0};
 
-
 Eigen::Matrix3d
 ckbot::rotX(double phi)
 {
@@ -82,7 +81,7 @@ ckbot::get_cross_mat(Eigen::Vector3d r)
     return r_cross;
 }
 
-Eigen::MatrixXd 
+Eigen::MatrixXd
 ckbot::get_body_trans(Eigen::Vector3d r)
 {
     /*std::cout << "Getting body trans...\n";*/
@@ -265,11 +264,15 @@ ckbot::module_link::get_torque_max(void) const
 {
     return torque_max_;
 }
-    
 
 /* Returns a module's 6x6 spatial
  * inertia matrix with respect to
  * its base-side joint.
+ */
+/* NOTE/TODO/DEBUG: The vectors here need to be
+ *    in the inertial frame because I'm doing everything
+ *    there...so this is no longer used, and is done
+ *    inline in the tip_base recursion.
  */
 Eigen::MatrixXd 
 ckbot::module_link::get_spatial_inertia_mat(void)
@@ -279,7 +282,6 @@ ckbot::module_link::get_spatial_inertia_mat(void)
 
     Eigen::Matrix3d L_tilde;
     L_tilde = get_cross_mat(-r_im1_);
-
     Jo = I_cm_ - m_*L_tilde*L_tilde;
     M_spat << Jo, m_*L_tilde,
              -m_*L_tilde, m_*(Eigen::Matrix3d::Identity());
@@ -293,24 +295,24 @@ ckbot::module_link::get_spatial_inertia_mat(void)
  * in the body z-axis of the previous module (ie: rotation around
  * the base joint axis)
  */
-Eigen::RowVectorXd 
+Eigen::RowVectorXd
 ckbot::module_link::get_joint_matrix(void) const 
 {
-    Eigen::Vector3d Hprev(0,0,1);
+    Eigen::Vector3d Hprev(0,0,1); /* 6DOF Change needed */
     Eigen::Vector3d Ht;
     Ht = R_jts_.transpose()*Hprev;
 
     Eigen::RowVectorXd H(6);
-    
+
     H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
     return H;
 }
 
-/* Relative of a module with respect to its base side neighbor
+/* Joint angle of a module with respect to its base side neighbor
  * in Radians.
  * [rad]
  */
-double 
+double
 ckbot::module_link::get_q(void) const
 {
     return q_;
@@ -320,7 +322,7 @@ ckbot::module_link::get_q(void) const
  * base side neighbor. In radians/second.
  * [rad/s]
  */
-double 
+double
 ckbot::module_link::get_qd(void) const
 {
     return qd_;
@@ -368,9 +370,10 @@ ckbot::module_link::get_I_cm(void) const
     return I_cm_;
 }
 
-/* TODO: Comment
+/* The rotation matrix from a module's base joint vector
+ * to its tip joint vector.
  */
-Eigen::Matrix3d 
+Eigen::Matrix3d
 ckbot::module_link::get_R_jts(void) const
 {
     return R_jts_;
@@ -482,7 +485,7 @@ ckbot::chain::get_link(int i)
  * the rotation matrix that brings the i-th module from
  * its module frame to the world frame.
  */
-Eigen::Matrix3d 
+Eigen::Matrix3d
 ckbot::chain::get_current_R(int i)
 {
     Eigen::Matrix3d R;
@@ -497,7 +500,7 @@ ckbot::chain::get_current_R(int i)
      */
     for (int j = 0; j <= i; ++j)
     {
-        R = R*rotZ(links_[j].get_q())*links_[j].get_R_jts();
+        R *= rotZ(links_[j].get_q())*links_[j].get_R_jts();
     }
     return R;
 }
@@ -539,6 +542,7 @@ ckbot::chain::get_angular_velocity(int i)
     Eigen::Vector3d tmp3vec(0,0,0);
     for (int cur=0; cur <= i; ++cur)
     {
+        /* 6DOF Update needed */
         tmp3vec << 0,0, links_[cur].get_qd();
         omega += R*tmp3vec;
         /* Updating R happens after updating omega, because each
@@ -567,11 +571,14 @@ ckbot::chain::get_link_r_base(int i)
     return r_base;
 }
 
-/* Get the 3vector from the base module to this module's CM */
+/* Get the 3vector from the base module to this module's CM
+ * in the world frame.
+ */
 Eigen::Vector3d
 ckbot::chain::get_link_r_cm(int i)
 {
-    return get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1());
+//    std::cout << "DEBUG: For link " << i << "getting r_cm: \n\tr_base = " << get_link_r_base(i) << "\n\t i's R=" << get_current_R(i) << std::endl;
+    return (get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1()));
 }
 
 
@@ -579,13 +586,14 @@ ckbot::chain::get_link_r_cm(int i)
 Eigen::Vector3d
 ckbot::chain::get_link_r_tip(int i)
 {
-    Eigen::Vector3d r_i_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
-    return get_link_r_base(i) + get_current_R(i)*(r_i_ip);
+    Eigen::Vector3d r_im_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
+    return get_link_r_base(i) + get_current_R(i)*(r_im_ip);
 }
 
 /* Get the 3 vector corresponding to the linear velocity of
  * this module's CM
  */
+/*
 Eigen::Vector3d
 ckbot::chain::get_linear_velocity(int i)
 {
@@ -594,21 +602,53 @@ ckbot::chain::get_linear_velocity(int i)
     Eigen::Vector3d omega_cur(0,0,0);
     Eigen::Matrix3d R;
 
-    for (int cur=0; cur <= i; ++cur)
+    Eigen::Vector3d r_step;
+    r_step = -links_[i].get_r_im1();
+    for (int cur=i; cur >= 0; cur--)
     {
-        R = get_current_R(cur);
+        if (cur > 0)
+        {
+            R = get_current_R(cur-1).transpose()*get_current_R(cur);
+        }
+        else 
+        {
+            R = get_current_R(cur);
+        }
         omega_cur = get_angular_velocity(cur);
-        if (cur < i)
-        {
-            v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1()));
-        }
-        else
-        {
-           v_incr = omega_cur.cross(R*(-links_[cur].get_r_im1()));
-        }
+        v_incr = omega_cur.cross(R*r_step);
         v_cm += v_incr;
+        
+        if (cur > 0)
+        {
+            r_step = -links_[cur-1].get_r_im1() + links_[cur-1].get_r_ip1();
+        }
     }
     return v_cm;
+}*/
+
+Eigen::Vector3d
+ckbot::chain::get_linear_velocity(int link_num)
+{
+    Eigen::Vector3d vel(0,0,0);
+    Eigen::Vector3d vel_tip(0,0,0);
+    Eigen::Vector3d v_prev(0,0,0);
+
+    Eigen::Vector3d omega(0,0,0);
+    Eigen::Matrix3d R_prev = Eigen::Matrix3d::Identity();
+    Eigen::Vector3d r_jt_jt(0,0,0);
+    Eigen::Vector3d r_cm(0,0,0);
+    for (int i = 0; i <= link_num; i++)
+    {
+       R_prev = (ckbot::rotZ(links_[i].get_q())*links_[i].get_R_jts()).transpose();
+       r_jt_jt = -links_[i].get_r_im1() + links_[i].get_r_ip1();
+       r_cm = -links_[i].get_r_im1();
+       
+       v_prev = R_prev*vel_tip;
+       omega = R_prev*(omega + Eigen::Vector3d(0,0,links_[i].get_qd())); //6DOF chainge
+       vel_tip = v_prev + omega.cross(r_jt_jt);
+       vel = v_prev + omega.cross(r_cm);
+    }
+    return vel;
 }
 
 ckbot::chain_rate::chain_rate(chain& ch) :
@@ -630,7 +670,7 @@ ckbot::chain& ckbot::chain_rate::get_chain(void)
  * this fills in the 2*N length vector sd with
  * the corresponding joint speeds and joint accelerations.
  */
-std::vector<double> 
+std::vector<double>
 ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
 {
     int N = c.num_links();
@@ -652,7 +692,7 @@ ckbot::chain_rate::calc_rate(std::vector<double> s, std::vector<double> T)
 
     tip_base_step(s, T);
     qdd = base_tip_step(s, T);
- 
+
     for (int i=0; i < N; ++i)
     {
         /* Rate of change of positions are already in our state */
@@ -686,16 +726,21 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
      * rate object, and then just use pointers to them after?  Would this be fast?
      * Re-initializing these every time through here has to be slow...
      */
-    Eigen::VectorXd grav(6);
-    grav << 0,0,0,0,0,9.81;
     Eigen::MatrixXd pp(6,6);
     pp = Eigen::MatrixXd::Zero(6,6);
 
     Eigen::VectorXd zp(6);
     zp << 0,0,0,0,0,0;
 
+    Eigen::VectorXd grav(6);
+    grav << 0,0,0,0,0,9.81;
+
+    Eigen::Matrix3d L_oc_tilde;
     Eigen::Matrix3d R_cur;
     Eigen::MatrixXd M_cur(6,6);
+    Eigen::MatrixXd M_cm(6,6);
+    M_cm = Eigen::MatrixXd::Zero(6,6);
+    Eigen::Matrix3d J_o;
 
     Eigen::Vector3d r_i_ip(0,0,0);
     Eigen::Vector3d r_i_cm(0,0,0);
@@ -738,8 +783,17 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         r_i_cm = R_cur*(-cur.get_r_im1());
 
         phi_cm = get_body_trans(r_i_cm);
-
-        M_cur = cur.get_spatial_inertia_mat();
+        
+        L_oc_tilde = get_cross_mat(r_i_cm);
+        J_o = cur.get_I_cm() - cur.get_mass()*L_oc_tilde*L_oc_tilde;
+        
+        M_cur.topLeftCorner(3,3) = J_o;
+        M_cur.topRightCorner(3,3) = cur.get_mass()*L_oc_tilde;
+        M_cur.bottomLeftCorner(3,3) = -cur.get_mass()*L_oc_tilde;
+        M_cur.bottomRightCorner(3,3) = cur.get_mass()*Eigen::Matrix3d::Identity();
+       
+        M_cm.topLeftCorner(3,3) = cur.get_I_cm();
+        M_cm.bottomRightCorner(3,3) = cur.get_mass()*Eigen::Matrix3d::Identity();
         /* 
         std::cout << "phi':\n" << phi.transpose() << "\n";
         std::cout << "pp:\n" << pp << "\n";
@@ -752,7 +806,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
 
         Eigen::MatrixXd tmp_6x6(6,6);
         tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
-                   Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
+                   Eigen::Matrix3d::Zero(), R_cur;
 
         /* std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n"; */
         H_w_frame_star = tmp_6x6*H_b_frame_star;
@@ -770,13 +824,13 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         omega = c.get_angular_velocity(i);
         omega_cross = get_cross_mat(omega);
 
-        b.topLeftCorner(3,1) = omega_cross*cur.get_I_cm()*omega;
-        b.bottomLeftCorner(3,1) = cur.get_mass()*omega_cross*omega_cross*(-cur.get_r_im1());
+        b.topLeftCorner(3,1) = omega_cross*J_o*omega;
+        b.bottomLeftCorner(3,1) = cur.get_mass()*omega_cross*omega_cross*r_i_cm;
 
         a.topLeftCorner(3,1) << 0,0,0;
-        a.bottomLeftCorner(3,1) = omega_cross*omega_cross*(-cur.get_r_im1());
+        a.bottomLeftCorner(3,1) = omega_cross*omega_cross*r_i_cm;
 
-        z = phi*zp + p_cur*a + b + phi_cm*cur.get_mass()*grav;
+        z = phi*zp + p_cur*a + b + phi_cm*M_cm*grav;
 
         C = -cur.get_damping()*qd[i];
 
@@ -825,6 +879,9 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
         qd[i] = s[N+i];
     }
 
+    Eigen::VectorXd grav(6);
+    grav << 0,0,0,0,0,9.81;
+
     Eigen::Matrix3d R_cur;
     Eigen::Vector3d r_i_ip;
     Eigen::MatrixXd phi(6,6);
@@ -849,7 +906,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
 
         alpha_p = phi.transpose()*alpha;
 
-        int cur_index = 0;                
+        int cur_index = 0;
         for (int k = (6*i); k <= (6*(i+1)-1); ++k, ++cur_index)
         {
             /* std::cout << "k is: " << k << " cur_index is: " << cur_index << "\n";*/
@@ -863,7 +920,7 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
 
         Eigen::MatrixXd tmp_6x6(6,6);
         tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
-                   Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
+                   Eigen::Matrix3d::Zero(), R_cur;
 
         H_w_frame_star = tmp_6x6*H_b_frame_star;
 
