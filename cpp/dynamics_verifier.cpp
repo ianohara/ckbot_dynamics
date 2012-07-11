@@ -59,6 +59,7 @@ main(int ac, char* av[])
           ("dir", po::value<std::string>())
           ("time", po::value<double>(), "Length of time to simulate for.")
           ("angle", po::value<double>(), "Initial angle of each module (ie: ignore those specified in sim.txt)")
+          ("rate", po::value<double>(), "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -83,6 +84,10 @@ main(int ac, char* av[])
         if (vm.count("angle"))
         {
            sets.custom_angle = vm["angle"].as<double>();
+        }
+        if (vm.count("rate"))
+        {
+            sets.custom_rate = vm["rate"].as<double>();
         }
     }
     catch (std::exception& e)
@@ -204,6 +209,15 @@ main(int ac, char* av[])
         }
         std::cout << "Using a custom initial joint angle for the modules ("
                   << sets.custom_angle << ")." << std::endl;
+    }
+    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
+    {
+        for (int i=0; i < num_modules; i++)
+        {
+            s0[num_modules+i] = sets.custom_rate;
+        }
+        std::cout << "Using a custom initial joint rate for modules ("
+                  << sets.custom_rate << ")." << std::endl;
     }
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
