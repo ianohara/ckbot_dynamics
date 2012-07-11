@@ -131,14 +131,14 @@ if (overlay)
    title('Time History of C++ Planned System','FontSize', 14);
    xlabel('Time [s]','FontSize', 14);
    ylabel('Joint Angle [rad]','FontSize',14);
-   plot(t_cpp,q_cpp,'LineWidth',2);  
+   plot(t_cpp,q_cpp,'-o','LineWidth',2);  
    
    subplot(212);
    grid on;
    hold on;
    xlabel('Time [s]', 'FontSize', 14);
    ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
-   plot(t_cpp, qd_cpp,'LineWidth',2);
+   plot(t_cpp, qd_cpp,'-o','LineWidth',2);
    legend(legend_strs);
    
    

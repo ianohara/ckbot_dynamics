@@ -51,7 +51,7 @@ counter = counter + 1;
 for i = N:-1:1
     cur = chain(i);
     
-    fprintf('Link %d (q=%2.2f, qd=%2.2f):\n', i, cur.q, cur.qd); % DEBUG
+    %fprintf('Link %d (q=%2.2f, qd=%2.2f):\n', i, cur.q, cur.qd); % DEBUG
 
     R_cur = R_chain(:,:,i); % Rotation from current link to inertial
     r_i_ip = R_cur*(cur.r_ip1 - cur.r_im1); % Vector from current joint to outbound joint
@@ -66,14 +66,14 @@ for i = N:-1:1
     % Form the 6x6 inertia Matrix about the inbound joint
     % And the 3x3 inertia matrix about the inbound joint as well
     L_oc_tilde = get_cross_mat(r_i_cm);
-    J_o = cur.I_cm - cur.m*L_oc_tilde*L_oc_tilde;
+    J_o = R_cur*cur.I_cm*R_cur' - cur.m*L_oc_tilde*L_oc_tilde;
     
     M = [J_o, cur.m*L_oc_tilde; ...
          -cur.m*L_oc_tilde, cur.m*eye(3)]; % 6x6 inertia matrix about inbound joint
     
-    M_cm = [cur.I_cm, zeros(3);
+    M_cm = [R_cur*cur.I_cm*R_cur', zeros(3);
             zeros(3), cur.m*eye(3)];
-     
+
     p_ind = get_block_indicies(i);
     
     % Articulated body spatial inertia of this link
@@ -108,14 +108,9 @@ for i = N:-1:1
         chain(i).m*omega_cross*omega_cross*r_i_cm];  % pg 5
     
     % DEBUG from pg 9 and 76 of Jain book
-    V_omega = [omega; 0; 0; 0];
-    V_omega_tilde = [omega_cross, zeros(3);
-                     zeros(3), omega_cross];
-    %disp('b from 76:');
-    %V_omega_tilde*M*V_omega
-    %disp('a from 79:');
-    %omega_delta = R_cur*(cur.qd*cur.forward_joint_axis); % Relative omega from this joint to next
-    %a_book = [omega_cross*omega_delta;
+    %V_omega = [omega; 0; 0; 0];
+    %V_omega_tilde = [omega_cross, zeros(3);
+                     %zeros(3), omega_cross];
               
     a = [0; ...
          0; ...
@@ -123,15 +118,13 @@ for i = N:-1:1
          omega_cross*omega_cross*r_i_cm];   % pg 4
     
     % Spatial compensation force at inbound joint.
-    
-    z = phi*zp + b + p_cur*a + phi_cm_op*M_cm*grav; % DEBUG + M*phi_cm*grav;% + b;% + M*phi_cm*grav;
-%     b
-%     disp('a:');
-%     a
-%     p_cur*a
-%     disp('H world:');
-%     H_w_frame_star
-%     G
+    z = phi*zp + phi_cm_op*M_cm*grav + p_cur*a + b;
+    fprintf('---JOINT %d---\n', i);
+    z'
+    %zp
+    %phi*zp
+     R_cur
+    %phi_cm_op*M_cm*grav
     % Velocity dependent joint force (ie: damping)
     % NOTE: Not in JPL paper.  Added by IMO
     c = -cur.damping*qd(i);

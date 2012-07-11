@@ -60,7 +60,7 @@ main(int ac, char* av[])
           ("time", po::value<float>(&sets.max_sol_time), "Length of time to simulate for.")
           ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
           ("angle",
-            po::value<double>(),
+            po::value<double>(&sets.custom_angle),
             "Initial angle of each module (ie: ignore those specified in sim.txt)")
           ("rate",
             po::value<double>(&sets.custom_rate)->default_value(0.0),
@@ -222,7 +222,7 @@ main(int ac, char* av[])
     {
         /* Make the zero torque vector */
         std::vector<double> T(num_modules);
-        std::fill(T.begin(), T.end(), 0.0);
+        std::fill(T.begin(), T.end(), sets.torque);
 
         ckbot::odeConstTorque chain_integrator(rate_machine_p->get_chain(), T);
 
@@ -259,8 +259,9 @@ main(int ac, char* av[])
                 ckbot::module_link m = ch.get_link(j);
                 Eigen::Vector3d omega_j = ch.get_angular_velocity(j);
                 Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
+                Eigen::Matrix3d R_cur = ch.get_current_R(j);
 
-                double ke_cur = ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
+                double ke_cur = ((0.5)*(omega_j.transpose()*R_cur*m.get_I_cm()*R_cur.transpose()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
                 ke += ke_cur;
                 double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
                 pe += pe_cur;
@@ -292,9 +293,9 @@ main(int ac, char* av[])
             }
 
             //std::cout << "Energy: " << ke+pe << "ke: " << ke << " pe: " << pe << std::endl;
-            std::cout << "TOTALS: " << std::endl;
+           /* std::cout << "TOTALS: " << std::endl;
             std::cout << "    KE_tot=" << ke << std::endl;
-            std::cout << "    PE_tot=" << pe << std::endl;
+            std::cout << "    PE_tot=" << pe << std::endl; */
             this_step["ke"] = ke;
             this_step["pe"] = pe;
             this_step["energy"] = ke+pe;

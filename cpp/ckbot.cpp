@@ -70,7 +70,7 @@ ckbot::rotZ(double phi)
     return Rz;
 }
 
-Eigen::Matrix3d 
+Eigen::Matrix3d
 ckbot::get_cross_mat(Eigen::Vector3d r)
 {
     /*std::cout << "Getting cross mat using " << r(1) << "...\n";*/
@@ -122,7 +122,7 @@ ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
         forward_joint_axis(m) = ((json_mod["f_jt_axis"])[m])[0u].asDouble();
         r_im1(m) = ((json_mod["r_im1"])[m])[0u].asDouble();
         r_ip1(m) = ((json_mod["r_ip1"])[m])[0u].asDouble();
-    } 
+    }
 
     Eigen::Matrix3d I_cm;
     Eigen::Matrix3d R_jts;
@@ -263,30 +263,6 @@ double
 ckbot::module_link::get_torque_max(void) const
 {
     return torque_max_;
-}
-
-/* Returns a module's 6x6 spatial
- * inertia matrix with respect to
- * its base-side joint.
- */
-/* NOTE/TODO/DEBUG: The vectors here need to be
- *    in the inertial frame because I'm doing everything
- *    there...so this is no longer used, and is done
- *    inline in the tip_base recursion.
- */
-Eigen::MatrixXd 
-ckbot::module_link::get_spatial_inertia_mat(void)
-{
-    Eigen::Matrix3d Jo;
-    Eigen::MatrixXd M_spat(6,6);
-
-    Eigen::Matrix3d L_tilde;
-    L_tilde = get_cross_mat(-r_im1_);
-    Jo = I_cm_ - m_*L_tilde*L_tilde;
-    M_spat << Jo, m_*L_tilde,
-             -m_*L_tilde, m_*(Eigen::Matrix3d::Identity());
-
-    return M_spat;
 }
 
 /* Returns a 1x6 vector that maps changes in a modules
@@ -590,42 +566,6 @@ ckbot::chain::get_link_r_tip(int i)
     return get_link_r_base(i) + get_current_R(i)*(r_im_ip);
 }
 
-/* Get the 3 vector corresponding to the linear velocity of
- * this module's CM
- */
-/*
-Eigen::Vector3d
-ckbot::chain::get_linear_velocity(int i)
-{
-    Eigen::Vector3d v_cm(0,0,0);
-    Eigen::Vector3d v_incr(0,0,0);
-    Eigen::Vector3d omega_cur(0,0,0);
-    Eigen::Matrix3d R;
-
-    Eigen::Vector3d r_step;
-    r_step = -links_[i].get_r_im1();
-    for (int cur=i; cur >= 0; cur--)
-    {
-        if (cur > 0)
-        {
-            R = get_current_R(cur-1).transpose()*get_current_R(cur);
-        }
-        else 
-        {
-            R = get_current_R(cur);
-        }
-        omega_cur = get_angular_velocity(cur);
-        v_incr = omega_cur.cross(R*r_step);
-        v_cm += v_incr;
-        
-        if (cur > 0)
-        {
-            r_step = -links_[cur-1].get_r_im1() + links_[cur-1].get_r_ip1();
-        }
-    }
-    return v_cm;
-}*/
-
 Eigen::Vector3d
 ckbot::chain::get_linear_velocity(int link_num)
 {
@@ -642,7 +582,7 @@ ckbot::chain::get_linear_velocity(int link_num)
        R_prev = (ckbot::rotZ(links_[i].get_q())*links_[i].get_R_jts()).transpose();
        r_jt_jt = -links_[i].get_r_im1() + links_[i].get_r_ip1();
        r_cm = -links_[i].get_r_im1();
-       
+ 
        v_prev = R_prev*vel_tip;
        omega = R_prev*(omega + Eigen::Vector3d(0,0,links_[i].get_qd())); //6DOF chainge
        vel_tip = v_prev + omega.cross(r_jt_jt);
@@ -783,14 +723,14 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         r_i_cm = R_cur*(-cur.get_r_im1());
 
         phi_cm = get_body_trans(r_i_cm);
-        
-        L_oc_tilde = get_cross_mat(r_i_cm);
-        J_o = cur.get_I_cm() - cur.get_mass()*L_oc_tilde*L_oc_tilde;
-        
-        M_cur << J_o, cur.get_mass()*L_oc_tilde,
-                -cur.get_mass()*L_oc_tilde, cur.get_mass()*Eigen::Matrix3d::Identity();       
 
-        M_cm << cur.get_I_cm(), Eigen::Matrix3d::Zero(),
+        L_oc_tilde = get_cross_mat(r_i_cm);
+        J_o = R_cur*cur.get_I_cm()*R_cur.transpose() - cur.get_mass()*L_oc_tilde*L_oc_tilde;
+
+        M_cur << J_o, cur.get_mass()*L_oc_tilde,
+                -cur.get_mass()*L_oc_tilde, cur.get_mass()*Eigen::Matrix3d::Identity();
+
+        M_cm << R_cur*cur.get_I_cm()*R_cur.transpose(), Eigen::Matrix3d::Zero(),
                 Eigen::Matrix3d::Zero(), cur.get_mass()*Eigen::Matrix3d::Identity();
         /* 
         std::cout << "phi':\n" << phi.transpose() << "\n";
@@ -846,20 +786,19 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
             G_all[k] = G[cur_index];
             a_all[k] = a[cur_index];
         }
-        /*
-        std::cout << "M_cur:\n" << M_cur << "\n";
-        std::cout << "phi:\n" << phi << "\n";
-        std::cout << "r_i_cm:\n" << r_i_cm << "\n";
-        std::cout << "R_cur:\n" << R_cur << "\n";
-        std::cout << "H_w_frame_star:\n "<< H_w_frame_star << "\n";
-        std::cout << "H: \n" << H << "\n";
-        std::cout << "G: \n" << G << "\n";
-        std::cout << "omega: \n" << omega << "\n";
-        std::cout << "omega_cross: \n" << omega_cross << "\n";
-        std::cout << "b: \n" << b << "\n";
-        std::cout << "a: \n" << a << "\n";
-        std::cout << "z: \n" << z << "\n";
-        */
+//        std::cout << "-- TIP BASE REPORT FOR LINK " << i << " (q=" << q[i] << ", qd=" << qd[i] << ")--" << std::endl;
+        //std::cout << "M_cur:\n" << M_cur << "\n";
+        //std::cout << "phi:\n" << phi << "\n";
+  //      std::cout << "r_i_cm:\n" << r_i_cm.transpose() << "\n";
+    //    std::cout << "R_cur:\n" << R_cur << "\n";
+        //std::cout << "H_w_frame_star:\n "<< H_w_frame_star << "\n";
+      //  std::cout << "H: \n" << H << "\n";
+        //std::cout << "G: \n" << G << "\n";
+      //  std::cout << "omega: \n" << omega.transpose() << "\n";
+        //std::cout << "omega_cross: \n" << omega_cross << "\n";
+       // std::cout << "b: \n" << b.transpose() << "\n";
+        //std::cout << "a: \n" << a.transpose() << "\n";
+        //std::cout << "z: \n" << z.transpose() << "\n";
     }
 }
 /* Returns a vector of length N corresponding to each link's qdd */

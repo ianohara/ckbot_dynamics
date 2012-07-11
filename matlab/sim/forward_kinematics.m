@@ -12,12 +12,15 @@ function vels = forward_kinematics(chain)
 %    vels(:,3,N) = angular velocity of link in link frame
 %
 
+% NOTE: AS OF 2012-07-11 THIS FUNCTION GIVES COMPLETELY
+%       INCORRECT ANSWERS
+% 
 
 N = length(chain);
 vels = zeros(3,3,N);
 
 R_first = chain(1).init_rotation*(rotZ(chain(1).q))*chain(1).R_jts;
-vels(:,3,1) = R_first*[0;0;chain(1).qd];
+vels(:,3,1) = get_angular_vel(chain, 1);
 r_jt_jt = -chain(1).r_im1 + chain(1).r_ip1;
 vels(:,1,1) = R_first*(cross(vels(:,3,1), r_jt_jt));
 vels(:,2,1) = R_first*(cross(vels(:,3,1), -chain(1).r_im1));
@@ -35,7 +38,7 @@ for i = 2:N
     % Angular velocity - Rotate about the previous link's joint axis at our
     % motor speed (which is attached at our base to the previous joint
     % axis)
-    vels(:,3,i) = R_prev*(vels(:,3,i-1) + chain(i).qd*chain(i-1).forward_joint_axis);
+    vels(:,3,i) = get_angular_vel(chain, i);
    
     % Linear velocity of our forward joint (for the next link to use)
     vels(:,1,i) = v_prev + cross(vels(:,3,i), r_jt_jt);

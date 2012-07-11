@@ -4,10 +4,17 @@ function sim = energy_conservation(varargin)
 % no input torques, the total system energy
 % should be constant.
 g = 9.81;
-N = 4;
+N = 5;
 chain(N) = new_link('HT1');
 chain = chain';
 chain(1) = new_link('HT1', 'rotate', rotY(pi/2));
+
+I_custom = [1, 0.1, 0.2; ...
+            0.1, 1, 0.3; ...
+            0.2, 0.3, 1];
+        
+%I_custom = 0.00083333*eye(3);
+        
 
 for i=2:N-1
    chain(i) = new_link('HT1');
@@ -15,6 +22,7 @@ end
 
 for i=1:N
     chain(i).damping = 0.0;
+    chain(i).I_cm = I_custom;
 end
 
 t_sim = 4; % Time length to simulate
@@ -23,8 +31,9 @@ num_s = t_sim/dt;
 
 q0 = zeros(N,1);
 q0(1) = pi/2;
+q0(2) = -pi/5;
+q0(3) = pi/5;
 qd0 = zeros(N,1);
-qd0(1) = 1;
 
 T = zeros(N, num_s);
 
@@ -42,6 +51,8 @@ for i=1:sim.s
    ch = propogate_angles_and_rates(sim.chain, sim.q(:,i), sim.qd(:,i));
    vels = forward_kinematics(ch);
    cms = cm_vectors(ch);
+   R_chain = get_chain_pos_rot(chain);
+   
    if (length(ch) > 1)
         r_cm_sys = (sum(cms')./length(ch))';
    else
@@ -49,13 +60,18 @@ for i=1:sim.s
    end
    mass_sys = length(ch)*ch(1).m;
    ke = 0.0;
-   pe = 0.0; %mass_sys*g*r_cm_sys(3);
+   pe = 0.0;
    tot = 0.0;
    for j=1:length(ch)
+       R_cur = R_chain(:,:,j);
        omeg = vels(:,3,j);
        v_cm = cm_vel(ch,j);
-       %v_cm = vels(:,2,j);
-       ke = ke + (1/2)*omeg'*ch(j).I_cm*omeg + (1/2)*ch(j).m*(v_cm'*v_cm);
+       fprintf('----LINK %d----', j);
+       omeg
+       v_cm
+       ke
+       pe
+       ke = ke + (1/2)*omeg'*(R_cur*ch(j).I_cm*R_cur')*omeg + (1/2)*ch(j).m*dot(v_cm, v_cm);
        pe = pe + ch(j).m*g*cms(3,j);  % Only z portion in pe
    end
    energies(i,:) = [(ke+pe)'; ke'; pe'];
