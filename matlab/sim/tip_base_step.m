@@ -87,7 +87,7 @@ for i = N:-1:1
     H_b_frame_star = get_joint_mat(cur)';
     H_w_frame_star = [R_cur, zeros(3);
                       zeros(3), R_cur]*H_b_frame_star;
-    H = H_w_frame_star'
+    H = H_w_frame_star';
 
     
     % Joint "Inertia"
@@ -111,8 +111,8 @@ for i = N:-1:1
     V_omega = [omega; 0; 0; 0];
     V_omega_tilde = [omega_cross, zeros(3);
                      zeros(3), omega_cross];
-    disp('b from 76:');
-    V_omega_tilde*M*V_omega
+    %disp('b from 76:');
+    %V_omega_tilde*M*V_omega
     %disp('a from 79:');
     %omega_delta = R_cur*(cur.qd*cur.forward_joint_axis); % Relative omega from this joint to next
     %a_book = [omega_cross*omega_delta;
@@ -124,10 +124,14 @@ for i = N:-1:1
     
     % Spatial compensation force at inbound joint.
     
-    z = phi*zp + b + p_cur*a + phi_cm_op*M_cm*grav % DEBUG + M*phi_cm*grav;% + b;% + M*phi_cm*grav;
-    b
-    disp('a:');
-    p_cur*a
+    z = phi*zp + b + p_cur*a + phi_cm_op*M_cm*grav; % DEBUG + M*phi_cm*grav;% + b;% + M*phi_cm*grav;
+%     b
+%     disp('a:');
+%     a
+%     p_cur*a
+%     disp('H world:');
+%     H_w_frame_star
+%     G
     % Velocity dependent joint force (ie: damping)
     % NOTE: Not in JPL paper.  Added by IMO
     c = -cur.damping*qd(i);
