@@ -61,6 +61,7 @@ struct sim_settings _DEFAULT_SETS = {
                  *  joint angle in dynamics_verifier.cpp. Any value over pi
                  *  is nonsense, so the default is just a large value to
                  *  signify that it should be ignored. */
+        1337.0, /* Same as above, but for angular rate. */
         0,      /* Debugging output? */
         true    /* Save the full planning tree? */
 };

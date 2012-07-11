@@ -57,6 +57,7 @@ struct sim_settings {
 
     float max_sol_time;
     double custom_angle; /* For use in dynamics_verifier.cpp */
+    double custom_rate;  /* For use in dynamics_verifier.cpp */
 
     unsigned int debug;
     bool save_full_tree;
