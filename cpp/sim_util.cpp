@@ -56,12 +56,13 @@ struct sim_settings _DEFAULT_SETS = {
         -1.0,   /* Minimum link torque */
         1.0,    /* Max link torque */
 
-        30,     /* Solution search timeout in [s] */
+        10,     /* Solution search timeout in [s] */
         1337.0, /* Unused in run_sim.  This is for specifying custom initial 
                  *  joint angle in dynamics_verifier.cpp. Any value over pi
                  *  is nonsense, so the default is just a large value to
                  *  signify that it should be ignored. */
         1337.0, /* Same as above, but for angular rate. */
+        0.0,    /* The torque value for dynamics verifier */
         0,      /* Debugging output? */
         true    /* Save the full planning tree? */
 };
@@ -494,17 +495,42 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
         po::options_description desc("Usage:");
         desc.add_options()
             ("help", "Give non-sensical help.")
-            ("dir", po::value<std::string>(), 
+            ("dir", po::value<std::string>(&sets.sim_dir),
                "Set the directory in which the simulation to run exists")
-            ("time", po::value<double>(), "Set the maximum runtime of the solver")
-            ("min_control_steps", po::value<unsigned int>(), "Set the minimum number of steps OMPL applies controls for")
-            ("max_control_steps", po::value<unsigned int>(), "Set the maximum number of steps OMPL applies controls for")
-            ("dt", po::value<double>(), "Set the timestep resolution OMPL uses")
-            ("max_torque", po::value<double>(), "Set the maximum torque a link can exert at its joint.")
-            ("min_torque", po::value<double>(), "Set the minimum torque a link can exert at its joint.")
+
+            ("time",
+              po::value<float>(&sets.max_sol_time),
+              "Set the maximum runtime of the solver")
+
+            ("min_control_steps",
+              po::value<unsigned int>(&sets.min_control_steps),
+              "Set the minimum number of steps OMPL applies controls for")
+
+            ("max_control_steps",
+              po::value<unsigned int>(&sets.max_control_steps),
+              "Set the maximum number of steps OMPL applies controls for")
+
+            ("dt",
+              po::value<double>(&sets.dt),
+              "Set the timestep resolution OMPL uses")
+
+            ("max_torque",
+              po::value<double>(&sets.max_torque),
+              "Set the maximum torque a link can exert at its joint.")
+
+            ("min_torque",
+              po::value<double>(&sets.min_torque),
+              "Set the minimum torque a link can exert at its joint.")
+
             ("no_tree", "Don't the entire planning tree.")
-            ("planner", po::value<unsigned int>(), "Set the planner: (0=RRT, 1=KPIECE)")
-            ("debug", "Turn on debugging output.")
+
+            ("planner",
+              po::value<unsigned int>(),
+              "Set the planner: (0=RRT, 1=KPIECE)")
+
+            ("debug",
+              po::value<unsigned int>(&sets.debug),
+             "Turn on debugging output.")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -519,41 +545,9 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
         {
             sets.planner = static_cast<enum planners>(vm["planner"].as<unsigned int>());
         }
-        if (vm.count("dir")) 
-        {
-            sets.sim_dir = vm["dir"].as<std::string>();
-        }
-        if (vm.count("time"))
-        {
-            sets.max_sol_time = vm["time"].as<double>();
-        }
-        if (vm.count("dt"))
-        {
-            sets.dt = vm["dt"].as<double>();
-        }
-        if (vm.count("min_control_steps"))
-        {
-            sets.min_control_steps = vm["min_control_steps"].as<unsigned int>();
-        }
-        if (vm.count("max_control_steps"))
-        {
-            sets.max_control_steps = vm["max_control_steps"].as<unsigned int>();
-        }
-        if (vm.count("max_torque"))
-        {
-            sets.max_torque = vm["max_torque"].as<double>();
-        }
-        if (vm.count("min_torque"))
-        {
-            sets.min_torque = vm["min_torque"].as<double>();
-        }
         if (vm.count("no_tree"))
         {
             sets.save_full_tree = false;
-        }
-        if (vm.count("debug"))
-        {
-            sets.debug = 1;
         }
     }
     catch (std::exception& e)

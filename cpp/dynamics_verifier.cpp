@@ -56,10 +56,19 @@ main(int ac, char* av[])
         po::options_description desc("Usage:");
         desc.add_options()
           ("help", "Prints this help message...")
-          ("dir", po::value<std::string>())
-          ("time", po::value<double>(), "Length of time to simulate for.")
-          ("angle", po::value<double>(), "Initial angle of each module (ie: ignore those specified in sim.txt)")
-          ("rate", po::value<double>(), "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
+          ("dir", po::value<std::string>(&sets.sim_dir))
+          ("time", po::value<float>(&sets.max_sol_time), "Length of time to simulate for.")
+          ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
+          ("angle",
+            po::value<double>(),
+            "Initial angle of each module (ie: ignore those specified in sim.txt)")
+          ("rate",
+            po::value<double>(&sets.custom_rate)->default_value(0.0),
+            "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
+
+          ("torque",
+           po::value<double>(&sets.torque)->default_value(0.0),
+           "Constant torque to apply to all joints")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -68,26 +77,6 @@ main(int ac, char* av[])
         if (vm.count("help"))
         {
             std::cout << desc << std::endl;
-        }
-        if (vm.count("dir"))
-        {
-            sets.sim_dir = vm["dir"].as<std::string>();
-        }
-        if (vm.count("debug"))
-        {
-            sets.debug = 1;
-        }
-        if (vm.count("time"))
-        {
-            sets.max_sol_time = vm["time"].as<double>();
-        }
-        if (vm.count("angle"))
-        {
-           sets.custom_angle = vm["angle"].as<double>();
-        }
-        if (vm.count("rate"))
-        {
-            sets.custom_rate = vm["rate"].as<double>();
         }
     }
     catch (std::exception& e)
