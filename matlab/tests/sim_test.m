@@ -18,30 +18,35 @@ close all
 global sim
 
 chain_single = [
-    new_link('HT2','rotate',rotY(pi/2));
+    new_link('HT1','rotate',rotY(pi/2));
     new_link('HT1');
     ];
 
 chain_single(1).damping = 0.0;
 chain_single(2).damping = 0.0;
 
+chain_single(1).I_cm = 0.00083333*eye(3);
+chain_single(2).I_cm = 0.00083333*eye(3);
+
 N = size(chain_single, 1);
 t_sim = 1.5;
 num_s = 300;
 % DEBUG
- dt = 0.01;
+ % dt = 0.01;
  t_sim = 0.02;
  num_s = 2;
 torque_history = zeros(N, num_s);
 q0 = zeros(N,1);
-q0(1) = 0;pi/12;
+q0(1) = 0;%pi/12;
+q0(2) = 0;
 %q0(2) = -pi/6;
 
 qd0 = zeros(N,1);
 qd0(1) = 1;
+qd0(2) = 1;
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
-    'torques', torque_history, 'q0', q0, 'qd0', qd0);
+    'torques', torque_history, 'q0', q0, 'qd0', qd0, 'integrator', @rk4Step);
 
 tic;
 sim = run_sim(sim, num_s);
@@ -125,6 +130,41 @@ tic;
 sim = run_sim(sim, num_s);
 toc
 draw_sim(sim,varargin{:});
+elseif ((sim_num == 4) || (~sim_num))
+
+fprintf('Running simulation number 1:\n');
+close all
+global sim
+
+chain_single = [
+    new_link('HT2','rotate',rotY(pi/2));
+    ];
+
+chain_single(1).damping = 0.0;
+
+N = size(chain_single, 1);
+t_sim = 1.5;
+num_s = 300;
+% % DEBUG
+ dt = 0.01;
+ t_sim = 0.03;
+ num_s = 3;
+torque_history = zeros(N, num_s);
+torque_history = 0.0981*ones(N, num_s); % DEBUG
+q0 = zeros(N,1);
+q0(1) = 1.57;
+
+qd0 = zeros(N,1);
+qd0(1) = 0;
+
+sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain_single, ...
+    'torques', torque_history, 'q0', q0, 'qd0', qd0);
+
+tic;
+sim = run_sim(sim, num_s);
+toc;
+
+draw_sim(sim, varargin{:}); 
 end
 %% 
 end
