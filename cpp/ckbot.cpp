@@ -304,7 +304,7 @@ ckbot::module_link::get_joint_matrix(void) const
 
     Eigen::RowVectorXd H(6);
 
-    H << Ht(0), Ht(1), Ht(2), 0, 0, 0;
+    H << Ht[0], Ht[1], Ht[2], 0, 0, 0;
     return H;
 }
 
@@ -340,10 +340,10 @@ ckbot::module_link::get_forward_joint_axis(void) const
 }
 
 /* Module frame 3x1 vector from a module's
- * CM to its base side joint. 
+ * CM to its base side joint.
  * [m]
  */
-Eigen::Vector3d 
+Eigen::Vector3d
 ckbot::module_link::get_r_im1(void) const
 {
     return r_im1_;
@@ -353,7 +353,7 @@ ckbot::module_link::get_r_im1(void) const
  * CM to its tip side joint
  * [m]
  */
-Eigen::Vector3d 
+Eigen::Vector3d
 ckbot::module_link::get_r_ip1(void) const
 {
     return r_ip1_;
@@ -491,7 +491,7 @@ ckbot::chain::get_current_R(int i)
     Eigen::Matrix3d R;
     R = links_[0].get_init_rotation();
 
-    /* Each module's joint angle is wrt the joint toward link 0
+    /* Each module's joint angle is wrt the joint toward link
      * and each module's R_jts is the rotation matrix that
      * takes the vector of its base joint (the joint at which
      * its joint angle is measured) to its tip joint
@@ -787,13 +787,11 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         L_oc_tilde = get_cross_mat(r_i_cm);
         J_o = cur.get_I_cm() - cur.get_mass()*L_oc_tilde*L_oc_tilde;
         
-        M_cur.topLeftCorner(3,3) = J_o;
-        M_cur.topRightCorner(3,3) = cur.get_mass()*L_oc_tilde;
-        M_cur.bottomLeftCorner(3,3) = -cur.get_mass()*L_oc_tilde;
-        M_cur.bottomRightCorner(3,3) = cur.get_mass()*Eigen::Matrix3d::Identity();
-       
-        M_cm.topLeftCorner(3,3) = cur.get_I_cm();
-        M_cm.bottomRightCorner(3,3) = cur.get_mass()*Eigen::Matrix3d::Identity();
+        M_cur << J_o, cur.get_mass()*L_oc_tilde,
+                -cur.get_mass()*L_oc_tilde, cur.get_mass()*Eigen::Matrix3d::Identity();       
+
+        M_cm << cur.get_I_cm(), Eigen::Matrix3d::Zero(),
+                Eigen::Matrix3d::Zero(), cur.get_mass()*Eigen::Matrix3d::Identity();
         /* 
         std::cout << "phi':\n" << phi.transpose() << "\n";
         std::cout << "pp:\n" << pp << "\n";
@@ -810,7 +808,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
 
         /* std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n"; */
         H_w_frame_star = tmp_6x6*H_b_frame_star;
-
+       
         H = H_w_frame_star.transpose();
 
         D = H*p_cur*H.transpose(); /* TODO:Could use H_w_frame_star..but..clarity */
@@ -830,7 +828,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         a.topLeftCorner(3,1) << 0,0,0;
         a.bottomLeftCorner(3,1) = omega_cross*omega_cross*r_i_cm;
 
-        z = phi*zp + p_cur*a + b + phi_cm*M_cm*grav;
+        z = phi*zp + b + p_cur*a + phi_cm*M_cm*grav;
 
         C = -cur.get_damping()*qd[i];
 
@@ -860,6 +858,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         std::cout << "omega_cross: \n" << omega_cross << "\n";
         std::cout << "b: \n" << b << "\n";
         std::cout << "a: \n" << a << "\n";
+        std::cout << "z: \n" << z << "\n";
         */
     }
 }
