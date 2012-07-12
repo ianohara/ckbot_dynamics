@@ -65,7 +65,7 @@ class Feedback( object ):
 	self.speed = speed
 	self.pwm = pwm
 	self.current = current
-	self.pos = 2*pi*pos/float(2**15)
+	self.pos = 2.0*pi*pos/2**15
 	self.timestamp = now()
 
 class moduleIface( object ):
@@ -94,6 +94,9 @@ class moduleIface( object ):
 	self.requests = []
 	self.feedback = []
 
+    def close( self ):
+	self.ser.close()
+
     def read( self, tout = 0.01 ):
 	'''
 	Returns a single valid packet where a packet is defined as:
@@ -117,8 +120,16 @@ class moduleIface( object ):
 		continue
 	    # Parse the packet 
 	    while len(self.buf) > 0:
-		self.buf = self.buf[find(self.buf, 'c')+1:]
-		length = int(self.buf[:2], 16)
+		c_ind = find(self.buf, 'c')
+		if c_ind == -1:
+		    self.buf = ''
+		    break
+		self.buf = self.buf[c_ind+1:]
+		try:
+		    length = int(self.buf[:2], 16)
+		except:
+		    self.buf = ''
+		    break 
 		if len(self.buf)-2 == length:
 		    pkt = self.buf[2:]
 		    self.buf = ''
@@ -129,6 +140,8 @@ class moduleIface( object ):
 	    dat = self.read()
 	    if dat is None:
 		return
+	self.feedback = []
+	self.requests = []
 
     def write( self, pkt ):
 	print repr(pkt)
@@ -171,7 +184,6 @@ class moduleIface( object ):
 	    pkt = self.read()
 	    if pkt is None:
 		continue
-	    print repr(pkt)
 	    # Handle request responses in a somewhat smart way
 	    if pkt[0] == self.REQUEST_RESPONSE:
 		data = self._decode_data( self.PKT_FMT[self.REQUEST_RESPONSE],
@@ -240,7 +252,7 @@ class moduleIface( object ):
 	self.requests.append( request )
 	return request
 	
-    def set_param_sync( self, m_id, param, val, perm=False, tout=0.3 ):
+    def set_param_sync( self, m_id, param, val, perm=False, tout=0.5 ):
 	'''
 	Set a parameter and then check to make sure that 
 	the correct value is returned
@@ -256,11 +268,29 @@ class moduleIface( object ):
 		req_val = req.data
 		if req_val != val:
 		    self.set_param( m_id, param, val, perm=False )
+		    sleep(0.05)
 		    req = self.request_param( m_id, param )
 		return True
-	    sleep(0.01)
+	    sleep(0.1)
 	return False
-		    
+   
+    def start( self, m_id ):
+	data = ( m_id, 0, 1 )	
+	pkt = self.COMMAND + self._encode_data( '<BhB', *data )
+	self.write(pkt)
 
+    def stop( self, m_id ):
+	data = ( m_id, 0, 2 )
+	pkt = self.COMMAND + self._encode_data( '<BhB', *data )
+	self.write(pkt)
 
+    def set_voltage( self, m_id, val ):
+	data = ( m_id, val, 0 )
+	pkt = self.COMMAND + self._encode_data( '<BhB', *data )
+	self.write(pkt)
+
+    def calibrate( self, m_id ):
+	data = ( m_id, 0, 0, 4 )
+	pkt = self.COMMAND + self._encode_data(4*'B', *data )
+	self.write(pkt)
 	    
