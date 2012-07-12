@@ -19,21 +19,69 @@ import serial
 from time import time as now, sleep
 from struct import pack, unpack
 from string import find
+from math import pi
 
+class Param( object ):
+    def __init__( self, addr, fmt, scl ):
+	self.addr = addr
+	self.fmt = fmt
+	self.scl = scl
+
+PARAM = {
+    'id' : Param( 1, 'hh', 1 ),
+    'fdbkRate' : Param( 16, 'hh', 1 ),
+    'autoOff' : Param( 17, 'hh', 1 )
+    }
+
+mP = PARAM
+
+class Message( object ):
+    def __init__( self, typ, data ):
+	self.type = typ
+	self.data = data
+
+class Request( object ):
+    def __init__( self, m_id, addr, fmt, tout=0.1 ):
+	self.id = m_id
+	self.addr = addr
+	self.fmt = fmt 
+	self.data = None
+	self.timestamp = None
+	self.tout = tout
+	self.t0 = now()
+	self.dead = False
+    
+    def hasData( self ):
+	if self.data is None:
+	    return False
+	return True
+
+    def isDead( self ):
+	return self.dead
+
+class Feedback( object ):
+    def __init__( self, m_id, speed, pwm, current, pos ):
+	self.m_id = m_id
+	self.speed = speed
+	self.pwm = pwm
+	self.current = current
+	self.pos = 2*pi*pos/float(2**15)
+	self.timestamp = now()
 
 class moduleIface( object ):
 
     NETWORK_MANAGEMENT = '000'
     EMERGENCY = '0'
     COMMAND = '1'
+    FEEDBACK = '2'
     REQUEST_RESPONSE = '5'
     REQUEST = '6'
     HB = '7'
 
     PKT_FMT = {
-	'2' : '<' + 'B' + 4*'h', 
-	'5' : '<' + 5*'B' + 2*'h',
-	'7' : '<' + 5*'B' + 2*'h'
+	FEEDBACK : '<' + 'B' + 4*'h', 
+	REQUEST_RESPONSE : '<' + 5*'B',
+	HB : '<' + 5*'B' + 'h' + 'BB'
 	}
 
     def __init__( self, dev='/dev/ttyUSB0' ):
@@ -43,6 +91,8 @@ class moduleIface( object ):
 	ser.flush()
 	self.ser = ser
 	self.buf = ''
+	self.requests = []
+	self.feedback = []
 
     def read( self, tout = 0.01 ):
 	'''
@@ -73,7 +123,13 @@ class moduleIface( object ):
 		    pkt = self.buf[2:]
 		    self.buf = ''
 		    return pkt
-    
+   
+    def flush( self ):
+	while True:
+	    dat = self.read()
+	    if dat is None:
+		return
+
     def write( self, pkt ):
 	print repr(pkt)
 	msg = 'c' + pack('B',len(pkt)).encode('hex').upper() + pkt + '\r'
@@ -102,21 +158,109 @@ class moduleIface( object ):
 	Look at first byte of packet to determine msg type then decode 
 	pkt data 
 	'''
-	pass	
+	print repr( self.PKT_FMT[ pkt[0] ] )
+	data = self._decode_data( self.PKT_FMT[pkt[0]], pkt[1:] )
+	return Message( pkt[0], data )
+
+    def update( self, tout=0.01 ):
+	t0 = now()
+	while True:
+	    curtime = now()
+	    if curtime-t0 > tout:
+		break
+	    pkt = self.read()
+	    if pkt is None:
+		continue
+	    print repr(pkt)
+	    # Handle request responses in a somewhat smart way
+	    if pkt[0] == self.REQUEST_RESPONSE:
+		data = self._decode_data( self.PKT_FMT[self.REQUEST_RESPONSE],
+		pkt[1:-8] )
+		m_id = data[0]
+		addr = data[1]
+		req_len = len(self.requests)
+		cnt = 0
+		while cnt < req_len:
+		    request = self.requests.pop(0)
+		    if request.id == m_id:
+			if request.addr == addr:
+			    request.data = self._decode_data( request.fmt,
+			    pkt[-8:] )[0]
+			    request.timestamp = curtime
+			    break
+		    self.requests.append( request )
+		    cnt += 1 
+	    # Handle feedback
+	    if pkt[0] == self.FEEDBACK:
+		data = self._decode_data( self.PKT_FMT[self.FEEDBACK], pkt[1:]
+		)
+		self.feedback.append( Feedback( *data ))
+
+	    # Get rid of out of timed out requests
+	    req_len = len(self.requests)
+	    cnt = 0
+	    while cnt < req_len:
+		if len(self.requests) == 0:
+		    break
+		request = self.requests.pop(0)
+		if curtime - request.t0 > request.tout:
+		    request.dead = True
+		    continue
+		self.requests.append( request )
+		cnt += 1
 
     def _decode_data( self, fmt, buf ):
 	return unpack( fmt, buf.lower().decode('hex'))
 
-    def _encode_data( self, fmt, buf ):
-	return pack(fmt, buf).encode('hex').upper()
+    def _encode_data( self, fmt, *buf ):
+	return pack(fmt, *buf).encode('hex').upper()
+	
+    def set_param( self, m_id, param, val, perm=False ):
+	if not mP.has_key( param ):
+	    print "paraemeter not in mP"
+	    return
+	if perm:
+	    addr = mP[param].addr
+	else:
+	    addr = 256-mP[param].addr
+	data = ( m_id, addr, 0, 0, 0,  val )
+	pkt = self.REQUEST + self._encode_data( '<'+5*'B'+mP[param].fmt[0], *data )
+	self.write( pkt )
 
-    def set_voltage( self, val ):
-	msg = '120' + pack('<h', val).encode('hex').upper()	
-	self.write( msg ) 
+    def request_param( self, m_id, param ):
+	if not mP.has_key( param ):
+	    print "param not in mP"
+	    return
+	addr = mP[param].addr
+	fmt = mP[param].fmt
+	data = ( m_id, 0, addr )
+	pkt = self.REQUEST + self._encode_data( '<'+3*'B', *data )
+	self.write( pkt )
+	request = Request( m_id, addr, fmt )
+	self.requests.append( request )
+	return request
 	
- 
-	
+    def set_param_sync( self, m_id, param, val, perm=False, tout=0.3 ):
+	'''
+	Set a parameter and then check to make sure that 
+	the correct value is returned
+	'''
+	self.set_param( m_id, param, val, perm=False )
+	if perm:
+	    sleep(1.0)
+	req = self.request_param( m_id, param )
+	t0 = now()
+	while now()-t0 < tout:
+	    self.update()
+	    if req.hasData():
+		req_val = req.data
+		if req_val != val:
+		    self.set_param( m_id, param, val, perm=False )
+		    req = self.request_param( m_id, param )
+		return True
+	    sleep(0.01)
+	return False
+		    
 
-	    
-	
+
 	    
