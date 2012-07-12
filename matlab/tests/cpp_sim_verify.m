@@ -87,7 +87,7 @@ q0 = s0(1:N);
 qd0 = s0(N+1:end);
 
 sim = new_sim('steps', num_s, 'sim_time', t_sim, 'chain', chain, ...
-    'torques', T, 'q0', q0, 'qd0', qd0,'dt', dt, 'integrator', @rk4step);
+    'torques', T, 'q0', q0, 'qd0', qd0,'dt', dt, 'integrator', @rk4Step);
 
 tic;
 sim = run_sim(sim, num_s);
@@ -131,15 +131,14 @@ if (overlay)
    title('Time History of C++ Planned System','FontSize', 14);
    xlabel('Time [s]','FontSize', 14);
    ylabel('Joint Angle [rad]','FontSize',14);
-   plot(t_cpp,q_cpp,'LineWidth',2);   
-   
+   plot(t_cpp,q_cpp,'-o','LineWidth',2);  
    
    subplot(212);
    grid on;
    hold on;
    xlabel('Time [s]', 'FontSize', 14);
    ylabel('Joint Angular Velocity [rad/s]', 'FontSize', 14);
-   plot(t_cpp, qd_cpp,'LineWidth',2);
+   plot(t_cpp, qd_cpp,'-o','LineWidth',2);
    legend(legend_strs);
    
    

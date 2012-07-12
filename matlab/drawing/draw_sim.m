@@ -167,10 +167,10 @@ hold on;
 if  (props.draw_plots)
     figure(plot_fig)
     subplot(joint_ang_sp);
-    plot(step_times, sim.q(props.to_plot,1:end),'LineWidth',2);
+    plot(step_times, sim.q(props.to_plot,1:end),'-o','LineWidth',2);
     hold on;
     subplot(joint_vel_sp);
-    plot(step_times, sim.qd(props.to_plot,1:end),'LineWidth',2);
+    plot(step_times, sim.qd(props.to_plot,1:end),'-o','LineWidth',2);
     hold on;
     legend_strs = {};
     for i=1:length(props.to_plot)

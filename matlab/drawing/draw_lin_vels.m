@@ -21,7 +21,7 @@ for i=1:length(chain)
     r_cm = r_base - R*(chain(i).r_im1);
     r_base = r_cm + R*(chain(i).r_ip1);
     
-    draw_arrow(r_cm, r_cm+R*vels(:,1,i));
+    draw_arrow(r_cm, r_cm+R*vels(:,2,i));
 end
 
 end

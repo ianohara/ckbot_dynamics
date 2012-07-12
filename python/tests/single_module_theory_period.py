@@ -8,7 +8,7 @@ sys.path.append("..")
 
 from Energy import ETree
 
-e = ETree(file='../cpp/test_sims/single_module_tests/theory_period/results/energy.txt')
+e = ETree(file='../../cpp/tests/single_module_tests/theory_period/results/energy.txt')
 
 chain = e._ETree__results["chain"]
 r_im1 = numpy.array(chain[0]["r_im1"])

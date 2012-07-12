@@ -20,6 +20,12 @@ for i = 1:steps-1
     sim.q(:,i+1) = q_n;
     sim.qd(:,i+1) = qd_n;
     sim.s = sim.s+1;
+    t_e = sum(sim.dt(1:i));
+    t_s = t_e - sim.dt(i);
+    fprintf('Step %d State (t_start=%2.3f, t_end=%2.3f):', i, t_s, t_e); 
+    [q_n; qd_n]'
+    fprintf('  Torque=');
+    sim.T(:,i)
 end
 
 end

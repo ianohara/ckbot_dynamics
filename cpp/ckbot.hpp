@@ -80,7 +80,7 @@ namespace ckbot
  
             module_link& operator=(module_link& source);
 
-            Eigen::MatrixXd get_spatial_inertia_mat(void);
+            /*Eigen::MatrixXd get_spatial_inertia_mat(void);*/ /* No longer used */
             Eigen::RowVectorXd get_joint_matrix(void) const;
 
             Json::Value describe_self(void);

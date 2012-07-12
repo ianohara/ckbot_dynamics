@@ -11,6 +11,7 @@ function phi = get_bod_trans(r)
 I = eye(3);
 Z = zeros(3);
 C = get_cross_mat(r);
-phi = [I, C; Z, I];
+phi = [I, C; 
+       Z, I];
 
 end

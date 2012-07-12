@@ -24,7 +24,7 @@
 #include<boost/bind.hpp>
 
 /* BLARGG!  This is a ridiculous hack.  OMPL packages odeint with its source, and so
- * links to it in a funky way.
+ * defines its own ompl specific namespace for the odeint code.
  */
 #include<omplext_odeint/boost/numeric/odeint.hpp>
 namespace ode = boost::numeric::omplext_odeint;
@@ -56,9 +56,19 @@ main(int ac, char* av[])
         po::options_description desc("Usage:");
         desc.add_options()
           ("help", "Prints this help message...")
-          ("dir", po::value<std::string>())
-          ("time", po::value<double>(), "Length of time to simulate for.")
-          ("angle", po::value<double>(), "Initial angle of each module (ie: ignore those specified in sim.txt)")
+          ("dir", po::value<std::string>(&sets.sim_dir))
+          ("time", po::value<float>(&sets.max_sol_time), "Length of time to simulate for.")
+          ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
+          ("angle",
+            po::value<double>(&sets.custom_angle),
+            "Initial angle of each module (ie: ignore those specified in sim.txt)")
+          ("rate",
+            po::value<double>(&sets.custom_rate)->default_value(0.0),
+            "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
+
+          ("torque",
+           po::value<double>(&sets.torque)->default_value(0.0),
+           "Constant torque to apply to all joints")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -67,22 +77,6 @@ main(int ac, char* av[])
         if (vm.count("help"))
         {
             std::cout << desc << std::endl;
-        }
-        if (vm.count("dir"))
-        {
-            sets.sim_dir = vm["dir"].as<std::string>();
-        }
-        if (vm.count("debug"))
-        {
-            sets.debug = 1;
-        }
-        if (vm.count("time"))
-        {
-            sets.max_sol_time = vm["time"].as<double>();
-        }
-        if (vm.count("angle"))
-        {
-           sets.custom_angle = vm["angle"].as<double>();
         }
     }
     catch (std::exception& e)
@@ -202,7 +196,17 @@ main(int ac, char* av[])
         {
             s0[i] = sets.custom_angle;
         }
-        std::cout << "Using a custom initial joint angle for the modules (" << sets.custom_angle << ")." << std::endl;
+        std::cout << "Using a custom initial joint angle for the modules ("
+                  << sets.custom_angle << ")." << std::endl;
+    }
+    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
+    {
+        for (int i=0; i < num_modules; i++)
+        {
+            s0[num_modules+i] = sets.custom_rate;
+        }
+        std::cout << "Using a custom initial joint rate for modules ("
+                  << sets.custom_rate << ")." << std::endl;
     }
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
@@ -218,7 +222,7 @@ main(int ac, char* av[])
     {
         /* Make the zero torque vector */
         std::vector<double> T(num_modules);
-        std::fill(T.begin(), T.end(), 0.0);
+        std::fill(T.begin(), T.end(), sets.torque);
 
         ckbot::odeConstTorque chain_integrator(rate_machine_p->get_chain(), T);
 
@@ -237,6 +241,8 @@ main(int ac, char* av[])
         const double sim_time = sets.max_sol_time;
         for (double t = 0.0; t < sim_time; t += dt)
         {
+            stepper.do_step(chain_integrator, s_cur, t, dt);
+
             Json::Value this_step(Json::objectValue);
             Json::Value this_state(Json::arrayValue);
 
@@ -253,8 +259,9 @@ main(int ac, char* av[])
                 ckbot::module_link m = ch.get_link(j);
                 Eigen::Vector3d omega_j = ch.get_angular_velocity(j);
                 Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
+                Eigen::Matrix3d R_cur = ch.get_current_R(j);
 
-                double ke_cur = ((0.5)*(omega_j.transpose()*m.get_I_cm()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
+                double ke_cur = ((0.5)*(omega_j.transpose()*R_cur*m.get_I_cm()*R_cur.transpose()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
                 ke += ke_cur;
                 double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
                 pe += pe_cur;
@@ -286,22 +293,15 @@ main(int ac, char* av[])
             }
 
             //std::cout << "Energy: " << ke+pe << "ke: " << ke << " pe: " << pe << std::endl;
-            std::cout << "TOTALS: " << std::endl;
+           /* std::cout << "TOTALS: " << std::endl;
             std::cout << "    KE_tot=" << ke << std::endl;
-            std::cout << "    PE_tot=" << pe << std::endl;
+            std::cout << "    PE_tot=" << pe << std::endl; */
             this_step["ke"] = ke;
             this_step["pe"] = pe;
             this_step["energy"] = ke+pe;
             this_step["state"] = this_state;
             this_ver.append(this_step);
-            /* We'll store this step next time through. Note this
-             * means we don't store the last step here, so we need
-             * to outside the loop
-             */
-            stepper.do_step(chain_integrator, s_cur, t, dt);
         }
-        /* TODO: Store last step in this_ver here.
-         * Right now we just miss the last step */
         verifications.append(this_ver);
     }
     result_root["verifications"] = verifications;

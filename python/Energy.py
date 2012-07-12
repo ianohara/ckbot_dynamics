@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 from matplotlib import pyplot as pp, cm
-import numpy, sys, json
+import numpy, sys, json, time
 
 class ETree( object ):
     def __init__(self, file=None):
         with open(file, 'r') as f:
             self.__results = json.loads(f.read())
-        
+
         self._verifications = self.__results["verifications"][0]
 
         self.states = [s['state'] for s in self._verifications]
@@ -20,7 +20,7 @@ class ETree( object ):
         assert len(self.states[0]) % 2 == 0, 'The number of states must be even (ie: module_count*2)'
         assert all([len(s) == len(self.states) for s in [self.energy, self.ke, self.pe, self.time]]), "Number of states, energy, ke, pe, and time entries in 'verifications' root level dictionary of json result file must be the same."
 
-        self.module_count = len(self.states[0]) % 2
+        self.module_count = len(self.states[0]) / 2
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -32,13 +32,25 @@ if __name__ == "__main__":
     e = ETree(file=res_file)
 
     pp.figure(1)
+    pp.subplot(211)
     pp.hold(True)
-    pp.title('Total Energy Over Time (Module Count = %d)' % e.module_count)
+    pp.title('Total Energy Over Time (Module Count = %d with q0 = %2.2f [rad])' % (e.module_count, e.states[0][0]))
 
     pp.plot(e.time, e.energy, 'or')
     pp.plot(e.time, e.ke, 'b')
     pp.plot(e.time, e.pe, 'g')
 
     pp.legend(('Total Energy', 'Kinetic', 'Potential'))
+    pp.xlabel('Time [s]')
+    pp.ylabel('Energy [J]')
     pp.grid(True)
+
+    pp.subplot(212)
+    pp.hold(True)
+    pp.plot(e.time, e.energy - e.energy[0]*numpy.ones(len(e.energy)))
+    pp.xlabel('Time [s]')
+    pp.ylabel('Change in Energy [J]')
+    pp.grid(True)
+
+    pp.savefig("images/total_energy_plot_mods_%d_q0_eq_%f_epochtime_%d.png" % (e.module_count, e.states[0][0], int(time.time())), dpi=480)
     pp.show()
