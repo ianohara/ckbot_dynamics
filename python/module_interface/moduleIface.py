@@ -65,7 +65,10 @@ class Feedback( object ):
 	self.speed = speed
 	self.pwm = pwm
 	self.current = current
+	self.pos_raw = pos
 	self.pos = 2.0*pi*pos/2**15
+	if self.pos > pi:
+	    self.pos = self.pos - 2*pi
 	self.timestamp = now()
 
 class moduleIface( object ):
@@ -136,10 +139,13 @@ class moduleIface( object ):
 		    return pkt
    
     def flush( self ):
+	'''
 	while True:
 	    dat = self.read()
 	    if dat is None:
 		return
+	'''
+	self.ser.flushInput()
 	self.feedback = []
 	self.requests = []
 
@@ -286,6 +292,13 @@ class moduleIface( object ):
 
     def set_voltage( self, m_id, val ):
 	data = ( m_id, val, 0 )
+	pkt = self.COMMAND + self._encode_data( '<BhB', *data )
+	self.write(pkt)
+
+    def set_pos( self, m_id, val ):
+	val = int(2**15*val/(2.0*pi))
+	print "val_raw: %d" % val
+	data = ( m_id, val, 3 )
 	pkt = self.COMMAND + self._encode_data( '<BhB', *data )
 	self.write(pkt)
 
