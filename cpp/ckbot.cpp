@@ -52,7 +52,7 @@ struct ckbot::module_description _ZERO_MODULE = {0.0,
 inline Eigen::Matrix3d
 ckbot::rotX(double phi)
 {
-    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitX());
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitX()).matrix();
 }
 
 /* 3x3 Rotation matrix corresponding to rotating about the
@@ -61,19 +61,24 @@ ckbot::rotX(double phi)
 inline Eigen::Matrix3d
 ckbot::rotY(double phi)
 {
-    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitY());
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitY()).matrix();
 }
 
+/* 3x3 Rotation matrix corresponding to rotating about
+ * the Z axis by angle phi [rad]
+ */
 inline Eigen::Matrix3d
 ckbot::rotZ(double phi)
 {
-    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ()).matrix();
 }
 
+/* If both r and v are 3x1 vectors, then:
+ *   r x v = cross(r,v) = get_cross_mat(r)*v
+ */
 Eigen::Matrix3d
 ckbot::get_cross_mat(Eigen::Vector3d r)
 {
-    /*std::cout << "Getting cross mat using " << r(1) << "...\n";*/
     Eigen::Matrix3d r_cross;
     r_cross << 0,   -r[2], r[1],
                r[2], 0,   -r[0],
@@ -81,22 +86,27 @@ ckbot::get_cross_mat(Eigen::Vector3d r)
     return r_cross;
 }
 
+/* Returns the 6x6 matrix operator that can be
+ * used to change the viewpoint of a spatial vector.
+ * IE: if we have a spatial vector V_a at point a then
+ *     the same vector expressed at point b, V_b, is:
+ *         V_b = get_body_trans(r_b_to_a)*V_b
+ */
 Eigen::MatrixXd
 ckbot::get_body_trans(Eigen::Vector3d r)
 {
     /*std::cout << "Getting body trans...\n";*/
     Eigen::MatrixXd phi(6,6);
 
-    Eigen::Matrix3d r_cross;
-    r_cross = get_cross_mat(r);
-
-    phi << Eigen::Matrix3d::Identity(), r_cross,
+    phi << Eigen::Matrix3d::Identity(), get_cross_mat(r),
            Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
 
     return phi;
 }
 
-
+/* Fill a module object from a json module dictionary that has
+ * keys matching the module proerty names
+ */
 bool
 ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
 {
@@ -151,8 +161,8 @@ ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     this_module_desc.init_rotation = init_rotation;
 
     ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
-    /* TODO: This doesn't really make sense.  Should make module pointer point to the newly allocated memory, not copy the newly allocated memory */
-    *module = *this_module;
+
+    module = this_module;
 
     return true;
 }
@@ -249,17 +259,22 @@ ckbot::module_link::~module_link(void)
 {
 }
 
-double
+/* Min allowed joint angle [rad] */
+inline double
 ckbot::module_link::get_joint_min(void) const
 {
     return joint_min_;
 }
-double
+
+/* Max allowed joint angle [rad] */
+inline double
 ckbot::module_link::get_joint_max(void) const
 {
     return joint_max_;
 }
-double
+
+/* Max allowed motor torque in [Nm] */
+inline double
 ckbot::module_link::get_torque_max(void) const
 {
     return torque_max_;
@@ -288,7 +303,7 @@ ckbot::module_link::get_joint_matrix(void) const
  * in Radians.
  * [rad]
  */
-double
+inline double
 ckbot::module_link::get_q(void) const
 {
     return q_;
@@ -298,16 +313,18 @@ ckbot::module_link::get_q(void) const
  * base side neighbor. In radians/second.
  * [rad/s]
  */
-double
+inline double
 ckbot::module_link::get_qd(void) const
 {
     return qd_;
 }
 
 /* Returns a 3x1 vector that defines
- * the joint connecting a module to its
+ * the joint axis connecting a module to its
  * tip side neighbor.  This needs to be a unit vector,
  * and should be written in the module's frame.
+ *
+ * TODO: Is this even used?
  */
 Eigen::Vector3d
 ckbot::module_link::get_forward_joint_axis(void) const
@@ -319,7 +336,7 @@ ckbot::module_link::get_forward_joint_axis(void) const
  * CM to its base side joint.
  * [m]
  */
-Eigen::Vector3d
+inline Eigen::Vector3d
 ckbot::module_link::get_r_im1(void) const
 {
     return r_im1_;
@@ -329,7 +346,7 @@ ckbot::module_link::get_r_im1(void) const
  * CM to its tip side joint
  * [m]
  */
-Eigen::Vector3d
+inline Eigen::Vector3d
 ckbot::module_link::get_r_ip1(void) const
 {
     return r_ip1_;
@@ -340,7 +357,7 @@ ckbot::module_link::get_r_ip1(void) const
  * module's CM
  * [m^4]
  */
-Eigen::Matrix3d
+inline Eigen::Matrix3d
 ckbot::module_link::get_I_cm(void) const
 {
     return I_cm_;
@@ -349,7 +366,7 @@ ckbot::module_link::get_I_cm(void) const
 /* The rotation matrix from a module's base joint vector
  * to its tip joint vector.
  */
-Eigen::Matrix3d
+inline Eigen::Matrix3d
 ckbot::module_link::get_R_jts(void) const
 {
     return R_jts_;
@@ -362,7 +379,7 @@ ckbot::module_link::get_R_jts(void) const
  * first in a chain.  It allows arbitrary orientaions
  * of the first link in a chain.
  */
-Eigen::Matrix3d
+inline Eigen::Matrix3d
 ckbot::module_link::get_init_rotation(void) const
 {
     return init_rotation_;
@@ -372,7 +389,7 @@ ckbot::module_link::get_init_rotation(void) const
  * base side (where its motor/DOF is) joint.  
  * [N*m*s]
  */
-double
+inline double
 ckbot::module_link::get_damping(void) const
 {
     return damping_;
@@ -381,7 +398,7 @@ ckbot::module_link::get_damping(void) const
 /* Returns a module's mass.
  * [kg]
  */
-double
+inline double
 ckbot::module_link::get_mass(void) const
 {
     return m_;
@@ -408,7 +425,7 @@ ckbot::module_link::set_qd(double qd)
     qd_ = qd;
 }
 
-/* Set a module's damping */
+/* Set a module's damping in [Nm/s] (ie: [rad/s]*[N/m]) */
 void
 ckbot::module_link::set_damping(double damping)
 {
@@ -449,7 +466,7 @@ ckbot::chain::describe_self(void)
  * to be able to define a sort of "current module"
  * reference. This serves the purpose. 
  */
-ckbot::module_link& 
+ckbot::module_link&
 ckbot::chain::get_link(int i)
 {
     return links_[i];
@@ -460,6 +477,12 @@ ckbot::chain::get_link(int i)
  * walks and composes module's rotations together to get
  * the rotation matrix that brings the i-th module from
  * its module frame to the world frame.
+ *
+ * TODO: Write another version of this that fills in a
+ *       3 x 3N matrix with all the rotation matricies for
+ *       the current chain configuration.
+ *       Then move this outside of the loops in tip_base_step
+ *          and base_tip_step.
  */
 Eigen::Matrix3d
 ckbot::chain::get_current_R(int i)
@@ -481,7 +504,7 @@ ckbot::chain::get_current_R(int i)
     return R;
 }
 
-int
+inline int
 ckbot::chain::num_links(void)
 {
     return N_;
@@ -494,7 +517,8 @@ ckbot::chain::num_links(void)
  * references to vectors of q and qd.
  */
 void
-ckbot::chain::propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd)
+ckbot::chain::propogate_angles_and_rates(std::vector<double> q,
+                                         std::vector<double> qd)
 {
     for (int i=0; i<N_; ++i)
     {
@@ -553,7 +577,6 @@ ckbot::chain::get_link_r_base(int i)
 Eigen::Vector3d
 ckbot::chain::get_link_r_cm(int i)
 {
-//    std::cout << "DEBUG: For link " << i << "getting r_cm: \n\tr_base = " << get_link_r_base(i) << "\n\t i's R=" << get_current_R(i) << std::endl;
     return (get_link_r_base(i) + get_current_R(i)*(-links_[i].get_r_im1()));
 }
 
@@ -566,6 +589,7 @@ ckbot::chain::get_link_r_tip(int i)
     return get_link_r_base(i) + get_current_R(i)*(r_im_ip);
 }
 
+/* Used in calculating system energy in the energy conservation tests */
 Eigen::Vector3d
 ckbot::chain::get_linear_velocity(int link_num)
 {
@@ -660,6 +684,9 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         qd[i] = s[N+i];
     }
 
+    Eigen::Matrix3d Iden = Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d Zero = Eigen::Matrix3d::Zero();
+
     /* Declare and initialized all of the loop variables */
 
     /* TODO: Can we allocate all of this on the heap *once* for a particular
@@ -716,44 +743,113 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
     for (int i = N-1; i >= 0; --i)
     {
         module_link& cur = c.get_link(i);
+        /* Rotation from the world to this link */
         R_cur = c.get_current_R(i);
+
+        /* Vector, in world frame, from inbound joint to outbound joint of
+         * this link
+         */
         r_i_ip = R_cur*(cur.get_r_ip1() - cur.get_r_im1());
+
+        /* Operator to transform spatial vectors from outbound joint
+         * to the inbound joint
+         */
         phi = get_body_trans(r_i_ip);
 
+        /* Vector from the inbound joint to the center of mass */
         r_i_cm = R_cur*(-cur.get_r_im1());
 
+        /* Operator to transform spatial vectors from the center of mass
+         * to the inbound joint
+         */
         phi_cm = get_body_trans(r_i_cm);
 
+        /* Cross product matrix corresponding to the vector from
+         * the inbound joint to the center of mass
+         */
         L_oc_tilde = get_cross_mat(r_i_cm);
+
+        /* 3x3 Inertia matrix of this link about its inbound joint and wrt the
+         * world coordinate system.
+         *
+         * NOTE: Similarity transform of get_I_cm() because it is wrt
+         *       the module frame
+         */
         J_o = R_cur*cur.get_I_cm()*R_cur.transpose() - cur.get_mass()*L_oc_tilde*L_oc_tilde;
 
+        /* Spatial mass matrix of this link about its inbound joint and wrt the
+         * world coordinate system.
+         *
+         */
         M_cur << J_o, cur.get_mass()*L_oc_tilde,
-                -cur.get_mass()*L_oc_tilde, cur.get_mass()*Eigen::Matrix3d::Identity();
+                -cur.get_mass()*L_oc_tilde, cur.get_mass()*Iden;
 
-        M_cm << R_cur*cur.get_I_cm()*R_cur.transpose(), Eigen::Matrix3d::Zero(),
-                Eigen::Matrix3d::Zero(), cur.get_mass()*Eigen::Matrix3d::Identity();
-        /* 
-        std::cout << "phi':\n" << phi.transpose() << "\n";
-        std::cout << "pp:\n" << pp << "\n";
-        std::cout << "pp*phi':\n" << pp*phi.transpose() << "\n";
-        */
+        /* Spatial mass matrix of this link about its cm and wrt the
+         * world coordinate system.
+         *
+         * NOTE: Similarity transform of get_I_cm() because it is wrt
+         *       the module frame
+         */
+        M_cm << R_cur*cur.get_I_cm()*R_cur.transpose(), Zero,
+                Zero, cur.get_mass()*Iden;
+
+        /* Articulated Body Spatial inertia matrix of the links from
+         * this one all the way to the tip of the chain (accounting for
+         * articulated body spatial inertia that gets through each joint)
+         *
+         * pp is p_cur from the previous (outbound) link.  This is the
+         * zero vector when we are on the farthest outbound link (the tip)
+         *
+         * In much the same way that we use a similarity transform to change
+         * the frame of the inertia matrix, a similarity transform moves
+         * pp from the previous module's base joint to this module's base joint.
+         */
         p_cur = phi*pp*phi.transpose() + M_cur;
-        /* std::cout << "p_cur:\n" << p_cur << "\n"; */
 
+        /* The joint matrix, in the body frame, that maps the change
+         * in general coordinates relating this link to the next inward link.
+         *
+         * It essentially defines what "gets through" a link.  IE:
+         * H_b_frame_star = [0,0,1,0,0,0] means that movements and forces
+         * in the joint's rotational Z axis get through. This is a single
+         * DOF rotational joint.
+         *
+         * H_b_frame_star = eye(6) means that forces in all 6 
+         * (3 rotational, 3 linear) get through the joint using
+         * 6 independent general coordinates.  This is a
+         * free 6DOF joint.
+         *
+         * H_b_frame_star = [0,0,2,0,0,1] is helical joint that rotates twice
+         *     for every single linear unit moved.  It is controlled by a single
+         *     general coordinate.
+         *
+         * (NOTE/TODO: Using anything but [0,0,1,0,0,0] breaks the code right now.)
+         */
         H_b_frame_star = cur.get_joint_matrix().transpose();
 
+        /* To transform a spatial vector (6 x 1) from one coordinate
+         * system to another, multiply it by the 6x6 matrix with
+         * the rotation matrix form one frame to the other on the diagonals
+         */
         Eigen::MatrixXd tmp_6x6(6,6);
         tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
                    Eigen::Matrix3d::Zero(), R_cur;
 
-        /* std::cout << "tmp 6x6: \n" << tmp_6x6 << "\n"; */
+        /* Joint matrix in the world frame */
         H_w_frame_star = tmp_6x6*H_b_frame_star;
-       
+
+        /* As a row vector */
         H = H_w_frame_star.transpose();
 
         D = H*p_cur*H.transpose(); /* TODO:Could use H_w_frame_star..but..clarity */
-        G = p_cur*H.transpose()*(1.0/D);
 
+        /* TODO: This needs to be changed to D.inverse() for 6DOF
+         *       and D needs to be made a variable sized Eigen Matrix 
+         */
+        G = p_cur*H.transpose()*(1.0/D); 
+        /* Articulated body projection operator through this joint.  This defines
+         * which part of the articulated body spatial inertia gets through this joint
+         */
         tau_tilde = Eigen::MatrixXd::Identity(6,6) - G*H;
 
         /* pp for the next time around the loop */
@@ -762,45 +858,52 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
         omega = c.get_angular_velocity(i);
         omega_cross = get_cross_mat(omega);
 
-        b.topLeftCorner(3,1) = omega_cross*J_o*omega;
-        b.bottomLeftCorner(3,1) = cur.get_mass()*omega_cross*omega_cross*r_i_cm;
+        /* Gyroscopic force */
+        b << omega_cross*J_o*omega,
+         cur.get_mass()*omega_cross*omega_cross*r_i_cm;
 
-        a.topLeftCorner(3,1) << 0,0,0;
-        a.bottomLeftCorner(3,1) = omega_cross*omega_cross*r_i_cm;
+        /* Coriolis and centripetal accel  */
+        a << Zero,
+             omega_cross*omega_cross*r_i_cm;
 
+        /* z is the total spatial force seen by this link at its inward joint
+         *   phi*zp = Force through joint from tip-side module
+         *   b = Gyroscopic force (velocity dependent)
+         *   p_cur*a = Coriolis and Centripetal forces
+         *   phi_cm*M_cm*grav = Force of grav at CM transformed to inbound jt
+         */
         z = phi*zp + b + p_cur*a + phi_cm*M_cm*grav;
 
+        /* Velocity related damping force in the joint */
+        /* TODO: 6DOF change.  epsilon will be an matrix when the joint
+         *       matrix is not a row matrix, so using C in the calculation
+         *       of epsilon will break things.
+         */
         C = -cur.get_damping()*qd[i];
 
+        /* The "Effective" force through the joint that can actually create
+         * accelerations.  IE: Forces that are in directions in which the joint
+         * can actually move.
+         *
+         * TODO: 6DOF change.  Epsilon will not be 1x1 for a 6DOF joint, so
+         *       both T[i] and C used here as they are will break things.
+         */
         epsilon = T[i] + C - H*z;
 
-        mu = (1/D)*epsilon;
+        mu = (1/D)*epsilon; /* 6DOF change: D will be a matrix, need to invert it */
         zp = z + G*epsilon;
 
+        /* base_tip_step needs G, a, and mu.  So store them in the chain object.*/
         mu_all[i] = mu;
-        /*std::cout << "Filling the vectors needed by base to tip....\n";*/
         int cur_index=0;
         for (int k=(6*i); k <= (6*(i+1)-1); ++k,++cur_index)
         {
-            /*std::cout << "k is: " << k << " cur_index is: " << cur_index << "\n";*/
             G_all[k] = G[cur_index];
             a_all[k] = a[cur_index];
         }
-//        std::cout << "-- TIP BASE REPORT FOR LINK " << i << " (q=" << q[i] << ", qd=" << qd[i] << ")--" << std::endl;
-        //std::cout << "M_cur:\n" << M_cur << "\n";
-        //std::cout << "phi:\n" << phi << "\n";
-  //      std::cout << "r_i_cm:\n" << r_i_cm.transpose() << "\n";
-    //    std::cout << "R_cur:\n" << R_cur << "\n";
-        //std::cout << "H_w_frame_star:\n "<< H_w_frame_star << "\n";
-      //  std::cout << "H: \n" << H << "\n";
-        //std::cout << "G: \n" << G << "\n";
-      //  std::cout << "omega: \n" << omega.transpose() << "\n";
-        //std::cout << "omega_cross: \n" << omega_cross << "\n";
-       // std::cout << "b: \n" << b.transpose() << "\n";
-        //std::cout << "a: \n" << a.transpose() << "\n";
-        //std::cout << "z: \n" << z.transpose() << "\n";
     }
 }
+
 /* Returns a vector of length N corresponding to each link's qdd */
 std::vector<double>
 ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
@@ -833,45 +936,62 @@ ckbot::chain_rate::base_tip_step(std::vector<double> s, std::vector<double> T)
     Eigen::VectorXd H_b_frame_star(6);
     Eigen::VectorXd H_w_frame_star(6);
     Eigen::RowVectorXd H(6);
-    /*std::cout << "Starting base to tip loop with " << N << " modules.\n";*/
+
     for (int i=0; i<N; ++i)
     {
-        /*std::cout << "--- At link..." << i << "\n";*/
         module_link& cur = c.get_link(i);
+
+        /* 3x3 Rotation matrix from this link's coordinate
+         * frame to the world frame
+         */
         R_cur = c.get_current_R(i);
+
+        /* Vector, in world frame, from this link's inbound joint to its
+         * outbound joint
+         */
         r_i_ip = R_cur*(cur.get_r_ip1() - cur.get_r_im1());
+
+        /* 6x6 Spatial body operator matrix that transforms spatial
+         * vectors from the outbound joint to the inbound joint in
+         * the world frame
+         */
         phi = get_body_trans(r_i_ip);
 
+        /* Transform the spatial accel vector from the inbound
+         * link's inbound joint to this link's inbound joint
+         */
         alpha_p = phi.transpose()*alpha;
 
+        /* These are calculated in tip_base_step */
         int cur_index = 0;
         for (int k = (6*i); k <= (6*(i+1)-1); ++k, ++cur_index)
         {
-            /* std::cout << "k is: " << k << " cur_index is: " << cur_index << "\n";*/
             G[cur_index] = G_all[k];
             a[cur_index] = a_all[k];
         }
 
+        /* The angular acceleration of this link's joint */
+        /* TODO: 6DOF changes here...This gets a whoooole lotta broken */
         qdd[i] = mu_all[i] - G.transpose()*alpha_p;
 
+        /* Joint matrix in body frame.  Check tip_base_step for the definition */
+        /* TODO: 6DOF changes here a plenty */
         H_b_frame_star = cur.get_joint_matrix().transpose();
 
         Eigen::MatrixXd tmp_6x6(6,6);
         tmp_6x6 << R_cur, Eigen::Matrix3d::Zero(),
                    Eigen::Matrix3d::Zero(), R_cur;
 
+        /* Joint matrix in the world frame */
         H_w_frame_star = tmp_6x6*H_b_frame_star;
-
+        /* As a row vector */
         H = H_w_frame_star.transpose();
 
+        /* Spatial acceleration of this link at its inbound joint in
+         * its frame (ie: including its joint accel)
+         */
         alpha = alpha_p + H.transpose()*qdd[i] + a;
-        /*
-        std::cout << "For link " << i << " alpha is: " << alpha << "\n";
-        std::cout << "For link " << i << " G is: " << G << "\n";
-        std::cout << "For link " << i << " a is: " << a << "\n";
-        */
     }
-    /* std::cout << "Exiting base_tip_step.\n"; */
     return qdd;
 }
 
