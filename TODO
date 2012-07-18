@@ -9,7 +9,7 @@ Project TODO list:
     it doesn't give us too much of an idea of where the problem is because
     the entire system is involved.
 
-(IAN WORKING) 2. Dynamics Verification (Energy)
+(IMO: 2012/07/11) 2. Dynamics Verification (Energy)
         For both the matlab sim and the c++ sim, we need to verify
     that for an undamped system with no torque inputs, the energy
     is constant.
@@ -26,7 +26,7 @@ Project TODO list:
     we should make sure that in the case that duration < timestep
     the integrator doesn't still simulate for timestep)
 
-4. Planning Graph Visualization
+4. (IMO [ditched effor]: ?) Planning Graph Visualization
         We need a nice way to visualize planning trees in the high
     dimensional space we're dealing with.  I've started a branch 
     "python_vis_tree" with python code that loads json result 
@@ -82,10 +82,10 @@ Project TODO list:
     fidelity proven necessary.  We also need to get the full characterization
     of the motors we're using (Matt probably has this for us).
 
-13. Brain Board + Motor Controller
+13.(UJB: 2012/07/16) Brain Board + Motor Controller
         We need to figure out how to use the Brain board and Motor controller.
 
-14. Write code for sending the torque to the modules.
+14. (UJB: 2012/07/16) Write code for sending the torque to the modules.
         With planning results from OMPL, we need to "play" the 
     torques onto the module chain.  Since the results are
     outputted to results.txt in json format, we can do
