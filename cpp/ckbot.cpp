@@ -46,28 +46,28 @@ struct ckbot::module_description _ZERO_MODULE = {0.0,
         0.0,
         0.0};
 
-Eigen::Matrix3d
+/* 3x3 Rotation matrix corresponding to rotating about the
+ * x axis by an angle phi [rad]
+ */
+inline Eigen::Matrix3d
 ckbot::rotX(double phi)
 {
-    Eigen::Matrix3d Rx;
-    Rx = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitX());
-    return Rx;
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitX());
 }
 
-Eigen::Matrix3d
+/* 3x3 Rotation matrix corresponding to rotating about the
+ * y axis by an angle of phi [rad]
+ */
+inline Eigen::Matrix3d
 ckbot::rotY(double phi)
 {
-    Eigen::Matrix3d Ry;
-    Ry = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitY());
-    return Ry;
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitY());
 }
 
-Eigen::Matrix3d
+inline Eigen::Matrix3d
 ckbot::rotZ(double phi)
 {
-    Eigen::Matrix3d Rz;
-    Rz = Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
-    return Rz;
+    return Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
 }
 
 Eigen::Matrix3d
