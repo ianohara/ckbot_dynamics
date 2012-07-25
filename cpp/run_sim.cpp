@@ -128,6 +128,10 @@ main(int ac, char* av[])
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = load_ckbot_rate_machine(sets, result_root);
 
+    report_setup(&sets);
+
+    std::cout << rate_machine_p->get_chain().describe_self() << std::endl;
+
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
     if (!ss_p)

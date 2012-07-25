@@ -55,6 +55,7 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     }
     /* Again, never explictly freed.  Let the program run till death! */
     ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
+    std::cout << "DEBUG, DEEPEST LEVEL: " << ch->describe_self() << std::endl;
     /* Chain rate store a reference to a chain, so this is right memory-wise (right?)
      * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
      * isn't passed as a copy, but instead as a reference.  Think that's right... 

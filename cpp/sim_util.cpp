@@ -67,6 +67,22 @@ struct sim_settings _DEFAULT_SETS = {
         true    /* Save the full planning tree? */
 };
 
+void
+report_setup(struct sim_settings* ps, std::ostream& o)
+{
+    o << "Running simulation with the following settings: " << std::endl <<
+         "  Sim Dir: '" << ps->sim_dir << "'" << std::endl <<
+         "  Planner: " << ps->planner << std::endl <<
+         "  Min Control Steps: " << ps->min_control_steps << std::endl <<
+         "  Max Control Steps: " << ps->max_control_steps << std::endl <<
+         "  Time Step: " << ps->dt << std::endl <<
+         "  Min Torque: " << ps->min_torque << std::endl <<
+         "  Max Torque: " << ps->max_torque << std::endl <<
+         "  Max Sol Time: " << ps->max_sol_time << std::endl <<
+         "  Debug?: " << ps->debug << std::endl <<
+         "  Save full tree?: " << ps->save_full_tree << std::endl;
+}
+
 boost::shared_ptr<ckbot::CK_ompl>
 load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::ostream& out_file)
 {
@@ -90,9 +106,11 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::os
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
+    std::cout << "SECOND DEBUG" << std::endl << rate_machine_p->get_chain().describe_self() << std::endl;
     res_root["chain"] = rate_machine_p->get_chain().describe_self();
     return rate_machine_p;
 }
+
 /*
  * Load a simulation from files containing json descriptions of the chain, 
  * and start and goal positions.

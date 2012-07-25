@@ -162,7 +162,7 @@ ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
 
     ckbot::module_link* this_module = new ckbot::module_link(this_module_desc);
 
-    module = this_module;
+    *module = *this_module;
 
     return true;
 }
@@ -863,7 +863,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
          cur.get_mass()*omega_cross*omega_cross*r_i_cm;
 
         /* Coriolis and centripetal accel  */
-        a << Zero,
+        a << 0,0,0,
              omega_cross*omega_cross*r_i_cm;
 
         /* z is the total spatial force seen by this link at its inward joint

@@ -64,6 +64,8 @@ struct sim_settings {
     bool save_full_tree;
 };
 
+void report_setup(struct sim_settings* psets, std::ostream& out=std::cout);
+
 extern struct sim_settings _DEFAULT_SETS;
 
 bool fill_start_and_goal(const Json::Value& sim_root,
