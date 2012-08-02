@@ -52,6 +52,8 @@ struct sim_settings {
     unsigned int min_control_steps;
     unsigned int max_control_steps;
     double dt;
+    double min_joint_vel;
+    double max_joint_vel;
     double min_torque;
     double max_torque;
 

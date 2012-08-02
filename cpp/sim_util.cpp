@@ -53,6 +53,8 @@ struct sim_settings _DEFAULT_SETS = {
         1,      /* OMPL min control steps */
         1,      /* OMPL max control steps */
         0.05,   /* OMPL timestep resolution */
+        100.0,    /* Max joint vel [rad/s] */
+        -100.0,   /* Min joint vel [rad/s] */
         -1.0,   /* Minimum link torque */
         1.0,    /* Max link torque */
 
@@ -106,7 +108,6 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::os
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
-    std::cout << "SECOND DEBUG" << std::endl << rate_machine_p->get_chain().describe_self() << std::endl;
     res_root["chain"] = rate_machine_p->get_chain().describe_self();
     return rate_machine_p;
 }
@@ -167,20 +168,41 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     /*****
      * Setup OMPL
      *****/
-    /* Make our configuration space and set the bounds on each module's angles */
-    ob::StateSpacePtr space(new ob::RealVectorStateSpace(2*num_modules));
-    space->as<ob::RealVectorStateSpace>()->setBounds(first_module.get_joint_min(), 
-                                                             first_module.get_joint_max());
+    /* Make our configuration space and set the bounds on each module's angles 
+     * and velocities.
+     */
+    int space_dim = 2*num_modules;
+    ob::StateSpacePtr space(new ob::RealVectorStateSpace());
+   /* Angular Position dimensions */
+    for (int i=0; i < num_modules; i++)
+    {
+        ob::RealVectorStateSpace *rs = space->as<ob::RealVectorStateSpace>();
+        ckbot::chain ch = rate_machine_p->get_chain();
+        rs->addDimension(ch.get_link(i).get_joint_min(),
+                         ch.get_link(i).get_joint_max());
+    }
+    /* Angular Velocity dimensions */
+    for (int i=0; i < num_modules; i++)
+    {
+        ob::RealVectorStateSpace *rs = space->as<ob::RealVectorStateSpace>();
+        ckbot::chain ch = rate_machine_p->get_chain();
+        rs->addDimension(sets.max_joint_vel, sets.min_joint_vel);
+    }
+
     /* Make our control space, which is one bound direction for each joint (Torques) */
     oc::ControlSpacePtr cspace(new oc::RealVectorControlSpace(space, num_modules));
     ob::RealVectorBounds cbounds(num_modules);
-    cbounds.setLow(sets.min_torque);
-    cbounds.setHigh(sets.max_torque);
-    cspace->as<oc::RealVectorControlSpace>()->setBounds(cbounds); // TODO (IMO): Arbitrary for now
+    for (int i=0; i < num_modules; i++)
+    {
+        ckbot::chain ch = rate_machine_p->get_chain();
+        cbounds.setLow(i, -ch.get_link(i).get_torque_max());
+        cbounds.setHigh(i, ch.get_link(i).get_torque_max());
+    }
+    cspace->as<oc::RealVectorControlSpace>()->setBounds(cbounds);
 
     /*
-     * Use OMPL's built in setup mechanism instead of allocating state space information
-     * and problem defintion pointers on my own
+     * Use OMPL's built in setup mechanism instead of allocating
+     * state space information and problem defintion pointers on my own
      */
     boost::shared_ptr<oc::SimpleSetup> ss_p(new oc::SimpleSetup(cspace));
 
@@ -201,6 +223,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 
     /* Define the start and end configurations */
     ob::ScopedState<ob::RealVectorStateSpace> start(ss_p->getSpaceInformation());
+    /* TODO: Custom goal class with custom distanceGoal(...) method */
     ob::ScopedState<ob::RealVectorStateSpace> goal(ss_p->getSpaceInformation());
     for (int i = 0; i < 2*num_modules; ++i)
     {
@@ -209,9 +232,9 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     }
     start.print(std::cout);
     goal.print(std::cout);
-    
-    ss_p->setStartAndGoalStates(start, goal);
 
+    ss_p->setStartState(start);
+    ss_p->setGoalState(goal);
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);

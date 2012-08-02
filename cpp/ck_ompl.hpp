@@ -16,11 +16,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef HPP_CK_OMPL
 #define HPP_CK_OMPL
 
 #include<vector>
+#include<ompl/base/GoalState.h>
+#include<ompl/base/State.h>
+#include<ompl/base/SpaceInformation.h>
 #include<ompl/control/ODESolver.h>
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/control/Control.h>
@@ -30,6 +32,7 @@
 namespace ckbot
 {
     namespace oc = ompl::control;
+    namespace ob = ompl::base;
 
     class CK_ompl: public chain_rate
     {
@@ -42,13 +45,23 @@ namespace ckbot
            bool stateValidityChecker(const ompl::base::State *s);
     };
 
-    boost::shared_ptr<ckbot::CK_ompl> setup_ompl_ckbot(Json::Value& chain_root, 
-                                                       std::ostream& out_file=std::cout);
+    boost::shared_ptr<ckbot::CK_ompl>
+    setup_ompl_ckbot(Json::Value& chain_root,
+                     std::ostream& out_file=std::cout);
 
     void CKBotODEFunc(const oc::ODESolver::StateType& s,
                       const oc::Control* con,
                       oc::ODESolver::StateType& sdot,
                       ckbot::chain_rate& ch_r);
+
+    class EndLocGoalState : public ob::GoalState
+    {
+        public:
+            EndLocGoalState(const ob::SpaceInformationPtr &si, int num_links);
+            double distanceGoal(const ob::State *s) const;
+        private:
+            int num_links_;
+    };
 };
 
 #endif

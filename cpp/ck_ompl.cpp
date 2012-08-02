@@ -27,8 +27,11 @@
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/control/Control.h>
 #include<ompl/base/spaces/RealVectorStateSpace.h>
+#include<ompl/base/State.h>
+#include<ompl/base/SpaceInformation.h>
 
 namespace oc = ompl::control;
+namespace ob = ompl::base;
 
 #include"ckbot.hpp"
 #include"ck_ompl.hpp"
@@ -55,7 +58,6 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     }
     /* Again, never explictly freed.  Let the program run till death! */
     ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
-    std::cout << "DEBUG, DEEPEST LEVEL: " << ch->describe_self() << std::endl;
     /* Chain rate store a reference to a chain, so this is right memory-wise (right?)
      * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
      * isn't passed as a copy, but instead as a reference.  Think that's right... 
@@ -65,7 +67,7 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
 };
 
 bool
-ckbot::CK_ompl::stateValidityChecker(const ompl::base::State *s)
+ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
 {
     return true;
 }
@@ -93,29 +95,20 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
-/* Currently Unused */
-void
-ckbot::CKBotODEFunc(const oc::ODESolver::StateType& s,
-                    const oc::Control* con,
-                    oc::ODESolver::StateType& sdot,
-                    ckbot::chain_rate& ch_r)
+ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
+                                        int num_links) :
+            ob::GoalState(si),
+            num_links_(num_links)
 {
-    const int N = ch_r.get_chain().num_links();
-    const double *input = con->as<oc::RealVectorControlSpace::ControlType>()->values;
-    std::vector<double> T(N);
-    for (int i = 0; i < N; i++)
+}
+
+double
+ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
+{
+    const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
+    for (int i=0; i < num_links_; i++)
     {
-        T[i] = input[i];
-        std::cout << "State is: " << s[2*i] << ", " << s[2*i+1] << "\n";
+       ; 
     }
-
-    std::vector<double> sdot_vec(2*N);
-    sdot_vec = ch_r.calc_rate(static_cast<std::vector<double> >(s), T);
-
-    for (int i = 0; i < 2*N; i++)
-    {
-        sdot[i] = sdot_vec[i];
-    }
-};
-
-
+    return 0.0; /*TODO: This ain't right, mate. */
+}

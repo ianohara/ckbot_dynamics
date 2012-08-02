@@ -130,8 +130,6 @@ main(int ac, char* av[])
 
     report_setup(&sets);
 
-    std::cout << rate_machine_p->get_chain().describe_self() << std::endl;
-
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
     if (!ss_p)
