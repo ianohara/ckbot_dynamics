@@ -66,7 +66,8 @@ struct sim_settings _DEFAULT_SETS = {
         1337.0, /* Same as above, but for angular rate. */
         0.0,    /* The torque value for dynamics verifier */
         0,      /* Debugging output? */
-        true    /* Save the full planning tree? */
+        true,   /* Save the full planning tree? */
+        false,   /* Use collisions? (requires world.txt file) */
 };
 
 void
@@ -118,12 +119,14 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::os
  * Then run and save the results for later. 
  */
 boost::shared_ptr<oc::SimpleSetup>
-load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::ostream& out_file, struct sim_settings sets, Json::Value& res_root)
+load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
+                        std::ostream& out_file, struct sim_settings sets,
+                        Json::Value& res_root)
 {
     /*****
     * Load both the CKBot chain simulator and the start and end goals
     * While loading the chain description, start outputing the description
-    * to the result json object. 
+    * to the result json object.
     *****/
     std::ifstream sim_file;
     Json::Value sim_root;
@@ -133,7 +136,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
     int num_modules = rate_machine_p->get_chain().num_links();
     ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
 
-    /* The start and goal positions are in a separate file. 
+    /* The start and goal positions are in a separate file than the chain def.
      * Hopefully this allows easy re-use of config parts
      */
     sim_file.open((char*)sets.sim_path.c_str());
@@ -181,6 +184,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
         rs->addDimension(ch.get_link(i).get_joint_min(),
                          ch.get_link(i).get_joint_max());
     }
+
     /* Angular Velocity dimensions */
     for (int i=0; i < num_modules; i++)
     {
@@ -213,11 +217,8 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p, std::o
 
     /* Setup and get the dynamics of our system into the planner */
     oc::ODEBasicSolver<> odeSolver(ss_p->getSpaceInformation(),
-                                              boost::bind(&ckbot::CK_ompl::CKBotODE,
-                                                               &(*rate_machine_p), _1, _2, _3));
-
-
-
+                                   boost::bind(&ckbot::CK_ompl::CKBotODE,
+                                               &(*rate_machine_p), _1, _2, _3));
 
     ss_p->setStatePropagator(odeSolver.getStatePropagator());
 
@@ -569,6 +570,9 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
               po::value<unsigned int>(),
               "Set the planner: (0=RRT, 1=KPIECE)")
 
+            ("collisions",
+             "Use simple collision checking.  Requires world.txt in sim dir")
+
             ("debug",
               po::value<unsigned int>(&sets.debug),
              "Turn on debugging output.")
@@ -589,6 +593,10 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
         if (vm.count("no_tree"))
         {
             sets.save_full_tree = false;
+        }
+        if (vm.count("collisions"))
+        {
+            sets.collisions = true;
         }
     }
     catch (std::exception& e)
