@@ -38,6 +38,7 @@
 #include "ckbot.hpp"
 #include "ck_ompl.hpp"
 #include "sim_util.hpp"
+#include "world.hpp"
 
 /* For use as the default initializer for settings structs */
 struct sim_settings _DEFAULT_SETS = {
@@ -47,6 +48,7 @@ struct sim_settings _DEFAULT_SETS = {
         "sim.txt",
         "results/",
         "results.txt",
+        "world.txt",
 
         RRT,
 
@@ -83,7 +85,8 @@ report_setup(struct sim_settings* ps, std::ostream& o)
          "  Max Torque: " << ps->max_torque << std::endl <<
          "  Max Sol Time: " << ps->max_sol_time << std::endl <<
          "  Debug?: " << ps->debug << std::endl <<
-         "  Save full tree?: " << ps->save_full_tree << std::endl;
+         "  Save full tree?: " << ps->save_full_tree << std::endl <<
+         "  Use collisions?: " << ps->collisions << std::endl;
 }
 
 boost::shared_ptr<ckbot::CK_ompl>
@@ -123,6 +126,10 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
                         std::ostream& out_file, struct sim_settings sets,
                         Json::Value& res_root)
 {
+    /* For reference when setting up OMPL */
+    int num_modules = rate_machine_p->get_chain().num_links();
+    ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
+
     /*****
     * Load both the CKBot chain simulator and the start and end goals
     * While loading the chain description, start outputing the description
@@ -131,10 +138,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     std::ifstream sim_file;
     Json::Value sim_root;
     Json::Reader sim_reader;
-
-    /* For reference when setting up OMPL */
-    int num_modules = rate_machine_p->get_chain().num_links();
-    ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
 
     /* The start and goal positions are in a separate file than the chain def.
      * Hopefully this allows easy re-use of config parts
@@ -167,6 +170,34 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         goal_node.append(s_fin[i]);
     }
     res_root["goal"] = goal_node;
+
+    /* Setup the collision world, or leave it as a null pointer
+     * to signify that no collision checking should be used
+     */
+    boost::shared_ptr<World> w;
+    w = boost::shared_ptr<World>();
+    if (sets.collisions)
+    {
+        std::ifstream world_file;
+        Json::Value world_root;
+        Json::Reader world_reader;
+
+        world_file.open((char*)sets.world_path.c_str());
+        bool world_parse_success = world_reader.parse(world_file, world_root);
+        world_file.close();
+
+        if (!world_parse_success) {
+            std::cerr << "Couldn't parse world file." << std::endl;
+            return boost::shared_ptr<oc::SimpleSetup>();
+        }
+        w = get_world(world_root);
+        if (!w) {
+            std::cerr << "Couldn't fill the world from world json." << std::endl;
+            return boost::shared_ptr<oc::SimpleSetup>();
+        }
+        w->describe();
+        rate_machine_p->setWorld(w);
+    }
 
     /*****
      * Setup OMPL

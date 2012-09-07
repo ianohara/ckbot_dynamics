@@ -67,10 +67,52 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     return rate_machine_p;
 };
 
+ckbot::CK_ompl::CK_ompl(ckbot::chain& ch,
+        boost::shared_ptr<World> w) :
+    chain_rate(ch),
+    world(w)
+{
+}
+
+bool
+ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
+{
+    world = w;
+}
+
 bool
 ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
 {
-    return true;
+    if (world)
+    {
+        const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
+        /* World exists, use collision checking */
+        const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
+        unsigned int num_links = c.num_links();
+        unsigned int slen = 2*num_links;
+        std::vector<double> q(num_links);
+        std::vector<double> qd(num_links);
+        for (unsigned int i = 0; i < slen; i++)
+        {
+            q[i] = (*sR)[i];
+            qd[i] = (*sR)[num_links+i];
+        }
+        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
+
+        std::vector<Sphere> modSpheres(num_links);
+        for (int i = 0; i < num_links; i++)
+        {
+            modSpheres[i].loc = c.get_link_r_cm(i);
+            modSpheres[i].r = MOD_SPHERE_RADIUS; // TODO: get this from somewhere nicer.
+        }
+
+        return world->checkForCollisions(modSpheres);
+    }
+    else
+    {
+        /* No collision world, all states are valid */
+        return true;
+    }
 }
 
 void

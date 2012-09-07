@@ -80,12 +80,12 @@ main(int ac, char* av[])
     sets.sim_path = sets.sim_dir + sets.sim_path;
     sets.result_dir = sets.sim_dir + sets.result_dir;
     sets.result_path = sets.result_dir + sets.result_path;
-    world_path = sets.result_dir + world_path;
+    sets.world_path = sets.sim_dir + world_path;
 
-    if (! boost::filesystem::is_regular_file(sets.desc_path)) 
+    if (! boost::filesystem::is_regular_file(sets.desc_path))
     {
-        std::cerr << "The description file does not exist. (" 
-                  << sets.desc_path 
+        std::cerr << "The description file does not exist. ("
+                  << sets.desc_path
                   << ")" << std::endl;
         return 1;
     }
@@ -128,13 +128,12 @@ main(int ac, char* av[])
     /* If we're using collisions, make sure the world.txt file exists in
      * the simulation directory.
      */
-    if (sets.collisions && (! boost::filesystem::is_regular_file(world_path)))
+    if (sets.collisions && (! boost::filesystem::is_regular_file(sets.world_path)))
     {
         std::cerr << "You asked to use collisions and the world file ("
-                  << world_path << ") does not exist." << std::endl;
+                  << sets.world_path << ") does not exist." << std::endl;
         return 1;
     }
-
     Json::Value result_root;
 
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;

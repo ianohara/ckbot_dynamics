@@ -46,6 +46,7 @@ struct sim_settings {
     std::string sim_path;
     std::string result_dir;
     std::string result_path;
+    std::string world_path;
 
     enum planners planner;
 
