@@ -10,12 +10,13 @@ class Cylinder
 {
     public:
         Cylinder();
-        Cylinder(Eigen::Vector3d Loc, Eigen::Vector3d Dir, double Len, double R);
+        Cylinder(Eigen::Vector3d &Loc, Eigen::Vector3d &Dir, double Len, double R);
         ~Cylinder();
         Eigen::Vector3d loc;
         Eigen::Vector3d dir;
         double len;
         double r;
+        const void describe(void) const;
 };
 
 class Sphere
@@ -26,6 +27,7 @@ class Sphere
         ~Sphere();
         Eigen::Vector3d loc;
         double r;
+        const void describe(void) const;
 };
 
 class World
@@ -36,7 +38,7 @@ class World
 
         void describe();
 
-        bool checkForCollisions(const std::vector<Sphere> &sphs);
+        bool isColliding(Sphere sph);
         unsigned int num;
         std::vector<Cylinder> cyls;
 };

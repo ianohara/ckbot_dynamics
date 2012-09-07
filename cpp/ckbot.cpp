@@ -443,8 +443,19 @@ ckbot::chain::chain(module_link chain_modules[], int num_modules) : N_(num_modul
     }
 }
 
+ckbot::chain::chain(const ckbot::chain& other):
+    N_(other.num_links())
+{
+    for (int i = 0; i < N_; i++)
+    {
+        links_.push_back(other.links_[i]);
+    }
+}
+
 ckbot::chain::~chain(void)
 {
+    std::cout << "DESTROYING chain..." << std::endl;
+
 }
 
 /*
@@ -504,8 +515,8 @@ ckbot::chain::get_current_R(int i)
     return R;
 }
 
-inline int
-ckbot::chain::num_links(void)
+int
+ckbot::chain::num_links(void) const
 {
     return N_;
 }
@@ -520,6 +531,7 @@ void
 ckbot::chain::propogate_angles_and_rates(std::vector<double> q,
                                          std::vector<double> qd)
 {
+    std::cout << "Propagating..." << std::endl;
     for (int i=0; i<N_; ++i)
     {
         links_[i].set_q(q[i]);

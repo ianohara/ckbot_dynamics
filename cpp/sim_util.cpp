@@ -119,15 +119,16 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::os
 /*
  * Load a simulation from files containing json descriptions of the chain, 
  * and start and goal positions.
- * Then run and save the results for later. 
+ * Then run and save the results for later.
  */
 boost::shared_ptr<oc::SimpleSetup>
 load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
-                        std::ostream& out_file, struct sim_settings sets,
+                        std::ostream& out_file,
+                        struct sim_settings sets,
                         Json::Value& res_root)
 {
     /* For reference when setting up OMPL */
-    int num_modules = rate_machine_p->get_chain().num_links();
+    const int num_modules = rate_machine_p->get_chain().num_links();
     ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
 
     /*****

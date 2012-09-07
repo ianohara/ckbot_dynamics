@@ -74,6 +74,11 @@ ckbot::CK_ompl::CK_ompl(ckbot::chain& ch,
 {
 }
 
+ckbot::CK_ompl::~CK_ompl()
+{
+    std::cout << "Destroying ck_ompl..." << std::endl;
+}
+
 bool
 ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 {
@@ -83,13 +88,17 @@ ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 bool
 ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
 {
+    std::cout << "Entering stateValidityChecker..." << std::endl;
     if (world)
     {
         const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
         /* World exists, use collision checking */
+        std::cout << "Before state madness..." << std::endl;
         const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
-        unsigned int num_links = c.num_links();
-        unsigned int slen = 2*num_links;
+        std::cout << "Before first chain use..." << std::endl;
+        int num_links = c.num_links();
+        std::cout << "after first chain use..." << std::endl;
+        int slen = 2*num_links;
         std::vector<double> q(num_links);
         std::vector<double> qd(num_links);
         for (unsigned int i = 0; i < slen; i++)
@@ -97,22 +106,27 @@ ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
             q[i] = (*sR)[i];
             qd[i] = (*sR)[num_links+i];
         }
-        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
-
-        std::vector<Sphere> modSpheres(num_links);
+        std::cout << "before second chain use..." << std::endl;
+        // std::cout << c.describe_self() << std::endl;
+//        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
+        std::cout << "RIGHT AFTER" << std::endl;
+        std::cout << "MADE THE SPHEREEEEES..." << std::endl;
         for (int i = 0; i < num_links; i++)
         {
-            modSpheres[i].loc = c.get_link_r_cm(i);
-            modSpheres[i].r = MOD_SPHERE_RADIUS; // TODO: get this from somewhere nicer.
+            Sphere tmpS;
+            std::cout << "Right before modsphere.loc..."<<std::endl;
+            tmpS.loc = c.get_link_r_cm(i);
+            tmpS.r = MOD_SPHERE_RADIUS;
+            bool colliding = world->isColliding(tmpS);
+            if (colliding) {
+                return false; /* Not a valid state */
+            }
         }
-
-        return world->checkForCollisions(modSpheres);
     }
-    else
-    {
-        /* No collision world, all states are valid */
-        return true;
-    }
+    /* No collisions or No collision world, in which case
+     * all states are valid 
+     */
+    return true;
 }
 
 void
