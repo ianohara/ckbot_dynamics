@@ -50,7 +50,8 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
+        out_file << " Attempting to fill chain link "
+                 << link << " of " << num_modules << std::endl;
         if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
         {
             throw "Error"; /* TODO: Make this more descriptive and useful/correct */
@@ -95,6 +96,7 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
+/* Goal metric code below here.  TODO: Incomplete right now */
 ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
                                         int num_links) :
             ob::GoalState(si),
