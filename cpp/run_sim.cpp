@@ -48,6 +48,7 @@ main(int ac, char* av[])
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
     std::string result_path("results.txt");
+    std::string world_path("world.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
     boost::program_options::variables_map vm;
@@ -79,6 +80,7 @@ main(int ac, char* av[])
     sets.sim_path = sets.sim_dir + sets.sim_path;
     sets.result_dir = sets.sim_dir + sets.result_dir;
     sets.result_path = sets.result_dir + sets.result_path;
+    world_path = sets.result_dir + world_path;
 
     if (! boost::filesystem::is_regular_file(sets.desc_path)) 
     {
@@ -121,6 +123,16 @@ main(int ac, char* av[])
             return 1;
         }
         std::cout << "Success!" << std::endl;
+    }
+
+    /* If we're using collisions, make sure the world.txt file exists in
+     * the simulation directory.
+     */
+    if (sets.collisions && (! boost::filesystem::is_regular_file(world_path)))
+    {
+        std::cerr << "You asked to use collisions and the world file ("
+                  << world_path << ") does not exist." << std::endl;
+        return 1;
     }
 
     Json::Value result_root;
