@@ -54,7 +54,7 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
                  << link << " of " << num_modules << std::endl;
         if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
         {
-            throw "Error"; /* TODO: Make this more descriptive and useful/correct */
+            return boost::shared_ptr<ckbot::CK_ompl>();
         }
     }
     /* Again, never explictly freed.  Let the program run till death! */
@@ -69,14 +69,13 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
 
 ckbot::CK_ompl::CK_ompl(ckbot::chain& ch,
         boost::shared_ptr<World> w) :
-    chain_rate(ch),
-    world(w)
+        chain_rate(ch),
+        world(w)
 {
 }
 
 ckbot::CK_ompl::~CK_ompl()
 {
-    std::cout << "Destroying ck_ompl..." << std::endl;
 }
 
 bool
@@ -88,33 +87,24 @@ ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 bool
 ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
 {
-    std::cout << "Entering stateValidityChecker..." << std::endl;
     if (world)
     {
         const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
         /* World exists, use collision checking */
-        std::cout << "Before state madness..." << std::endl;
-        const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
-        std::cout << "Before first chain use..." << std::endl;
+        const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
         int num_links = c.num_links();
-        std::cout << "after first chain use..." << std::endl;
         int slen = 2*num_links;
         std::vector<double> q(num_links);
         std::vector<double> qd(num_links);
-        for (unsigned int i = 0; i < slen; i++)
+        for (int i = 0; i < num_links; i++)
         {
-            q[i] = (*sR)[i];
-            qd[i] = (*sR)[num_links+i];
+            q[i] = sVals[i];
+            qd[i] = sVals[num_links+i];
         }
-        std::cout << "before second chain use..." << std::endl;
-        // std::cout << c.describe_self() << std::endl;
-//        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
-        std::cout << "RIGHT AFTER" << std::endl;
-        std::cout << "MADE THE SPHEREEEEES..." << std::endl;
+        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
         for (int i = 0; i < num_links; i++)
         {
             Sphere tmpS;
-            std::cout << "Right before modsphere.loc..."<<std::endl;
             tmpS.loc = c.get_link_r_cm(i);
             tmpS.r = MOD_SPHERE_RADIUS;
             bool colliding = world->isColliding(tmpS);

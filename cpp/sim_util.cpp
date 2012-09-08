@@ -112,7 +112,40 @@ load_ckbot_rate_machine(struct sim_settings sets, Json::Value& res_root, std::os
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = ckbot::setup_ompl_ckbot(chain_root);
+    if (!rate_machine_p) 
+    {
+        return boost::shared_ptr<ckbot::CK_ompl>();
+    }
     res_root["chain"] = rate_machine_p->get_chain().describe_self();
+
+    /* Setup the collision world, or leave it as a null pointer
+     * to signify that no collision checking should be used
+     */
+    boost::shared_ptr<World> w;
+    w = boost::shared_ptr<World>();
+    if (sets.collisions)
+    {
+        std::ifstream world_file;
+        Json::Value world_root;
+        Json::Reader world_reader;
+
+        world_file.open((char*)sets.world_path.c_str());
+        bool world_parse_success = world_reader.parse(world_file, world_root);
+        world_file.close();
+
+        if (!world_parse_success) {
+            std::cerr << "Couldn't parse world file." << std::endl;
+            return boost::shared_ptr<ckbot::CK_ompl>();
+        }
+        w = get_world(world_root);
+        if (!w) {
+            std::cerr << "Couldn't fill the world from world json." << std::endl;
+            return boost::shared_ptr<ckbot::CK_ompl>();
+        }
+        w->describe();
+        rate_machine_p->setWorld(w);
+    }
+
     return rate_machine_p;
 }
 
@@ -129,7 +162,8 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 {
     /* For reference when setting up OMPL */
     const int num_modules = rate_machine_p->get_chain().num_links();
-    ckbot::module_link first_module = rate_machine_p->get_chain().get_link(0u);
+    ckbot::chain ch = rate_machine_p->get_chain();
+    ckbot::module_link first_module = ch.get_link(0u);
 
     /*****
     * Load both the CKBot chain simulator and the start and end goals
@@ -171,35 +205,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         goal_node.append(s_fin[i]);
     }
     res_root["goal"] = goal_node;
-
-    /* Setup the collision world, or leave it as a null pointer
-     * to signify that no collision checking should be used
-     */
-    boost::shared_ptr<World> w;
-    w = boost::shared_ptr<World>();
-    if (sets.collisions)
-    {
-        std::ifstream world_file;
-        Json::Value world_root;
-        Json::Reader world_reader;
-
-        world_file.open((char*)sets.world_path.c_str());
-        bool world_parse_success = world_reader.parse(world_file, world_root);
-        world_file.close();
-
-        if (!world_parse_success) {
-            std::cerr << "Couldn't parse world file." << std::endl;
-            return boost::shared_ptr<oc::SimpleSetup>();
-        }
-        w = get_world(world_root);
-        if (!w) {
-            std::cerr << "Couldn't fill the world from world json." << std::endl;
-            return boost::shared_ptr<oc::SimpleSetup>();
-        }
-        w->describe();
-        rate_machine_p->setWorld(w);
-    }
-
     /*****
      * Setup OMPL
      *****/
@@ -212,7 +217,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     for (int i=0; i < num_modules; i++)
     {
         ob::RealVectorStateSpace *rs = space->as<ob::RealVectorStateSpace>();
-        ckbot::chain ch = rate_machine_p->get_chain();
         rs->addDimension(ch.get_link(i).get_joint_min(),
                          ch.get_link(i).get_joint_max());
     }
@@ -221,7 +225,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     for (int i=0; i < num_modules; i++)
     {
         ob::RealVectorStateSpace *rs = space->as<ob::RealVectorStateSpace>();
-        ckbot::chain ch = rate_machine_p->get_chain();
         rs->addDimension(sets.max_joint_vel, sets.min_joint_vel);
     }
 
@@ -230,7 +233,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     ob::RealVectorBounds cbounds(num_modules);
     for (int i=0; i < num_modules; i++)
     {
-        ckbot::chain ch = rate_machine_p->get_chain();
         cbounds.setLow(i, -ch.get_link(i).get_torque_max());
         cbounds.setHigh(i, ch.get_link(i).get_torque_max());
     }
@@ -399,7 +401,7 @@ save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json
 {
     const ob::PlannerPtr planner = ss_p->getPlanner();
     const ob::ProblemDefinitionPtr prob_def = planner->getProblemDefinition();
-    const ob::RealVectorStateSpace::StateType *start = prob_def->getStartState(0u)->as<ob::RealVectorStateSpace::StateType>();
+    //const ob::RealVectorStateSpace::StateType *start = prob_def->getStartState(0u)->as<ob::RealVectorStateSpace::StateType>();
     const ob::GoalPtr& goal_ptr = prob_def->getGoal();
     const oc::PathControl& sol_path(ss_p->getSolutionPath());
     if (sets.debug)

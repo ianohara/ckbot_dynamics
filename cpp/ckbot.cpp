@@ -454,7 +454,6 @@ ckbot::chain::chain(const ckbot::chain& other):
 
 ckbot::chain::~chain(void)
 {
-    std::cout << "DESTROYING chain..." << std::endl;
 
 }
 
@@ -531,7 +530,6 @@ void
 ckbot::chain::propogate_angles_and_rates(std::vector<double> q,
                                          std::vector<double> qd)
 {
-    std::cout << "Propagating..." << std::endl;
     for (int i=0; i<N_; ++i)
     {
         links_[i].set_q(q[i]);
