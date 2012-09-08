@@ -14,6 +14,7 @@ class Cylinder
         ~Cylinder();
         Eigen::Vector3d loc;
         Eigen::Vector3d dir;
+        Eigen::Vector3d* dp;
         double len;
         double r;
         const void describe(void) const;
@@ -40,7 +41,7 @@ class World
 
         bool isColliding(Sphere sph);
         unsigned int num;
-        std::vector<Cylinder> cyls;
+        std::vector<Cylinder*> cyls;
 };
 
 boost::shared_ptr<World>

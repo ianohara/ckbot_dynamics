@@ -6,8 +6,6 @@
 #define EPS 0.00001
 
 Cylinder::Cylinder(Eigen::Vector3d &Loc, Eigen::Vector3d &Dir, double Len, double R) :
-    loc(Loc),
-    dir(Dir),
     len(Len)
 {
     double dirL = sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2]);
@@ -15,13 +13,18 @@ Cylinder::Cylinder(Eigen::Vector3d &Loc, Eigen::Vector3d &Dir, double Len, doubl
         std::cerr << "Warning, cylinder direction must be a unit vector.  Normalizing." << std::endl;
         dir = dir.normalized();
     }
+    dp = new Eigen::Vector3d(1,1,1);
+    loc << Loc;
+    dir << Dir;
 }
 
 Cylinder::Cylinder() :
-    loc(Eigen::Vector3d::Zero()),
-    dir(Eigen::Vector3d::UnitZ()),
     len(1.0)
 {
+    dp = new Eigen::Vector3d(1,1,2);
+    loc << Eigen::Vector3d::Zero();
+    dir << Eigen::Vector3d::UnitZ();
+
 }
 
 Cylinder::~Cylinder()
@@ -33,11 +36,10 @@ const void
 Cylinder::describe(void) const
 {
     std::cout << "  Cylinder Desc:" << std::endl;
-    std::cout << " Woot:" << loc << std::endl;
-    std::cout << "  loc = " << loc.transpose() << std::endl;
-    std::cout << "  dir = " << dir.transpose() << std::endl;
     std::cout << "  len = " << len << std::endl;
     std::cout << "  r   = " << r << std::endl;
+    std::cout << "  dp = " << *dp << std::endl;
+    std::cout << "  loc = " << loc << std::endl;
 }
 
 Sphere::Sphere()
@@ -63,18 +65,15 @@ Sphere::describe(void) const
 }
 
 World::World(Cylinder cs[], unsigned int Num) :
-    num(Num),
-    cyls(Num)
+    num(Num)
 {
     for (unsigned int i = 0; i < num; i++) {
-        cyls[i].loc = cs[i].loc;
-        cyls[i].dir = cs[i].dir;
-        cyls[i].r = cs[i].r;
-        cyls[i].len = cs[i].len;
+        Cylinder* tmp = new Cylinder(cs[i].loc, cs[i].dir, cs[i].r, cs[i].len);
+        cyls.push_back(tmp);
     }
     std::cout << "Printing cyls in constructor..." << std::endl;
     for (unsigned int j=0; j < cyls.size(); j++) {
-        std::cout << "Cyls[" << j << "].loc:" << cyls[j].loc << std::endl;
+        std::cout << "Cyls[" << j << "].loc:" << cyls[j]->loc << std::endl;
     }
     std::cout << "Done!" << std::endl;
 }
@@ -90,7 +89,7 @@ World::describe()
     std::cout << "The world of consists of: " << std::endl;
     for (unsigned int i = 0; i < num; i++) {
         std::cout << " Cyl " << i << ": " << std::endl;
-        cyls[i].describe();
+        cyls[i]->describe();
     }
 }
 
@@ -144,15 +143,15 @@ World::isColliding(Sphere sph)
     std::cout << "cyls size is: " << cyls.size() << std::endl;
     for (int cid = 0; cid < cyls.size(); cid++)
     {
-        cyls[cid].describe();
+        cyls[cid]->describe();
         std::cout << "  cid = " << cid << std::endl; //DEBUG
-        cHat = cyls[cid].dir;
+        cHat = cyls[cid]->dir;
         std::cout << "  cHat = " << cHat.transpose() << std::endl;
-        L = cyls[cid].len;
+        L = cyls[cid]->len;
         std::cout << "  cyl Len=" << L << std::endl;
-        Rc = cyls[cid].r;
+        Rc = cyls[cid]->r;
         Rs = sph.r;
-        r_c = cyls[cid].loc;
+        r_c = cyls[cid]->loc;
         std::cout << "  r_c=" << r_c.transpose() << std::endl;
         r_s = sph.loc;
         std::cout << "  r_s=" << r_s.transpose() << std::endl;
@@ -184,7 +183,7 @@ World::isColliding(Sphere sph)
             std::cout << "Sphere:" << std::endl;
             sph.describe();
             std::cout << "Cylinder:" << std::endl;
-            cyls[cid].describe();
+            cyls[cid]->describe();
             std::cout << "    Distance is: " << r_ns.norm() << " colliding dist is " << (Rs + Rc) << std::endl;
             return true;
         }
