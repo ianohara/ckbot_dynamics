@@ -124,17 +124,30 @@ World::isColliding(Sphere &sph)
     double L=0, Rc=0, Rs=0;
     for (int cid = 0; cid < cyls.size(); cid++)
     {
-        cHat = cyls[cid].dir;
-        L = cyls[cid].len;
-        Rc = cyls[cid].r;
-        Rs = sph.r;
+        cHat = cyls[cid].dir; /* Cylinder direction unit vector */
+        L = cyls[cid].len; /* Cylinder length */
+        Rc = cyls[cid].r;  /* Cylinder radius */
+        Rs = sph.r; /* Sphere radius */
+        /* Location of base of cylinder (extends length L in cHat
+         * direction from here) */
         r_c = cyls[cid].loc;
-        r_s = sph.loc;
-        r_cs = r_s  - r_c;
+        r_s = sph.loc; /* Location of center of sphere */
+        r_cs = r_s  - r_c; /* Vector from cylinder base to sphere center */
+        /* Unit vector pointing out of the plane defined by cHat and r_cs */
         pHat = (cHat.cross(r_s - r_c)).normalized();
+        /* Unit vector normal to cHat and in the plane intersecting the
+         * sphere center and the cylinder's center line. */
         nHat = cHat.cross(pHat);
+        /* Vector from sphere center to sphere center line contact point such
+         * that r_ns is normal to cHat */
         r_ns = r_cs.dot(nHat)*nHat;
+        /* Vector from origin to intersection of r_ns with cylinder center line */
         r_nc = r_s - r_ns;
+        std::cout << "Collision Check Summary:" << std::endl
+           << "  Sphere centered at: " << r_s.transpose() << " with radius: " << Rs
+           << std::endl << "  Cylinder with base at: " << r_c.transpose()
+           << " with len: " << L << " and radius: " << Rc << std::endl
+           << "  Normal distance is: " << r_ns.norm() << std::endl; //DEBUG
 
 //DEBUG        std::cout << "  r_nc=" << r_nc.transpose() << std::endl;
 //DEBUG        std::cout << "  r_ns=" << r_ns.transpose() << std::endl;
