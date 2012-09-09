@@ -146,9 +146,7 @@ main(int ac, char* av[])
     report_setup(&sets);
 
     boost::shared_ptr<oc::SimpleSetup> ss_p;
-    std::cout << "main: Right before load_and_run_simulation is called." << std::endl ; //DEBUG
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
-    std::cout << "main: Right after load_and_run_simulation is called." << std::endl; // DEBUG
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;

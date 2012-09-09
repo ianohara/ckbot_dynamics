@@ -247,6 +247,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     // TODO: Write an actual state validity checker!
     ss_p->setStateValidityChecker(boost::bind(&ckbot::CK_ompl::stateValidityChecker,
                                                  &(*rate_machine_p),
+                                                 ss_p->getSpaceInformation(),
                                                  _1));
 
     /* Setup and get the dynamics of our system into the planner */

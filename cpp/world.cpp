@@ -143,12 +143,12 @@ World::isColliding(Sphere &sph)
         r_ns = r_cs.dot(nHat)*nHat;
         /* Vector from origin to intersection of r_ns with cylinder center line */
         r_nc = r_s - r_ns;
-        std::cout << "Collision Check Summary:" << std::endl
-           << "  Sphere centered at: " << r_s.transpose() << " with radius: " << Rs
-           << std::endl << "  Cylinder with base at: " << r_c.transpose()
-           << " with len: " << L << " and radius: " << Rc << std::endl
-           << "  Normal distance is: " << r_ns.norm() << std::endl; //DEBUG
-
+//DEBUG        std::cout << "Collision Check Summary:" << std::endl
+//DEBUG           << "  Sphere centered at: " << r_s.transpose() << " with radius: " << Rs
+//DEBUG           << std::endl << "  Cylinder with base at: " << r_c.transpose()
+//DEBUG           << " with len: " << L << " and radius: " << Rc << std::endl
+//DEBUG           << "  Normal distance is: " << r_ns.norm() << std::endl;
+//DEBUG
 //DEBUG        std::cout << "  r_nc=" << r_nc.transpose() << std::endl;
 //DEBUG        std::cout << "  r_ns=" << r_ns.transpose() << std::endl;
 //DEBUG        std::cout << "  nHat=" << nHat.transpose() << std::endl;
@@ -168,6 +168,7 @@ World::isColliding(Sphere &sph)
         if (((r_c - r_nc).dot(cHat) > 0.0) /* Before start*/ 
             || (((r_c + L*cHat) - r_nc).dot(cHat) < 0.0)) /* After end */
         {
+//DEBUG            std::cout << "  Cannot collide! Normal line is before or after end of cyl." << std::endl;
             continue;
         }
 
@@ -175,7 +176,7 @@ World::isColliding(Sphere &sph)
          * somewhere in the cylinder.  Check to see if there is intersection
          */
         if (r_ns.norm() < (Rs + Rc)) {
-            std::cout << "    Distance is: " << r_ns.norm() << " colliding dist is " << (Rs + Rc) << std::endl;
+//DEBUG std::cout << "    Distance is: " << r_ns.norm() << " colliding dist is " << (Rs + Rc) << std::endl;
             return true;
         }
     }

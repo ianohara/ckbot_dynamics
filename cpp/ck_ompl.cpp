@@ -85,8 +85,12 @@ ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 }
 
 bool
-ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
+ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
 {
+    if (! (si->satisfiesBounds(s))) {
+        return false;
+    }
+
     if (world)
     {
         const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
@@ -102,7 +106,6 @@ ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
             qd[i] = sVals[num_links+i];
         }
         c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
-        std::cout << "Checking state where cm of last module is at: " << c.get_link_r_cm(num_links).transpose() << std::endl; //DEBUG
         for (int i = 0; i < num_links; i++)
         {
             Sphere tmpS;
@@ -110,7 +113,6 @@ ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
             tmpS.r = MOD_SPHERE_RADIUS;
             bool colliding = world->isColliding(tmpS);
             if (colliding) {
-                std::cout << "  And there is a collision!" << std::endl; //DEBUG
                 return false; /* Not a valid state */
             }
         }
