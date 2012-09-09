@@ -38,8 +38,7 @@ namespace ckbot
     class CK_ompl: public chain_rate
     {
         public:
-            CK_ompl(chain& ch,
-                    boost::shared_ptr<World> w=boost::shared_ptr<World>());
+            CK_ompl(chain& ch);
             ~CK_ompl(void);
             void CKBotODE(const oc::ODESolver::StateType& s,
                           const oc::Control* con,

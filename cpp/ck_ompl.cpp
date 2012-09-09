@@ -67,10 +67,9 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     return rate_machine_p;
 };
 
-ckbot::CK_ompl::CK_ompl(ckbot::chain& ch,
-        boost::shared_ptr<World> w) :
+ckbot::CK_ompl::CK_ompl(ckbot::chain& ch) :
         chain_rate(ch),
-        world(w)
+        world(boost::shared_ptr<World>()) /* Null */
 {
 }
 
