@@ -28,6 +28,7 @@
 #include<ompl/control/Control.h>
 
 #include"ckbot.hpp"
+#include"world.hpp"
 
 namespace ckbot
 {
@@ -37,12 +38,18 @@ namespace ckbot
     class CK_ompl: public chain_rate
     {
         public:
-            CK_ompl(chain& ch): chain_rate(ch){};
-            ~CK_ompl(void){};
+            CK_ompl(chain& ch,
+                    boost::shared_ptr<World> w=boost::shared_ptr<World>());
+            ~CK_ompl(void);
             void CKBotODE(const oc::ODESolver::StateType& s,
                           const oc::Control* con,
                            oc::ODESolver::StateType& sdot);
-           bool stateValidityChecker(const ompl::base::State *s);
+           bool stateValidityChecker(const ob::SpaceInformationPtr &si,
+                                     const ompl::base::State *s);
+           bool setWorld(boost::shared_ptr<World> w);
+
+        private:
+           boost::shared_ptr<World> world;
     };
 
     boost::shared_ptr<ckbot::CK_ompl>

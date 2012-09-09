@@ -57,7 +57,9 @@ main(int ac, char* av[])
         desc.add_options()
           ("help", "Prints this help message...")
           ("dir", po::value<std::string>(&sets.sim_dir))
-          ("time", po::value<float>(&sets.max_sol_time), "Length of time to simulate for.")
+          ("time",
+            po::value<float>(&sets.max_sol_time),
+            "Length of time to simulate for.")
           ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
           ("angle",
             po::value<double>(&sets.custom_angle),
