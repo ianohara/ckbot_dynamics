@@ -57,6 +57,7 @@ struct sim_settings {
     double max_joint_vel;
     double min_torque;
     double max_torque;
+    double threshhold;
 
     float max_sol_time;
     double custom_angle; /* For use in dynamics_verifier.cpp */
