@@ -454,7 +454,6 @@ ckbot::chain::chain(const ckbot::chain& other):
 
 ckbot::chain::~chain(void)
 {
-
 }
 
 /*
@@ -631,6 +630,10 @@ ckbot::chain_rate::chain_rate(chain& ch) :
     mu_all(ch.num_links()),
     a_all(6*ch.num_links()),
     sd(2*ch.num_links())
+{
+}
+
+ckbot::chain_rate::~chain_rate(void)
 {
 }
 

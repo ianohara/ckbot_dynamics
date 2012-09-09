@@ -130,9 +130,9 @@ namespace ckbot
         const int N_;
 
     public:
-        chain(module_link chain_modules[], int num_modules); 
+        chain(module_link chain_modules[], int num_modules);
         chain(const chain& other);
-        ~chain(void); 
+        ~chain(void);
 
         module_link& get_link(int i);
         Eigen::Matrix3d get_current_R(int i);
@@ -160,7 +160,9 @@ namespace ckbot
         std::vector<double> sd;
 
    public:
-        chain_rate(chain& ch);
+        explicit chain_rate(chain& ch);
+        ~chain_rate(void);
+
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T);
         void tip_base_step(std::vector<double> s, std::vector<double> T);
         std::vector<double> base_tip_step(std::vector<double> s, std::vector<double> T);

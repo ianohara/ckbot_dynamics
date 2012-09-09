@@ -21,7 +21,6 @@
 #include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
-#include<unistd.h> //DEBUG (sleep)
 
 #include<boost/bind.hpp> /* www.boost.org */
 #include<boost/program_options.hpp>
@@ -160,9 +159,6 @@ main(int ac, char* av[])
     result_file.open((char*)sets.result_path.c_str());
     result_file << result_root;
     result_file.close();
-    std::cout << "About to sleep...." << std::endl;
-    sleep(10);
-    std::cout << "Done sleeping..." << std::endl;
 
     return 0;
 }

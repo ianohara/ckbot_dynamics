@@ -272,7 +272,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     goal.print(std::cout);
 
     ss_p->setStartState(start);
-    ss_p->setGoalState(goal, sets.threshhold);
+    ss_p->setGoalState(goal);//DEBUG, sets.threshhold);
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);

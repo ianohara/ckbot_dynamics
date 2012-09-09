@@ -86,9 +86,11 @@ ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 bool
 ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
 {
+    /*
     if (! (si->satisfiesBounds(s))) {
         return false;
     }
+    */
 
     if (world)
     {

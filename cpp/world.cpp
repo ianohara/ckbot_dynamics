@@ -70,6 +70,7 @@ World::World(std::vector<Cylinder> &cs, unsigned int Num) :
 
 World::~World()
 {
+    
 }
 
 void
