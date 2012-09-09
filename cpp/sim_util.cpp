@@ -357,6 +357,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         return boost::shared_ptr<oc::SimpleSetup>();
     }
 
+    std::cout << "Returning from load_and_run_sol..." << std::endl;
     return ss_p;
 }
 
@@ -367,11 +368,14 @@ run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, J
     bool solve_status = false;
     if (ss_p->solve(sets.max_sol_time))
     {
+        std::cout << "Successfully ran..." << std::endl;
         solve_status = true;
         save_sol(ss_p, sets, res_root);
         if (sets.save_full_tree)
         {
+            std::cout << "About to call safe_full_tree..." << std::endl;
             save_full_tree(ss_p, res_root); 
+            std::cout << "Done throwing it into a tree..." << std::endl;
         }
     }
     return solve_status;
@@ -463,6 +467,7 @@ save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json
     }
 
     res_root["controls"] = controls;
+    std::cout << "Just finished putting solution into result." << std::endl;
     return true;
 }
 

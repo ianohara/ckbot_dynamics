@@ -21,6 +21,7 @@
 #include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
+#include<unistd.h> //DEBUG (sleep)
 
 #include<boost/bind.hpp> /* www.boost.org */
 #include<boost/program_options.hpp>
@@ -51,6 +52,7 @@ main(int ac, char* av[])
     std::string world_path("world.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
+    std::cout << "THRESHHOLD IS: " << sets.threshhold << std::endl;
     boost::program_options::variables_map vm;
 
     if (!parse_options(ac, av, vm, sets))
@@ -147,6 +149,7 @@ main(int ac, char* av[])
 
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
+    std::cout << "Made it out of load_and_run_simulation..." << std::endl;
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;
@@ -157,6 +160,9 @@ main(int ac, char* av[])
     result_file.open((char*)sets.result_path.c_str());
     result_file << result_root;
     result_file.close();
+    std::cout << "About to sleep...." << std::endl;
+    sleep(10);
+    std::cout << "Done sleeping..." << std::endl;
 
     return 0;
 }
