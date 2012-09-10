@@ -51,7 +51,6 @@ main(int ac, char* av[])
     std::string world_path("world.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
-    std::cout << "THRESHHOLD IS: " << sets.threshold << std::endl;
     boost::program_options::variables_map vm;
 
     if (!parse_options(ac, av, vm, sets))
@@ -148,7 +147,6 @@ main(int ac, char* av[])
 
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
-    std::cout << "Made it out of load_and_run_simulation..." << std::endl;
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;

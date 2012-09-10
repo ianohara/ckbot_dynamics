@@ -54,9 +54,9 @@ struct sim_settings _DEFAULT_SETS = {
 
         1,      /* OMPL min control steps */
         1,      /* OMPL max control steps */
-        0.05,   /* OMPL timestep resolution */
-        100.0,    /* Max joint vel [rad/s] */
-        -100.0,   /* Min joint vel [rad/s] */
+        0.01,   /* OMPL timestep resolution */
+        50.0,    /* Max joint vel [rad/s] */
+        -50.0,   /* Min joint vel [rad/s] */
         -1.0,   /* Minimum link torque */
         1.0,    /* Max link torque */
         0.01,   /* Goal threshold */
@@ -70,7 +70,7 @@ struct sim_settings _DEFAULT_SETS = {
         0.0,    /* The torque value for dynamics verifier */
         0,      /* Debugging output? */
         true,   /* Save the full planning tree? */
-        false,   /* Use collisions? (requires world.txt file) */
+        false,  /* Use collisions? (requires world.txt file) */
 };
 
 void
@@ -271,17 +271,47 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     start.print(std::cout);
     goal.print(std::cout);
 
-    ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(), rate_machine_p->get_chain()));
-
-    goalSt->as<ob::GoalState>()->setState(goal);
-    goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
-
     ss_p->setStartState(start);
-    ss_p->setGoal(goalSt);
+
+    /* BEGIN HACKING NONSENSE FOR GETTIN' THIS DONE */
+    if (sets.planner == RRT) {
+        std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
+        double goalX = 0.0; //DEBUG Specific to swing_test_3modules_inplane
+        double goalY = 0.18726; //DEBUG Corresponds to the basebase at 90deg pos
+        double goalZ = 0.0;
+        ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(), rate_machine_p->get_chain(), goalX, goalY, goalZ));
+
+        goalSt->as<ob::GoalState>()->setState(goal);
+        goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
+
+        ss_p->setGoal(goalSt);
+    }
+    else {
+        ss_p->setGoalState(goal, sets.threshold);
+    }
 
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
+
+    /* If we're using KPIECE1, use our own custom projection subspace */
+    if (sets.planner == KPIECE1) {
+        std::cout << "NOTE: Using the x,y,z location of the end of the chain and the sqrt of the sum of the squares of the angular vels of each module as the planning space with KPIECE1." << std::endl;
+        ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
+                    ss_p->getSpaceInformation(),
+                    ss_p->getStateSpace(),
+                    rate_machine_p->get_chain()));
+
+        std::vector<double> projCellSizes(prjEvalPtr->getDimension());
+        projCellSizes[0] = 1; /* 5 mm */
+        projCellSizes[1] = 1; /* 5 mm */
+        projCellSizes[2] = 1; /* 5 mm */
+        projCellSizes[3] = 1; /* rad/s */
+
+        prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
+        planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
+    }
+
     ss_p->setPlanner(planner);
 
     /* Allow this range of number of steps in our solution */
@@ -363,7 +393,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         return boost::shared_ptr<oc::SimpleSetup>();
     }
 
-    std::cout << "Returning from load_and_run_sol..." << std::endl;
     return ss_p;
 }
 
@@ -374,14 +403,11 @@ run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, J
     bool solve_status = false;
     if (ss_p->solve(sets.max_sol_time))
     {
-        std::cout << "Successfully ran..." << std::endl;
         solve_status = true;
         save_sol(ss_p, sets, res_root);
         if (sets.save_full_tree)
         {
-            std::cout << "About to call safe_full_tree..." << std::endl;
             save_full_tree(ss_p, res_root); 
-            std::cout << "Done throwing it into a tree..." << std::endl;
         }
     }
     return solve_status;

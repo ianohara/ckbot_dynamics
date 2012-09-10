@@ -34,6 +34,8 @@
 namespace oc = ompl::control;
 namespace ob = ompl::base;
 
+#include <Eigen/Dense>
+
 #include"ckbot.hpp"
 #include"ck_ompl.hpp"
 
@@ -88,10 +90,21 @@ bool
 ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
 {
     /*
-    if (! (si->satisfiesBounds(s))) {
-        return false;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    int num_links = c.num_links();
+    int slen = 2*num_links;
+    for (int i = 0; i < slen; i++)
+    {
+        std::cout << sVals[i] << ", ";
     }
-    */
+    std::cout << std::endl;
+
+     END DEBUG
+     */
+
+    if (! (si->satisfiesBounds(s))) {
+       return false;
+    }
 
     if (world)
     {
@@ -148,16 +161,17 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
-ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
-                                        ckbot::chain &chain) :
-            ob::GoalState(si), /* Parent contstructor */
-            ch(chain),
-            si(si)
+ckbot::EuclDistGoalState::EuclDistGoalState(const ob::SpaceInformationPtr &si,
+                                            ckbot::chain &chain) :
+    ob::GoalState(si), /* Parent Constructor */
+    ch(chain),
+    si(si)
 {
 }
 
+/* Distance metric classes */
 double
-ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
+ckbot::EuclDistGoalState::distanceGoal(const ob::State *s) const
 {
     const double *gVals = state_->as<ob::RealVectorStateSpace::StateType>()->values;
     const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
@@ -169,20 +183,93 @@ ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
         sumSqrs += diff*diff;
     }
     double dist = sqrt(sumSqrs);
-    std::cout << "Distance to goal for this state is: " << dist << std::endl;
     return dist;
-        /*
-        const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
-        int num_links = ch.num_links();
-        int slen = 2*num_links;
-        std::vector<double> q(num_links);
-        std::vector<double> qd(num_links);
-        for (int i = 0; i < num_links; i++)
-        {
-            q[i] = sVals[i];
-            qd[i] = sVals[num_links+i];
-        }
-        ch.propogate_angles_and_rates(q,qd);
-        */
+}
 
+ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
+                                        ckbot::chain &chain,
+                                        double x,
+                                        double y,
+                                        double z) :
+            ob::GoalState(si), /* Parent contstructor */
+            ch(chain),
+            si(si),
+            x_(x),
+            y_(y),
+            z_(z)
+{
+}
+
+double
+ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
+{
+    static double minDist = 100000000.0;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    int slen = 2*num_links;
+    std::vector<double> q(num_links);
+    std::vector<double> qd(num_links);
+    for (int i = 0; i < num_links; i++)
+    {
+        q[i] = sVals[i];
+        qd[i] = sVals[num_links+i];
+    }
+    ch.propogate_angles_and_rates(q,qd);
+
+    Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
+    double dist = sqrt(pow((r_end[0] - x_),2) + pow((r_end[1]-y_),2) + pow((r_end[2]-z_),2));
+    if (dist < minDist) {
+        minDist = dist;
+        std::cout << "Found a new min end effector distance: " << minDist << std::endl;
+    }
+    return dist;
+
+}
+
+/**** KPIECE Projection classes ****/
+ckbot::EndLocAndAngVelProj::EndLocAndAngVelProj(const ob::SpaceInformationPtr &si,
+        const ob::StateSpacePtr &space,
+        ckbot::chain &chain) :
+    ob::ProjectionEvaluator(space),
+    si(si),
+    sp(space),
+    ch(chain)
+{
+}
+
+unsigned int
+ckbot::EndLocAndAngVelProj::getDimension(void) const
+{
+    return 4u;
+}
+
+void
+ckbot::EndLocAndAngVelProj::project(const ob::State *state,
+        ob::EuclideanProjection &proj) const
+{
+    const double *sVals = state->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    int slen = 2*num_links;
+    std::vector<double> q(num_links);
+    std::vector<double> qd(num_links);
+    for (int i = 0; i < num_links; i++)
+    {
+        q[i] = sVals[i];
+        qd[i] = sVals[num_links+i];
+    }
+    ch.propogate_angles_and_rates(q,qd);
+
+    double sumSqrVels = 0;
+    for (int i = 0; i < qd.size(); i++)
+    {
+        sumSqrVels += qd[i]*qd[i];
+
+    }
+    Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
+    //DEBUG std::cout << "End is at: " << r_end.transpose() << std::endl;
+    proj[0] = r_end[0];
+    proj[1] = r_end[1];
+    proj[2] = r_end[2];
+    proj[3] = sqrt(sumSqrVels);
+//DEBUG    std::cout << "Projection is: [" << proj[0] << ", " << proj[1] << ", " << proj[2] << ", " << proj[3] <<"]" << std::endl;
 }
