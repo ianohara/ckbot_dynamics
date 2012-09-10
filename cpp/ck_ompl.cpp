@@ -17,6 +17,7 @@
 */
 
 #include<iostream>
+#include<cmath>
 
 /*
  * This code implements the functions needed by differential (control) planners
@@ -147,21 +148,41 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
-/* Goal metric code below here.  TODO: Incomplete right now */
 ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
-                                        int num_links) :
-            ob::GoalState(si),
-            num_links_(num_links)
+                                        ckbot::chain &chain) :
+            ob::GoalState(si), /* Parent contstructor */
+            ch(chain),
+            si(si)
 {
 }
 
 double
 ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
 {
-    const ob::RealVectorStateSpace::StateType *sR = s->as<ob::RealVectorStateSpace::StateType>();
-    for (int i=0; i < num_links_; i++)
+    const double *gVals = state_->as<ob::RealVectorStateSpace::StateType>()->values;
+    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    double sumSqrs = 0;
+    for (int i = 0; i < 2*num_links; i++)
     {
-       ; 
+        double diff = gVals[i] - sVals[i];
+        sumSqrs += diff*diff;
     }
-    return 0.0; /*TODO: This ain't right, mate. */
+    double dist = sqrt(sumSqrs);
+    std::cout << "Distance to goal for this state is: " << dist << std::endl;
+    return dist;
+        /*
+        const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+        int num_links = ch.num_links();
+        int slen = 2*num_links;
+        std::vector<double> q(num_links);
+        std::vector<double> qd(num_links);
+        for (int i = 0; i < num_links; i++)
+        {
+            q[i] = sVals[i];
+            qd[i] = sVals[num_links+i];
+        }
+        ch.propogate_angles_and_rates(q,qd);
+        */
+
 }

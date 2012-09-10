@@ -59,7 +59,7 @@ struct sim_settings _DEFAULT_SETS = {
         -100.0,   /* Min joint vel [rad/s] */
         -1.0,   /* Minimum link torque */
         1.0,    /* Max link torque */
-        0.01,   /* Goal threshhold */
+        0.01,   /* Goal threshold */
 
         10,     /* Solution search timeout in [s] */
         1337.0, /* Unused in run_sim.  This is for specifying custom initial 
@@ -81,7 +81,7 @@ report_setup(struct sim_settings* ps, std::ostream& o)
          "  Planner: " << ps->planner << std::endl <<
          "  Min Control Steps: " << ps->min_control_steps << std::endl <<
          "  Max Control Steps: " << ps->max_control_steps << std::endl <<
-         "  Goal Threshhold: " << ps->threshhold << std::endl <<
+         "  Goal Threshold: " << ps->threshold << std::endl <<
          "  Time Step: " << ps->dt << std::endl <<
          "  Min Torque: " << ps->min_torque << std::endl <<
          "  Max Torque: " << ps->max_torque << std::endl <<
@@ -164,7 +164,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 {
     /* For reference when setting up OMPL */
     const int num_modules = rate_machine_p->get_chain().num_links();
-    ckbot::chain ch = rate_machine_p->get_chain();
+    ckbot::chain &ch = rate_machine_p->get_chain();
     ckbot::module_link first_module = ch.get_link(0u);
 
     /*****
@@ -271,8 +271,14 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     start.print(std::cout);
     goal.print(std::cout);
 
+    ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(), rate_machine_p->get_chain()));
+
+    goalSt->as<ob::GoalState>()->setState(goal);
+    goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
+
     ss_p->setStartState(start);
-    ss_p->setGoalState(goal);//DEBUG, sets.threshhold);
+    ss_p->setGoal(goalSt);
+
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
@@ -606,8 +612,8 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
               po::value<double>(&sets.min_torque),
               "Set the minimum torque a link can exert at its joint.")
 
-            ("threshhold",
-             po::value<double>(&sets.threshhold),
+            ("threshold",
+             po::value<double>(&sets.threshold),
              "Set the goal threshold")
 
             ("no_tree", "Don't the entire planning tree.")

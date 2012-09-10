@@ -63,10 +63,11 @@ namespace ckbot
     class EndLocGoalState : public ob::GoalState
     {
         public:
-            EndLocGoalState(const ob::SpaceInformationPtr &si, int num_links);
+            EndLocGoalState(const ob::SpaceInformationPtr &si, ckbot::chain &chain);
             double distanceGoal(const ob::State *s) const;
         private:
-            int num_links_;
+            const ob::SpaceInformationPtr &si;
+            ckbot::chain &ch;
     };
 };
 

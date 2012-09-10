@@ -51,7 +51,7 @@ main(int ac, char* av[])
     std::string world_path("world.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
-    std::cout << "THRESHHOLD IS: " << sets.threshhold << std::endl;
+    std::cout << "THRESHHOLD IS: " << sets.threshold << std::endl;
     boost::program_options::variables_map vm;
 
     if (!parse_options(ac, av, vm, sets))
