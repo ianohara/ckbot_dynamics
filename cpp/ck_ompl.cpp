@@ -50,10 +50,11 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        out_file << " Attempting to fill chain link " << link << " of " << num_modules << std::endl;
+        out_file << " Attempting to fill chain link "
+                 << link << " of " << num_modules << std::endl;
         if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
         {
-            throw "Error"; /* TODO: Make this more descriptive and useful/correct */
+            return boost::shared_ptr<ckbot::CK_ompl>();
         }
     }
     /* Again, never explictly freed.  Let the program run till death! */
@@ -66,9 +67,60 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     return rate_machine_p;
 };
 
-bool
-ckbot::CK_ompl::stateValidityChecker(const ob::State *s)
+ckbot::CK_ompl::CK_ompl(ckbot::chain& ch) :
+        chain_rate(ch),
+        world(boost::shared_ptr<World>()) /* Null */
 {
+}
+
+ckbot::CK_ompl::~CK_ompl()
+{
+}
+
+bool
+ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
+{
+    world = w;
+}
+
+bool
+ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
+{
+    /*
+    if (! (si->satisfiesBounds(s))) {
+        return false;
+    }
+    */
+
+    if (world)
+    {
+        const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
+        /* World exists, use collision checking */
+        const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
+        int num_links = c.num_links();
+        int slen = 2*num_links;
+        std::vector<double> q(num_links);
+        std::vector<double> qd(num_links);
+        for (int i = 0; i < num_links; i++)
+        {
+            q[i] = sVals[i];
+            qd[i] = sVals[num_links+i];
+        }
+        c.propogate_angles_and_rates(q,qd); /* TODO: Does this need to be called? */
+        for (int i = 0; i < num_links; i++)
+        {
+            Sphere tmpS;
+            tmpS.loc = c.get_link_r_cm(i);
+            tmpS.r = MOD_SPHERE_RADIUS;
+            bool colliding = world->isColliding(tmpS);
+            if (colliding) {
+                return false; /* Not a valid state */
+            }
+        }
+    }
+    /* No collisions or No collision world, in which case
+     * all states are valid 
+     */
     return true;
 }
 
@@ -95,6 +147,7 @@ ckbot::CK_ompl::CKBotODE(const oc::ODESolver::StateType& s,
     }
 }
 
+/* Goal metric code below here.  TODO: Incomplete right now */
 ckbot::EndLocGoalState::EndLocGoalState(const ob::SpaceInformationPtr &si,
                                         int num_links) :
             ob::GoalState(si),

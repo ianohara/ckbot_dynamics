@@ -128,15 +128,15 @@ namespace ckbot
     {
     protected:
         const int N_;
-        std::vector<module_link> links_;
 
     public:
-        chain(module_link chain_modules[], int num_modules); 
-        ~chain(void); 
+        chain(module_link chain_modules[], int num_modules);
+        chain(const chain& other);
+        ~chain(void);
 
         module_link& get_link(int i);
         Eigen::Matrix3d get_current_R(int i);
-        int num_links(void);
+        int num_links(void) const;
         void propogate_angles_and_rates(std::vector<double> q, std::vector<double> qd);
 
         Eigen::Vector3d get_angular_velocity(int i);
@@ -146,6 +146,7 @@ namespace ckbot
         Eigen::Vector3d get_link_r_base(int i);
 
         Json::Value describe_self(void);
+        std::vector<module_link> links_;
     };
 
     class chain_rate
@@ -159,7 +160,9 @@ namespace ckbot
         std::vector<double> sd;
 
    public:
-        chain_rate(chain& ch);
+        explicit chain_rate(chain& ch);
+        ~chain_rate(void);
+
         std::vector<double> calc_rate(std::vector<double> s, std::vector<double> T);
         void tip_base_step(std::vector<double> s, std::vector<double> T);
         std::vector<double> base_tip_step(std::vector<double> s, std::vector<double> T);

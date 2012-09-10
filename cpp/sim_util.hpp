@@ -46,6 +46,7 @@ struct sim_settings {
     std::string sim_path;
     std::string result_dir;
     std::string result_path;
+    std::string world_path;
 
     enum planners planner;
 
@@ -56,14 +57,16 @@ struct sim_settings {
     double max_joint_vel;
     double min_torque;
     double max_torque;
+    double threshhold;
 
     float max_sol_time;
     double custom_angle; /* For use in dynamics_verifier.cpp */
     double custom_rate;  /* For use in dynamics_verifier.cpp */
-    double torque; /* For use in dynamics_verifier.cpp */
+    double torque;       /* For use in dynamics_verifier.cpp */
 
     unsigned int debug;
     bool save_full_tree;
+    bool collisions;
 };
 
 void report_setup(struct sim_settings* psets, std::ostream& out=std::cout);
@@ -73,19 +76,38 @@ extern struct sim_settings _DEFAULT_SETS;
 bool fill_start_and_goal(const Json::Value& sim_root,
                          std::vector<double>& s0,
                          std::vector<double>& s_fin);
-boost::shared_ptr<ckbot::CK_ompl> load_ckbot_rate_machine(struct sim_settings sets,
-                                                          Json::Value& result_root,
-                                                          std::ostream& out_file=std::cout);
-boost::shared_ptr<oc::SimpleSetup> load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
-                                                   std::ostream& out_file,
-                                                   struct sim_settings sets,
-                                                   Json::Value& res_root);
+
+boost::shared_ptr<ckbot::CK_ompl>
+load_ckbot_rate_machine(struct sim_settings sets,
+                        Json::Value& result_root,
+                        std::ostream& out_file=std::cout);
+
+boost::shared_ptr<oc::SimpleSetup>
+load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
+                        std::ostream& out_file,
+                        struct sim_settings sets,
+                        Json::Value& res_root);
+
 bool save_sol(boost::shared_ptr<oc::SimpleSetup> ss_p,
               struct sim_settings sets,
               Json::Value& res_root);
-bool save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p, Json::Value& res_root);
-bool run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p, struct sim_settings sets, Json::Value& res_root);
-ob::PlannerPtr get_planner(oc::SpaceInformationPtr, enum planners);
-bool parse_options(int ac, char* av[], boost::program_options::variables_map& vm, struct sim_settings& sets);
+
+bool
+save_full_tree(boost::shared_ptr<oc::SimpleSetup> ss_p,
+               Json::Value& res_root);
+
+bool
+run_planner(boost::shared_ptr<oc::SimpleSetup> ss_p,
+            struct sim_settings sets, Json::Value& res_root);
+
+ob::PlannerPtr
+get_planner(oc::SpaceInformationPtr,
+            enum planners);
+
+bool
+parse_options(int ac,
+              char* av[],
+              boost::program_options::variables_map& vm,
+              struct sim_settings& sets);
 
 #endif /* _RUN_SIM_HPP */

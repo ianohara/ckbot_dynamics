@@ -48,8 +48,10 @@ main(int ac, char* av[])
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
     std::string result_path("results.txt");
+    std::string world_path("world.txt");
 
     struct sim_settings sets = _DEFAULT_SETS;
+    std::cout << "THRESHHOLD IS: " << sets.threshhold << std::endl;
     boost::program_options::variables_map vm;
 
     if (!parse_options(ac, av, vm, sets))
@@ -79,11 +81,12 @@ main(int ac, char* av[])
     sets.sim_path = sets.sim_dir + sets.sim_path;
     sets.result_dir = sets.sim_dir + sets.result_dir;
     sets.result_path = sets.result_dir + sets.result_path;
+    sets.world_path = sets.sim_dir + world_path;
 
-    if (! boost::filesystem::is_regular_file(sets.desc_path)) 
+    if (! boost::filesystem::is_regular_file(sets.desc_path))
     {
-        std::cerr << "The description file does not exist. (" 
-                  << sets.desc_path 
+        std::cerr << "The description file does not exist. ("
+                  << sets.desc_path
                   << ")" << std::endl;
         return 1;
     }
@@ -123,15 +126,29 @@ main(int ac, char* av[])
         std::cout << "Success!" << std::endl;
     }
 
+    /* If we're using collisions, make sure the world.txt file exists in
+     * the simulation directory.
+     */
+    if (sets.collisions && (! boost::filesystem::is_regular_file(sets.world_path)))
+    {
+        std::cerr << "You asked to use collisions and the world file ("
+                  << sets.world_path << ") does not exist." << std::endl;
+        return 1;
+    }
     Json::Value result_root;
 
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p;
     rate_machine_p = load_ckbot_rate_machine(sets, result_root);
+    if (!rate_machine_p) {
+        std::cerr << "Error loading the rate machine. Exiting." << std::endl;
+        return 1;
+    }
 
     report_setup(&sets);
 
     boost::shared_ptr<oc::SimpleSetup> ss_p;
     ss_p = load_and_run_simulation(rate_machine_p, std::cout, sets, result_root);
+    std::cout << "Made it out of load_and_run_simulation..." << std::endl;
     if (!ss_p)
     {
         std::cerr << "Error loading simulation...exiting." << std::endl;
