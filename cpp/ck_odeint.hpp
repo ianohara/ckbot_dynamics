@@ -26,10 +26,31 @@ namespace ckbot
     {
         public:
             odeConstTorque(chain &ch, std::vector< double > T) : chain_rate(ch), T_(T) {};
+            ~odeConstTorque(){};
+
             void operator() ( const std::vector< double > &s,
                               std::vector< double > &sdot,
                               const double t);
         private:
             std::vector< double > T_;
     };
+
+    class odePulseTorque : public chain_rate
+    {
+        public:
+            odePulseTorque(chain &ch,
+                           std::vector< double > Tpulse,
+                           double t_start,
+                           double t_end);
+            ~odePulseTorque(){};
+            void operator() ( const std::vector< double > &s,
+                              std::vector< double > &sdot,
+                              const double t);
+        private:
+            std::vector< double > Tpulse_;
+            std::vector< double > TZero_;
+            double ts_;
+            double te_;
+    };
+
 }
