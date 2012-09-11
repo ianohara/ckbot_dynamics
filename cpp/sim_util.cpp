@@ -277,7 +277,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     if (sets.planner == RRT) {
         std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
         double goalX = 0.0; //DEBUG Specific to swing_test_3modules_inplane
-        double goalY = 0.18726; //DEBUG Corresponds to the basebase at 90deg pos
+        double goalY = 0.1;//8726; //DEBUG Corresponds to the basebase at 90deg pos
         double goalZ = 0.0;
         ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(), rate_machine_p->get_chain(), goalX, goalY, goalZ));
 
@@ -295,6 +295,18 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
 
     /* If we're using KPIECE1, use our own custom projection subspace */
+    //const ob::ProjectionEvaluatorPtr defProj = planner->as<oc::KPIECE1>()->getProjectionEvaluator();
+    //defProj->printSettings();
+    /*
+    const std::vector<double> cellSizes = defProj->getCellSizes();
+
+    std::cout << "Cell Sizes:" << std::endl;
+    for (int i=0; i < cellSizes.size(); i++)
+    {
+        std::cout << cellSizes[i] << ", ";
+    }
+    std::cout << std::endl;
+*/
     if (sets.planner == KPIECE1) {
         std::cout << "NOTE: Using the x,y,z location of the end of the chain and the sqrt of the sum of the squares of the angular vels of each module as the planning space with KPIECE1." << std::endl;
         ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
@@ -323,6 +335,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
      * (mostly, fill in the planner parameters.) 
      */
     ss_p->setup();
+    ss_p->getPlanner()->as<oc::KPIECE1>()->getProjectionEvaluator()->printSettings();
 
     /* Debug printing section for information having to do with the setup
      * of the planner and any of its components.
