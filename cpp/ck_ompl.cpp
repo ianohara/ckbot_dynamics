@@ -53,8 +53,6 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     ckbot::module_link* modules_for_chain = new ckbot::module_link[num_modules];
     for (unsigned int link=0; link<num_modules; ++link)
     {
-        out_file << " Attempting to fill chain link "
-                 << link << " of " << num_modules << std::endl;
         if (! ckbot::fill_module(chain_array[link], &modules_for_chain[link]))
         {
             return boost::shared_ptr<ckbot::CK_ompl>();
@@ -62,9 +60,10 @@ ckbot::setup_ompl_ckbot(Json::Value& chain_root, std::ostream& out_file)
     }
     /* Again, never explictly freed.  Let the program run till death! */
     ckbot::chain *ch = new ckbot::chain(modules_for_chain, num_modules);
-    /* Chain rate store a reference to a chain, so this is right memory-wise (right?)
-     * de-ref pointer, rate_machine looks for a reference so the dereferenced chain
-     * isn't passed as a copy, but instead as a reference.  Think that's right... 
+    /* Chain rate store a reference to a chain, so this is right memory-wise
+     * (right?) de-ref pointer, rate_machine looks for a reference so the
+     * dereferenced chain isn't passed as a copy, but instead as a reference.
+     * Think that's right...
      */
     boost::shared_ptr<ckbot::CK_ompl> rate_machine_p(new ckbot::CK_ompl(*ch));
     return rate_machine_p;
