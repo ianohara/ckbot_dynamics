@@ -64,7 +64,7 @@ def run_test( test_name, test_time ):
     for pkt in pkts:
         if len(pkt) != 10:
             continue
-        vals = unpack('<BhhB', pkt[3:-1])
+        vals = unpack('<BHHB', pkt[3:-1])
         m_dat.append(vals)
         m_id = vals[0]
         modules[m_id] = m_id
