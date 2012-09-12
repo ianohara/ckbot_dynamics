@@ -14,6 +14,8 @@ dat = test_dat['data']
 test_time = test_dat['time']
 test_name = test_dat['name']
 modules = test_dat['modules']
+if test_dat.has_key('date'):
+    print "Test date: %s" % test_dat['date']
 
 for k,v in module_param.items():
     offs = ((2**15/4-v[1])+(2**15*3/4-v[0]))/2
