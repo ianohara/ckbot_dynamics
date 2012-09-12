@@ -76,6 +76,10 @@ main(int ac, char* av[])
           ("torque",
            po::value<double>(&sets.torque)->default_value(0.0),
            "Constant torque to apply to all joints")
+
+          ("dt",
+           po::value<double>(&sets.dt)->default_value(0.01),
+           "Time step for simulator")
         ;
 
         po::store(po::parse_command_line(ac, av, desc), vm);
@@ -196,26 +200,26 @@ main(int ac, char* av[])
     std::vector<double> s0(2*num_modules);
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
-
-    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
-    {
-        for (int i=0; i < num_modules; i++)
-        {
-            s0[i] = sets.custom_angle;
-        }
-        std::cout << "Using a custom initial joint angle for the modules ("
-                  << sets.custom_angle << ")." << std::endl;
-    }
-    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
-    {
-        for (int i=0; i < num_modules; i++)
-        {
-            s0[num_modules+i] = sets.custom_rate;
-        }
-        std::cout << "Using a custom initial joint rate for modules ("
-                  << sets.custom_rate << ")." << std::endl;
-    }
-
+//DEBUG
+//DEBUG    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
+//DEBUG    {
+//DEBUG        for (int i=0; i < num_modules; i++)
+//DEBUG        {
+//DEBUG            s0[i] = sets.custom_angle;
+//DEBUG        }
+//DEBUG        std::cout << "Using a custom initial joint angle for the modules ("
+//DEBUG                  << sets.custom_angle << ")." << std::endl;
+//DEBUG    }
+//DEBUG    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
+//DEBUG    {
+//DEBUG        for (int i=0; i < num_modules; i++)
+//DEBUG        {
+//DEBUG            s0[num_modules+i] = sets.custom_rate;
+//DEBUG        }
+//DEBUG        std::cout << "Using a custom initial joint rate for modules ("
+//DEBUG                  << sets.custom_rate << ")." << std::endl;
+//DEBUG    }
+//DEBUG
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
      * arrays of dictionaries. The outer array contains
@@ -231,18 +235,15 @@ main(int ac, char* av[])
     {
         /* Make the constant torque vector */
         std::vector<double> T(num_modules);
-        std::fill(T.begin(), T.end(), sets.torque);
+        std::fill(T.begin(), T.end(), 0.0); // DEBUG.  Making this only set the first.
+        T[0] = sets.torque;
         double tstart = 0.0; // DEBUG/TODO: Make this command line or json file setting.
-        double tend = 1.0; // DEBUG/TODO: Make this command line or json file setting.
+        double tend = 0.1; // DEBUG/TODO: Make this command line or json file setting.
 
         ckbot::odePulseTorque chain_integrator(rate_machine_p->get_chain(), T, tstart, tend);
 
         ckbot::chain& ch = chain_integrator.get_chain();
-        /* Make sure dampings are all zero */
-        for (int i=0; i < ch.num_links(); i++)
-        {
-            ch.get_link(i).set_damping(0.0);
-        }
+        std::cout << ch.describe_self() << std::endl;
 
         std::vector<double> s_cur(s0);
 

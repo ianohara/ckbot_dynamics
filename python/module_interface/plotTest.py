@@ -1,5 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import json
+from math import pi
+import numpy
+
+import matplotlib.pyplot as plt
 
 module_traj = {}
 
@@ -7,7 +11,7 @@ module_param = {3: [18880, 2350, 27216],
                 4: [24868, 8530, 250], 
                 5: [23152, 6614, 31600]}
 
-test_name = 'tests/debug_test'
+test_name = 'tests/swing_3modules_2planes_100msPulse_paperData'
 
 test_dat = json.load( open( test_name, 'r' ))
 dat = test_dat['data']
@@ -32,9 +36,6 @@ for dat_stub in dat:
     time = dat_stub[2]
     if time < 0:
         continue
-    #if time > test_time*1000:
-    #    break
-
     voltage = dat_stub[3]
     if not module_traj.has_key(module_id):
         module_traj[module_id] = [] 
@@ -42,6 +43,13 @@ for dat_stub in dat:
 
 for module in modules.values():
     t_p = numpy.array(module_traj[module])
-    plot(t_p[...,0],
-         t_p[...,1], 'o')
-    
+    plt.plot(t_p[410:,0],
+            t_p[410:,1], 'o')
+    for i, t in enumerate(t_p[:,0]):
+        if abs(t - 5000.0) < 100:
+            print "Module ", module, " at time ", t, " is at ", t_p[i,1]
+            print "  With speed = ", 1000.0*(t_p[i+1,1] - t_p[i,1])/(t_p[i+1,0] - t_p[i, 0])
+
+
+plt.grid(True)
+plt.show()

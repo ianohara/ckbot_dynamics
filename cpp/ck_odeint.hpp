@@ -48,7 +48,7 @@ namespace ckbot
                               const double t);
         private:
             std::vector< double > Tpulse_;
-            std::vector< double > TZero_;
+            std::vector< double > Tzero_;
             double ts_;
             double te_;
     };
