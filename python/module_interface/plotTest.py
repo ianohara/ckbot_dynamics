@@ -11,7 +11,7 @@ module_param = {3: [18880, 2350, 27216],
                 4: [24868, 8530, 250], 
                 5: [23152, 6614, 31600]}
 
-test_name = 'tests/step_response'
+test_name = 'tests/debug_test'
 
 test_dat = json.load( open( test_name, 'r' ))
 dat = test_dat['data']

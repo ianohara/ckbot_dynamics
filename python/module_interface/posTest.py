@@ -38,8 +38,8 @@ def run_test( test_name, test_time ):
 
     m.ser.write(start)
 
-    time.sleep(0.5)
-    set_voltage(200)
+    #time.sleep(0.5)
+    #set_voltage(200)
     #sleep(0.1)
     #set_zero()
 
