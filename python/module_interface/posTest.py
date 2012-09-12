@@ -25,6 +25,9 @@ def set_zero():
     for i in xrange(10):   
         m.set_voltage(19,0)
         time.sleep(random()/10.0)
+    for i in xrange(10):   
+        m.set_voltage(38,0)
+        time.sleep(random()/10.0)
 
 def run_test( test_name, test_time ):
 
