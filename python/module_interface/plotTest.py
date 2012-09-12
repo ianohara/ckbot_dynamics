@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 
 module_traj = {}
 
-module_param = {3: [18880, 2350, 27216], 
+module_param = {2: [21600, 5118, 30248],
+                3: [18880, 2350, 27216], 
                 4: [24868, 8530, 250], 
                 5: [23152, 6614, 31600]}
 

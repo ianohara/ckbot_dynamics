@@ -5,7 +5,7 @@ from math import pi
 from random import random
 import json
 
-m = moduleIface.moduleIface('/dev/ttyUSB0')
+m = moduleIface.moduleIface('/dev/ttyUSB1')
 
 ALL = 0
 HB = 2
