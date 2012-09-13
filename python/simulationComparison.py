@@ -67,21 +67,27 @@ plt.grid(True)
 plt.axis([min(e.time), max(e.time), -1.57, 1.57])
 plt.xlabel("Time [s]")
 plt.ylabel("Radians [rad/s]")
+legStrs = list()
 for module in modules.values():
     t_p = numpy.array(module_traj[module])
     plt.plot((t_p[...,0]/1000.0 - time_shift),
-             t_p[...,1], 'o', markersize=1.0)
+             t_p[...,1], 'o', markersize=2.0)
     print module, " is mod number."
+    legStrs.append("Phys Mod %d" % module)
+
 
 for index in xrange(e.module_count):
     plt.plot([t for t in e.time],
              [s[index] for s in e.states],
              "-", linewidth=1.0)
+    legStrs.append("Sim Mod %d" % index)
 
+plt.legend(legStrs)
 save_file = "images/physical_verification/%s_damping%f_shift%f_epochtime%d.png" % (
              sim_result_file.replace("..", "").replace("/","-"), 
              damping, time_shift, int(Time.time())
              )
+
 
 print "Saving this plot to ", save_file
 
