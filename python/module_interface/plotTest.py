@@ -49,7 +49,7 @@ for module in modules.values():
     plt.plot(t_p[...,0],
             t_p[...,1], 'o')
     for i, t in enumerate(t_p[:,0]):
-        if abs(t - 5000.0) < 10:
+        if abs(t - 860) < 50:
             print "Module ", module, " at time ", t, " is at ", t_p[i,1]
             print "  With speed = ", 1000.0*(t_p[i+1,1] - t_p[i,1])/(t_p[i+1,0] - t_p[i, 0])
 

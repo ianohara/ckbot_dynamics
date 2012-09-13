@@ -49,6 +49,7 @@ main(int ac, char* av[])
 
     struct sim_settings sets = _DEFAULT_SETS;
     boost::program_options::variables_map vm;
+    double t_start, t_end; /* Start and end time for applying torque */
 
     try
     {
@@ -64,18 +65,26 @@ main(int ac, char* av[])
             "Length of time to simulate for.")
 
           ("debug", po::value<unsigned int>(&sets.debug)->default_value(0u))
-
-          ("angle",
-            po::value<double>(&sets.custom_angle),
-            "Initial angle of each module (ie: ignore those specified in sim.txt)")
-
-          ("rate",
-            po::value<double>(&sets.custom_rate)->default_value(0.0),
-            "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
-
+//DEBUG
+//DEBUG          ("angle",
+//DEBUG            po::value<double>(&sets.custom_angle),
+//DEBUG            "Initial angle of each module (ie: ignore those specified in sim.txt)")
+//DEBUG
+//DEBUG          ("rate",
+//DEBUG            po::value<double>(&sets.custom_rate)->default_value(0.0),
+//DEBUG            "Initial angle rate of each module (ie: ignore those specified in sim.txt)")
+//DEBUG
           ("torque",
            po::value<double>(&sets.torque)->default_value(0.0),
            "Constant torque to apply to all joints")
+         
+          ("start",
+           po::value<double>(&t_start)->default_value(0.0),
+           "Time at which to start applying torque")
+
+          ("end", 
+           po::value<double>(&t_end)->default_value(0.0),
+           "Time at which to stop applying torque")
 
           ("dt",
            po::value<double>(&sets.dt)->default_value(0.01),
@@ -200,26 +209,6 @@ main(int ac, char* av[])
     std::vector<double> s0(2*num_modules);
     std::vector<double> s_fin(2*num_modules);
     fill_start_and_goal(sim_root, s0, s_fin);
-//DEBUG
-//DEBUG    if (abs(sets.custom_angle - _DEFAULT_SETS.custom_angle) > EPS)
-//DEBUG    {
-//DEBUG        for (int i=0; i < num_modules; i++)
-//DEBUG        {
-//DEBUG            s0[i] = sets.custom_angle;
-//DEBUG        }
-//DEBUG        std::cout << "Using a custom initial joint angle for the modules ("
-//DEBUG                  << sets.custom_angle << ")." << std::endl;
-//DEBUG    }
-//DEBUG    if (abs(sets.custom_rate - _DEFAULT_SETS.custom_rate) > EPS)
-//DEBUG    {
-//DEBUG        for (int i=0; i < num_modules; i++)
-//DEBUG        {
-//DEBUG            s0[num_modules+i] = sets.custom_rate;
-//DEBUG        }
-//DEBUG        std::cout << "Using a custom initial joint rate for modules ("
-//DEBUG                  << sets.custom_rate << ")." << std::endl;
-//DEBUG    }
-//DEBUG
     /* The top level entry "verifications" in the result_root
      * json will store verification runs.  It is an array of
      * arrays of dictionaries. The outer array contains
@@ -229,64 +218,63 @@ main(int ac, char* av[])
      */
 
     Json::Value verifications(Json::arrayValue);
-    /* First off, we want to verify that with 0 torques and no damping, 
-     * system energy is constant
-     */
+    std::vector<double> T(num_modules);
+    std::fill(T.begin(), T.end(), 0.0); // DEBUG.  Making this only set the first.
+    T[1] = sets.torque; // DEBUG  Need way of specifying torques on all modules.
+
+    ckbot::odePulseTorque chain_integrator(rate_machine_p->get_chain(),
+                                           T,
+                                           t_start,
+                                           t_end);
+
+    ckbot::chain& ch = chain_integrator.get_chain();
+    std::cout << ch.describe_self() << std::endl;
+
+    std::vector<double> s_cur(s0);
+
+    Json::Value this_ver(Json::arrayValue);
+    ode::runge_kutta4< std::vector< double > > stepper;
+    const double dt = sets.dt;
+    const double sim_time = sets.max_sol_time;
+    for (double t = 0.0; t < sim_time; t += dt)
     {
-        /* Make the constant torque vector */
-        std::vector<double> T(num_modules);
-        std::fill(T.begin(), T.end(), 0.0); // DEBUG.  Making this only set the first.
-        T[0] = sets.torque;
-        double tstart = 0.0; // DEBUG/TODO: Make this command line or json file setting.
-        double tend = 0.1; // DEBUG/TODO: Make this command line or json file setting.
+        stepper.do_step(chain_integrator, s_cur, t, dt);
 
-        ckbot::odePulseTorque chain_integrator(rate_machine_p->get_chain(), T, tstart, tend);
+        Json::Value this_step(Json::objectValue);
+        Json::Value this_state(Json::arrayValue);
+        Json::Value this_torque(Json::arrayValue);
+        std::vector<double> torques_now(chain_integrator.getTorques(t));
 
-        ckbot::chain& ch = chain_integrator.get_chain();
-        std::cout << ch.describe_self() << std::endl;
+        double ke = 0.0;
+        double pe = 0.0;
 
-        std::vector<double> s_cur(s0);
-
-        Json::Value this_ver(Json::arrayValue);
-        ode::runge_kutta4< std::vector< double > > stepper;
-        const double dt = sets.dt;
-        const double sim_time = sets.max_sol_time;
-        for (double t = 0.0; t < sim_time; t += dt)
+        this_step["time"] = t;
+        for (int i=0; i < s_cur.size(); i++)
         {
-            stepper.do_step(chain_integrator, s_cur, t, dt);
-
-            Json::Value this_step(Json::objectValue);
-            Json::Value this_state(Json::arrayValue);
-
-            double ke = 0.0;
-            double pe = 0.0;
-
-            this_step["time"] = t;
-            for (int i=0; i < s_cur.size(); i++)
-            {
-               this_state.append(s_cur[i]);
-            }
-            for (int j=0; j < s_cur.size()/2; j++)
-            {
-                ckbot::module_link m = ch.get_link(j);
-                Eigen::Vector3d omega_j = ch.get_angular_velocity(j);
-                Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
-                Eigen::Matrix3d R_cur = ch.get_current_R(j);
-
-                double ke_cur = ((0.5)*(omega_j.transpose()*R_cur*m.get_I_cm()*R_cur.transpose()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
-                ke += ke_cur;
-                double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
-                pe += pe_cur;
-            }
-
-            this_step["ke"] = ke;
-            this_step["pe"] = pe;
-            this_step["energy"] = ke+pe;
-            this_step["state"] = this_state;
-            this_ver.append(this_step);
+           this_state.append(s_cur[i]);
         }
-        verifications.append(this_ver);
+        for (int j=0; j < s_cur.size()/2; j++)
+        {
+            this_torque.append(torques_now[j]);
+            ckbot::module_link m = ch.get_link(j);
+            Eigen::Vector3d omega_j = ch.get_angular_velocity(j);
+            Eigen::Vector3d cur_vel = ch.get_linear_velocity(j);
+            Eigen::Matrix3d R_cur = ch.get_current_R(j);
+
+            double ke_cur = ((0.5)*(omega_j.transpose()*R_cur*m.get_I_cm()*R_cur.transpose()*omega_j))[0] + (0.5)*m.get_mass()*(cur_vel.dot(cur_vel));
+            ke += ke_cur;
+            double pe_cur = ch.get_link_r_cm(j).dot(Eigen::Vector3d::UnitZ())*m.get_mass()*9.81;
+            pe += pe_cur;
+        }
+
+        this_step["ke"] = ke;
+        this_step["pe"] = pe;
+        this_step["energy"] = ke+pe;
+        this_step["state"] = this_state;
+        this_step["torques"] = this_torque;
+        this_ver.append(this_step);
     }
+    verifications.append(this_ver);
     result_root["verifications"] = verifications;
 
     /* To file! */

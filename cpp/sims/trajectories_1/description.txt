@@ -1,0 +1,3 @@
+{
+"description": "5 modules with the 'motor rotor with bearing hook' body at the base.  This test we tried to go to a bar parrallel to and in front of the starting bar.  The hook came around back of the goal bar."
+}
