@@ -46,11 +46,8 @@ for dat_stub in dat:
         pos_raw = pos_raw - (max_tics+1)
         pos_raw = pos_raw % 2**15
         max_tics = 2**15
-    if module_id == 4:
-        print time, module_id, max_tics, pos_raw, min_tics
+
     pos = -pi/2 + (pi/2--pi/2)/(max_tics-min_tics)*(pos_raw-min_tics)
-    if module_id == 4:
-        print time, module_id, pos
 
     if time < 0:
         continue
@@ -64,7 +61,6 @@ for dat_stub in dat:
 legend_str = list()
 for module in modules.values():
     t_p = numpy.array(module_traj[module])
-<<<<<<< HEAD
     t_t = numpy.array(module_traj_time[module])
     legend_str.append( "module: %d" % module )
     plt.plot(t_t, t_p, 'o')
@@ -78,15 +74,5 @@ for i, t in enumerate(t_p[:,0]):
         print "Module ", module, " at time ", t, " is at ", t_p[i,1]
         print "  With speed = ", 1000.0*(t_p[i+1,1] - t_p[i,1])/(t_p[i+1,0] - t_p[i, 0])
 '''
-=======
-    plt.plot(t_p[...,0],
-            t_p[...,1], 'o')
-    for i, t in enumerate(t_p[:,0]):
-        if abs(t - 860) < 50:
-            print "Module ", module, " at time ", t, " is at ", t_p[i,1]
-            print "  With speed = ", 1000.0*(t_p[i+1,1] - t_p[i,1])/(t_p[i+1,0] - t_p[i, 0])
->>>>>>> 062dfdfa45bb716a8266c4e4f5cbe4f05dc9834b
-
-
 plt.grid(True)
 plt.show()
