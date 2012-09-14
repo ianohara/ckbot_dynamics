@@ -274,7 +274,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     ss_p->setStartState(start);
 
     /* BEGIN HACKING NONSENSE FOR GETTIN' THIS DONE */
-    if (sets.planner == RRT) {
+    /*if (sets.planner == RRT) {*/ // DEBUG IMO
         std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
         double goalX = 0.0; //DEBUG Specific to swing_test_3modules_inplane
         double goalY = 0.1;//8726; //DEBUG Corresponds to the basebase at 90deg pos
@@ -285,27 +285,30 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
 
         ss_p->setGoal(goalSt);
-    }
+    /*} //DEBUG IMO
     else {
         ss_p->setGoalState(goal, sets.threshold);
-    }
+    }*/
 
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
 
     if (sets.planner == KPIECE1) {
-        std::cout << "NOTE: Using the x,y,z location of the end of the chain and the sqrt of the sum of the squares of the angular vels of each module as the planning space with KPIECE1." << std::endl;
+        std::cout << "NOTE: Using the x,y,z location of the end of the " 
+                  << "chain and the sqrt of the sum of the squares of the " 
+                  << "angular vels of each module as the planning space " 
+                  << " with KPIECE1." << std::endl;
         ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
                     ss_p->getSpaceInformation(),
                     ss_p->getStateSpace(),
                     rate_machine_p->get_chain()));
 
         std::vector<double> projCellSizes(prjEvalPtr->getDimension());
-        projCellSizes[0] = 1; /* 5 mm */
-        projCellSizes[1] = 1; /* 5 mm */
-        projCellSizes[2] = 1; /* 5 mm */
-        projCellSizes[3] = 1; /* rad/s */
+        projCellSizes[0] = 0.005; /* 5 mm */
+        projCellSizes[1] = 0.005; /* 5 mm */
+        projCellSizes[2] = 0.005; /* 5 mm */
+        projCellSizes[3] = 0.005; /* rad/s */
 
         prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
         planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
