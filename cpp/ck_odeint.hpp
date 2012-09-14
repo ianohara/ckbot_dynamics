@@ -46,6 +46,7 @@ namespace ckbot
             void operator() ( const std::vector< double > &s,
                               std::vector< double > &sdot,
                               const double t);
+            std::vector< double >& getTorques(double t);
         private:
             std::vector< double > Tpulse_;
             std::vector< double > Tzero_;

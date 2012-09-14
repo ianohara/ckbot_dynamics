@@ -294,19 +294,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
 
-    /* If we're using KPIECE1, use our own custom projection subspace */
-    //const ob::ProjectionEvaluatorPtr defProj = planner->as<oc::KPIECE1>()->getProjectionEvaluator();
-    //defProj->printSettings();
-    /*
-    const std::vector<double> cellSizes = defProj->getCellSizes();
-
-    std::cout << "Cell Sizes:" << std::endl;
-    for (int i=0; i < cellSizes.size(); i++)
-    {
-        std::cout << cellSizes[i] << ", ";
-    }
-    std::cout << std::endl;
-*/
     if (sets.planner == KPIECE1) {
         std::cout << "NOTE: Using the x,y,z location of the end of the chain and the sqrt of the sum of the squares of the angular vels of each module as the planning space with KPIECE1." << std::endl;
         ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
@@ -335,7 +322,6 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
      * (mostly, fill in the planner parameters.) 
      */
     ss_p->setup();
-    ss_p->getPlanner()->as<oc::KPIECE1>()->getProjectionEvaluator()->printSettings();
 
     /* Debug printing section for information having to do with the setup
      * of the planner and any of its components.

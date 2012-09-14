@@ -1,0 +1,9185 @@
+
+{
+	"chain" : 
+	[
+		
+		{
+			"I_cm" : 
+			[
+				[ 8.508000000000001e-05, 9.490000000000001e-06, 1.332000000000000e-05 ],
+				[ 9.490000000000001e-06, 0.000209880, -6.400000000000000e-07 ],
+				[ 1.322000000000000e-05, -6.400000000000000e-07, 0.000212990 ]
+			],
+			"R_jts" : 
+			[
+				[ 1.0, 0.0, 0.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ 0.0, 0.0, 1.0 ]
+			],
+			"damping" : 0.00120,
+			"f_jt_axis" : 
+			[
+				[ 0.0 ],
+				[ 0.0 ],
+				[ 1.0 ]
+			],
+			"init_rotation" : 
+			[
+				[ 0.0, 0.0, 1.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ -1.0, 0.0, 0.0 ]
+			],
+			"joint_max" : 1.570,
+			"joint_min" : -1.570,
+			"mass" : 0.1990,
+			"r_im1" : 
+			[
+				[ -0.037310 ],
+				[ 0.0 ],
+				[ 0.00119370 ]
+			],
+			"r_ip1" : 
+			[
+				[ 0.044690 ],
+				[ 0.0013420 ],
+				[ 0.0 ]
+			],
+			"torque_max" : 0.4520
+		},
+		
+		{
+			"I_cm" : 
+			[
+				[ 8.570000000000000e-05, 3.900000000000000e-07, 2.234000000000000e-05 ],
+				[ 3.900000000000000e-07, 0.000217960, 3.300000000000000e-07 ],
+				[ 2.234000000000000e-05, 3.300000000000000e-07, 0.000205510 ]
+			],
+			"R_jts" : 
+			[
+				[ 1.0, 0.0, 0.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ 0.0, 0.0, 1.0 ]
+			],
+			"damping" : 0.00120,
+			"f_jt_axis" : 
+			[
+				[ 0.0 ],
+				[ 0.0 ],
+				[ 1.0 ]
+			],
+			"init_rotation" : 
+			[
+				[ 1.0, 0.0, 0.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ 0.0, 0.0, 1.0 ]
+			],
+			"joint_max" : 1.570,
+			"joint_min" : -1.570,
+			"mass" : 0.1990,
+			"r_im1" : 
+			[
+				[ -0.037320 ],
+				[ 0.000280 ],
+				[ 0.0 ]
+			],
+			"r_ip1" : 
+			[
+				[ 0.044680 ],
+				[ 0.000280 ],
+				[ 0.0 ]
+			],
+			"torque_max" : 0.4520
+		},
+		
+		{
+			"I_cm" : 
+			[
+				[ 5.881000000000000e-05, -6.900000000000000e-07, 4.420000000000000e-06 ],
+				[ -6.900000000000000e-07, 7.969000000000000e-05, 1.800000000000000e-07 ],
+				[ 4.420000000000000e-06, 1.800000000000000e-07, 6.596000000000000e-05 ]
+			],
+			"R_jts" : 
+			[
+				[ 1.0, 0.0, 0.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ 0.0, 0.0, 1.0 ]
+			],
+			"damping" : 0.00120,
+			"f_jt_axis" : 
+			[
+				[ 0.0 ],
+				[ 0.0 ],
+				[ 1.0 ]
+			],
+			"init_rotation" : 
+			[
+				[ 1.0, 0.0, 0.0 ],
+				[ 0.0, 1.0, 0.0 ],
+				[ 0.0, 0.0, 1.0 ]
+			],
+			"joint_max" : 1.570,
+			"joint_min" : -1.570,
+			"mass" : 110.590,
+			"r_im1" : 
+			[
+				[ -0.0183280 ],
+				[ 0.00050 ],
+				[ 0.0 ]
+			],
+			"r_ip1" : 
+			[
+				[ 0.0 ],
+				[ 0.0 ],
+				[ 0.0 ]
+			],
+			"torque_max" : 0.4520
+		}
+	],
+	"verifications" : 
+	[
+		
+		[
+			
+			{
+				"energy" : 3301.79674130790,
+				"ke" : 3497.671842185582,
+				"pe" : -195.8751008776821,
+				"state" : 
+				[
+					-0.06897629438131746,
+					0.2655390939041806,
+					-0.08563477275108983,
+					-5.062304894812283,
+					67.90619597640216,
+					-123.4031546471143
+				],
+				"time" : 0.0,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : 42747.68185789527,
+				"ke" : 42860.85491771155,
+				"pe" : -113.1730598162755,
+				"state" : 
+				[
+					0.06117738388240923,
+					-1.674896844518573,
+					3.748362663749167,
+					-1045.852076136486,
+					4268.403854538494,
+					-4561.054653323354
+				],
+				"time" : 0.010,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : 4.833326948116375e+27,
+				"ke" : 4.833326948116375e+27,
+				"pe" : -158.3103871104305,
+				"state" : 
+				[
+					-240426031617.0402,
+					522895608743.0121,
+					40196649071.95193,
+					2.766078511323463e+25,
+					-5.014130238678899e+25,
+					-2.349443891610739e+25
+				],
+				"time" : 0.020,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : inf,
+				"ke" : inf,
+				"pe" : -140.1039411600258,
+				"state" : 
+				[
+					-1.916884310767388e+189,
+					5.530837102187319e+189,
+					1.324550508957943e+189,
+					nan,
+					nan,
+					nan
+				],
+				"time" : 0.030,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.040,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.050,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.060,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.07000000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.080,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.090,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.09999999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.110,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.120,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.130,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.140,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.150,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.160,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.170,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.180,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.190,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.20,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.210,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2200000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2300000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2400000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2500000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2600000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2700000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2800000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.2900000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3000000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3100000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3200000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3300000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3400000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3500000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3600000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3700000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3800000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.3900000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4000000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4100000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4200000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4300000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4400000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4500000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4600000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4700000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4800000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.4900000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5000000000000002,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5100000000000002,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5200000000000002,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5300000000000002,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5400000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5500000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5600000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5700000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5800000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.5900000000000003,
+				"torques" : [ 0.0, 0.180, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6000000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6100000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6200000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6300000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6400000000000003,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6500000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6600000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6700000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6800000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.6900000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7000000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7100000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7200000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7300000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7400000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7500000000000004,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7600000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7700000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7800000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.7900000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8000000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8100000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8200000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8300000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8400000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8500000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8600000000000005,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8700000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8800000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.8900000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9000000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9100000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9200000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9300000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9400000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9500000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9600000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9700000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9800000000000006,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 0.9900000000000007,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.000000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.010000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.020000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.030000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.040000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.050000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.060000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.070000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.080000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.090000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.100000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.110000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.120000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.130000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.140000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.150000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.160000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.170000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.180000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.190000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.200000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.210000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.220000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.230000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.240000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.250000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.260000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.270000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.280000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.290000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.300000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.310000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.320000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.330000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.340000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.350000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.360000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.370000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.380000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.390000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.400000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.410000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.420000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.430000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.440000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.450000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.460000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.470000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.480000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.490000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.500000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.510000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.520000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.530000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.540000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.550000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.560000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.570000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.580000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.590000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.600000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.610000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.620000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.630000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.640000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.650000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.660000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.670000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.680000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.690000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.700000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.710000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.720000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.730000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.740000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.750000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.760000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.770000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.780000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.790000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.800000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.810000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.820000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.830000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.840000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.850000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.860000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.870000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.880000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.890000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.900000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.910000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.920000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.930000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.940000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.950000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.960000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.970000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.980000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 1.990000000000002,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.000000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.010000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.020000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.030000000000001,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.040,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.050,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.060,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.070,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.080,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.089999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.099999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.109999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.119999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.129999999999999,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.139999999999998,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.149999999999998,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.159999999999998,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.169999999999998,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.179999999999997,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.189999999999997,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.199999999999997,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.209999999999997,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.219999999999997,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.229999999999996,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.239999999999996,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.249999999999996,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.259999999999996,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.269999999999996,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.279999999999995,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.289999999999995,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.299999999999995,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.309999999999995,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.319999999999995,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.329999999999994,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.339999999999994,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.349999999999994,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.359999999999994,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.369999999999993,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.379999999999993,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.389999999999993,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.399999999999993,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.409999999999993,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.419999999999992,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.429999999999992,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.439999999999992,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.449999999999992,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.459999999999992,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.469999999999991,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.479999999999991,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.489999999999991,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.499999999999991,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.509999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.519999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.529999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.539999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.549999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.559999999999989,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.569999999999989,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.579999999999989,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.589999999999989,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.599999999999989,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.609999999999988,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.619999999999988,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.629999999999988,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.639999999999988,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.649999999999987,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.659999999999987,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.669999999999987,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.679999999999987,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.689999999999987,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.699999999999986,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.709999999999986,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.719999999999986,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.729999999999986,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.739999999999986,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.749999999999985,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.759999999999985,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.769999999999985,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.779999999999985,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.789999999999984,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.799999999999984,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.809999999999984,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.819999999999984,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.829999999999984,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.839999999999983,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.849999999999983,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.859999999999983,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.869999999999983,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.879999999999983,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.889999999999982,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.899999999999982,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.909999999999982,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.919999999999982,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.929999999999982,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.939999999999981,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.949999999999981,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.959999999999981,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.969999999999981,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.979999999999980,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.989999999999980,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 2.999999999999980,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.009999999999980,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.019999999999980,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.029999999999979,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.039999999999979,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.049999999999979,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.059999999999979,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.069999999999979,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.079999999999978,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.089999999999978,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.099999999999978,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.109999999999978,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.119999999999977,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.129999999999977,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.139999999999977,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.149999999999977,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.159999999999977,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.169999999999976,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.179999999999976,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.189999999999976,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.199999999999976,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.209999999999976,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.219999999999975,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.229999999999975,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.239999999999975,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.249999999999975,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.259999999999974,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.269999999999974,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.279999999999974,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.289999999999974,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.299999999999974,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.309999999999973,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.319999999999973,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.329999999999973,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.339999999999973,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.349999999999973,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.359999999999972,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.369999999999972,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.379999999999972,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.389999999999972,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.399999999999971,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.409999999999971,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.419999999999971,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.429999999999971,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.439999999999971,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.449999999999970,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.459999999999970,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.469999999999970,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.479999999999970,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.489999999999970,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.499999999999969,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.509999999999969,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.519999999999969,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.529999999999969,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.539999999999969,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.549999999999968,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.559999999999968,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.569999999999968,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.579999999999968,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.589999999999967,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.599999999999967,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.609999999999967,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.619999999999967,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.629999999999967,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.639999999999966,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.649999999999966,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.659999999999966,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.669999999999966,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.679999999999966,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.689999999999965,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.699999999999965,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.709999999999965,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.719999999999965,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.729999999999964,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.739999999999964,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.749999999999964,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.759999999999964,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.769999999999964,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.779999999999963,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.789999999999963,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.799999999999963,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.809999999999963,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.819999999999963,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.829999999999962,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.839999999999962,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.849999999999962,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.859999999999962,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.869999999999961,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.879999999999961,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.889999999999961,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.899999999999961,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.909999999999961,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.919999999999960,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.929999999999960,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.939999999999960,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.949999999999960,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.959999999999960,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.969999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.979999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.989999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 3.999999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.009999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.019999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.029999999999959,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.039999999999958,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.049999999999958,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.059999999999958,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.069999999999958,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.079999999999957,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.089999999999957,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.099999999999957,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.109999999999957,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.119999999999957,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.129999999999956,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.139999999999956,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.149999999999956,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.159999999999956,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.169999999999956,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.179999999999955,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.189999999999955,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.199999999999955,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.209999999999955,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.219999999999954,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.229999999999954,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.239999999999954,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.249999999999954,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.259999999999954,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.269999999999953,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.279999999999953,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.289999999999953,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.299999999999953,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.309999999999953,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.319999999999952,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.329999999999952,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.339999999999952,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.349999999999952,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.359999999999951,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.369999999999951,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.379999999999951,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.389999999999951,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.399999999999951,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.409999999999950,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.419999999999950,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.429999999999950,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.439999999999950,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.449999999999950,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.459999999999949,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.469999999999949,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.479999999999949,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.489999999999949,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.499999999999948,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.509999999999948,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.519999999999948,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.529999999999948,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.539999999999948,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.549999999999947,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.559999999999947,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.569999999999947,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.579999999999947,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.589999999999947,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.599999999999946,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.609999999999946,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.619999999999946,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.629999999999946,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.639999999999946,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.649999999999945,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.659999999999945,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.669999999999945,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.679999999999945,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.689999999999944,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.699999999999944,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.709999999999944,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.719999999999944,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.729999999999944,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.739999999999943,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.749999999999943,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.759999999999943,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.769999999999943,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.779999999999943,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.789999999999942,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.799999999999942,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.809999999999942,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.819999999999942,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.829999999999941,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.839999999999941,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.849999999999941,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.859999999999941,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.869999999999941,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.879999999999940,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.889999999999940,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.899999999999940,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.909999999999940,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.919999999999940,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.929999999999939,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.939999999999939,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.949999999999939,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.959999999999939,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.969999999999938,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.979999999999938,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.989999999999938,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 4.999999999999938,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.009999999999938,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.019999999999937,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.029999999999937,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.039999999999937,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.049999999999937,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.059999999999937,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.069999999999936,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.079999999999936,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.089999999999936,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.099999999999936,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.109999999999935,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.119999999999935,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.129999999999935,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.139999999999935,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.149999999999935,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.159999999999934,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.169999999999934,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.179999999999934,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.189999999999934,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.199999999999934,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.209999999999933,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.219999999999933,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.229999999999933,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.239999999999933,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.249999999999932,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.259999999999932,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.269999999999932,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.279999999999932,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.289999999999932,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.299999999999931,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.309999999999931,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.319999999999931,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.329999999999931,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.339999999999931,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.349999999999930,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.359999999999930,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.369999999999930,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.379999999999930,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.389999999999930,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.399999999999929,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.409999999999929,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.419999999999929,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.429999999999929,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.439999999999928,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.449999999999928,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.459999999999928,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.469999999999928,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.479999999999928,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.489999999999927,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.499999999999927,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.509999999999927,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.519999999999927,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.529999999999927,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.539999999999926,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.549999999999926,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.559999999999926,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.569999999999926,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.579999999999925,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.589999999999925,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.599999999999925,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.609999999999925,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.619999999999925,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.629999999999924,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.639999999999924,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.649999999999924,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.659999999999924,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.669999999999924,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.679999999999923,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.689999999999923,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.699999999999923,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.709999999999923,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.719999999999922,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.729999999999922,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.739999999999922,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.749999999999922,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.759999999999922,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.769999999999921,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.779999999999921,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.789999999999921,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.799999999999921,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.809999999999921,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.819999999999920,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.829999999999920,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.839999999999920,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.849999999999920,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.859999999999919,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.869999999999919,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.879999999999919,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.889999999999919,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.899999999999919,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.909999999999918,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.919999999999918,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.929999999999918,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.939999999999918,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.949999999999918,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.959999999999917,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.969999999999917,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.979999999999917,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.989999999999917,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 5.999999999999917,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.009999999999916,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.019999999999916,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.029999999999916,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.039999999999916,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.049999999999915,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.059999999999915,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.069999999999915,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.079999999999915,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.089999999999915,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.099999999999914,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.109999999999914,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.119999999999914,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.129999999999914,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.139999999999914,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.149999999999913,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.159999999999913,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.169999999999913,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.179999999999913,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.189999999999912,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.199999999999912,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.209999999999912,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.219999999999912,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.229999999999912,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.239999999999911,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.249999999999911,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.259999999999911,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.269999999999911,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.279999999999911,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.289999999999910,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.299999999999910,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.309999999999910,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.319999999999910,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.329999999999909,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.339999999999909,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.349999999999909,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.359999999999909,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.369999999999909,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.379999999999908,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.389999999999908,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.399999999999908,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.409999999999908,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.419999999999908,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.429999999999907,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.439999999999907,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.449999999999907,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.459999999999907,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.469999999999906,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.479999999999906,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.489999999999906,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.499999999999906,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.509999999999906,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.519999999999905,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.529999999999905,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.539999999999905,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.549999999999905,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.559999999999905,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.569999999999904,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.579999999999904,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.589999999999904,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.599999999999904,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.609999999999904,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.619999999999903,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.629999999999903,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.639999999999903,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.649999999999903,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.659999999999902,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.669999999999902,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.679999999999902,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.689999999999902,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.699999999999902,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.709999999999901,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.719999999999901,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.729999999999901,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.739999999999901,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.749999999999901,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.75999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.76999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.77999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.78999999999990,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.799999999999899,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.809999999999899,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.819999999999899,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.829999999999899,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.839999999999899,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.849999999999898,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.859999999999898,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.869999999999898,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.879999999999898,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.889999999999898,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.899999999999897,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.909999999999897,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.919999999999897,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.929999999999897,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.939999999999896,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.949999999999896,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.959999999999896,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.969999999999896,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.979999999999896,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.989999999999895,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 6.999999999999895,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.009999999999895,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.019999999999895,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.029999999999895,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.039999999999894,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.049999999999894,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.059999999999894,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.069999999999894,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.079999999999893,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.089999999999893,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.099999999999893,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.109999999999893,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.119999999999893,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.129999999999892,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.139999999999892,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.149999999999892,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.159999999999892,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.169999999999892,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.179999999999891,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.189999999999891,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.199999999999891,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.209999999999891,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.219999999999891,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.229999999999890,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.239999999999890,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.249999999999890,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.259999999999890,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.269999999999889,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.279999999999889,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.289999999999889,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.299999999999889,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.309999999999889,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.319999999999888,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.329999999999888,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.339999999999888,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.349999999999888,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.359999999999888,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.369999999999887,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.379999999999887,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.389999999999887,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.399999999999887,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.409999999999886,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.419999999999886,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.429999999999886,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.439999999999886,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.449999999999886,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.459999999999885,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.469999999999885,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.479999999999885,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.489999999999885,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.499999999999885,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.509999999999884,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.519999999999884,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.529999999999884,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.539999999999884,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.549999999999883,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.559999999999883,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.569999999999883,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.579999999999883,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.589999999999883,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.599999999999882,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.609999999999882,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.619999999999882,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.629999999999882,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.639999999999882,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.649999999999881,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.659999999999881,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.669999999999881,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.679999999999881,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.689999999999880,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.699999999999880,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.709999999999880,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.719999999999880,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.729999999999880,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.739999999999879,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.749999999999879,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.759999999999879,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.769999999999879,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.779999999999879,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.789999999999878,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.799999999999878,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.809999999999878,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.819999999999878,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.829999999999878,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.839999999999877,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.849999999999877,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.859999999999877,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.869999999999877,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.879999999999876,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.889999999999876,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.899999999999876,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.909999999999876,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.919999999999876,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.929999999999875,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.939999999999875,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.949999999999875,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.959999999999875,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.969999999999875,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.979999999999874,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.989999999999874,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 7.999999999999874,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.009999999999874,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.019999999999873,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.029999999999873,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.039999999999873,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.049999999999873,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.059999999999873,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.069999999999872,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.079999999999872,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.089999999999872,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.099999999999872,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.109999999999872,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.119999999999871,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.129999999999871,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.139999999999871,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.149999999999871,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.159999999999870,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.169999999999870,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.179999999999870,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.189999999999870,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.199999999999870,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.209999999999869,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.219999999999869,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.229999999999869,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.239999999999869,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.249999999999869,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.259999999999868,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.269999999999868,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.279999999999868,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.289999999999868,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.299999999999867,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.309999999999867,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.319999999999867,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.329999999999867,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.339999999999867,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.349999999999866,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.359999999999866,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.369999999999866,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.379999999999866,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.389999999999866,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.399999999999865,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.409999999999865,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.419999999999865,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.429999999999865,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.439999999999864,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.449999999999864,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.459999999999864,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.469999999999864,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.479999999999864,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.489999999999863,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.499999999999863,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.509999999999863,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.519999999999863,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.529999999999863,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.539999999999862,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.549999999999862,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.559999999999862,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.569999999999862,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.579999999999862,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.589999999999861,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.599999999999861,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.609999999999861,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.619999999999861,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.629999999999860,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.639999999999860,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.649999999999860,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.659999999999860,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.669999999999860,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.679999999999859,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.689999999999859,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.699999999999859,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.709999999999859,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.719999999999859,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.729999999999858,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.739999999999858,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.749999999999858,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.759999999999858,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.769999999999857,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.779999999999857,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.789999999999857,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.799999999999857,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.809999999999857,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.819999999999856,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.829999999999856,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.839999999999856,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.849999999999856,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.859999999999856,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.869999999999855,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.879999999999855,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.889999999999855,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.899999999999855,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.909999999999854,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.919999999999854,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.929999999999854,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.939999999999854,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.949999999999854,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.959999999999853,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.969999999999853,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.979999999999853,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.989999999999853,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 8.999999999999853,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.009999999999852,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.019999999999852,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.029999999999852,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.039999999999852,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.049999999999851,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.059999999999851,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.069999999999851,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.079999999999851,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.089999999999851,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.099999999999850,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.109999999999850,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.119999999999850,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.129999999999850,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.139999999999850,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.149999999999849,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.159999999999849,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.169999999999849,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.179999999999849,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.189999999999849,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.199999999999848,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.209999999999848,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.219999999999848,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.229999999999848,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.239999999999847,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.249999999999847,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.259999999999847,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.269999999999847,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.279999999999847,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.289999999999846,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.299999999999846,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.309999999999846,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.319999999999846,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.329999999999846,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.339999999999845,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.349999999999845,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.359999999999845,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.369999999999845,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.379999999999844,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.389999999999844,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.399999999999844,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.409999999999844,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.419999999999844,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.429999999999843,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.439999999999843,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.449999999999843,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.459999999999843,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.469999999999843,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.479999999999842,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.489999999999842,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.499999999999842,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.509999999999842,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.519999999999841,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.529999999999841,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.539999999999841,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.549999999999841,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.559999999999841,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.569999999999840,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.579999999999840,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.589999999999840,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.599999999999840,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.609999999999840,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.619999999999839,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.629999999999839,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.639999999999839,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.649999999999839,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.659999999999838,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.669999999999838,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.679999999999838,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.689999999999838,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.699999999999838,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.709999999999837,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.719999999999837,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.729999999999837,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.739999999999837,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.749999999999837,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.759999999999836,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.769999999999836,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.779999999999836,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.789999999999836,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.799999999999836,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.809999999999835,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.819999999999835,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.829999999999835,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.839999999999835,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.849999999999834,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.859999999999834,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.869999999999834,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.879999999999834,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.889999999999834,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.899999999999833,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.909999999999833,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.919999999999833,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.929999999999833,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.939999999999833,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.949999999999832,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.959999999999832,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.969999999999832,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.979999999999832,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.989999999999831,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			},
+			
+			{
+				"energy" : nan,
+				"ke" : nan,
+				"pe" : nan,
+				"state" : [ nan, nan, nan, nan, nan, nan ],
+				"time" : 9.999999999999831,
+				"torques" : [ 0.0, 0.0, 0.0 ]
+			}
+		]
+	]
+}

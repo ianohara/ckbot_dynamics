@@ -46,15 +46,26 @@ ckbot::odePulseTorque::operator() (const std::vector< double > &s,
                                    std::vector< double > &sdot,
                                    const double t)
 {
-//    std::cout << "start: " << ts_ << " end: " << te_ << std::endl;
-    if ((t > ts_) && (t < te_)) {
-//        std::cout << "Applying torque " << Tpulse_[0] << " at time " << t << std::endl; // DEBUG
-        sdot = calc_rate(s, Tpulse_);
-    }
-    else
+    sdot = calc_rate(s, getTorques(t));
+    // DEBUG 
+    /*std::cout << "At time t=" << t << std::endl << "  sdot=";
+    for (int i = 0; i < sdot.size(); i++)
     {
-//        std::cout << "Applying torque " << Tzero_[0] << " at time " << t << std::endl; // DEBUG
-        sdot = calc_rate(s, Tzero_);
+        std::cout << sdot[i] << ", ";
+    }
+    std::cout << std::endl;
+    */
+}
+
+std::vector<double>&
+ckbot::odePulseTorque::getTorques(double t)
+{
+    if ((t > ts_) && (t < te_)) {
+        return Tpulse_;
+    } 
+    else
+    { 
+        return Tzero_;
     }
 }
 
