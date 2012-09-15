@@ -28,6 +28,9 @@ def set_zero():
     for i in xrange(10):   
         m.set_voltage(38,0)
         time.sleep(random()/10.0)
+    for i in xrange(10):   
+        m.set_voltage(37,0)
+        time.sleep(random()/10.0)
 
 def run_test( test_name, test_time ):
 
@@ -44,7 +47,7 @@ def run_test( test_name, test_time ):
     #time.sleep(0.5)
     #set_voltage(200)
     #sleep(0.1)
-    #set_zero()
+    #set_zero() # 6 -> 17 
 
     time.sleep(test_time+1)
 
@@ -71,7 +74,7 @@ def run_test( test_name, test_time ):
         modules[m_id] = m_id
         pos = vals[1]
         if pos > 2**15:
-            print "Pos greater than 2**15"
+            print "ID: %d, Pos greater than 2**15" % m_id
             continue
         pos_raw = pos 
         if pos_raw > 2**14:
