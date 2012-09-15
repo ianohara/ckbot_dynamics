@@ -88,19 +88,6 @@ ckbot::CK_ompl::setWorld(boost::shared_ptr<World> w)
 bool
 ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob::State *s)
 {
-    /*
-    const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
-    int num_links = c.num_links();
-    int slen = 2*num_links;
-    for (int i = 0; i < slen; i++)
-    {
-        std::cout << sVals[i] << ", ";
-    }
-    std::cout << std::endl;
-
-     END DEBUG
-     */
-
     if (! (si->satisfiesBounds(s))) {
        return false;
     }
@@ -208,20 +195,31 @@ ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
     int slen = 2*num_links;
     std::vector<double> q(num_links);
     std::vector<double> qd(num_links);
+    double speedsSquare = 0;
     for (int i = 0; i < num_links; i++)
     {
         q[i] = sVals[i];
         qd[i] = sVals[num_links+i];
+        speedsSquare += pow(qd[i], 2);
     }
     ch.propogate_angles_and_rates(q,qd);
 
     Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
-    double dist = sqrt(pow((r_end[0] - x_),2) + pow((r_end[1]-y_),2) + pow((r_end[2]-z_),2));
+    double dist = r_end.norm();
     if (dist < minDist) {
         minDist = dist;
         std::cout << "Found a new min end effector distance: " << minDist << std::endl;
     }
-    return dist;
+    double sqrtSpds = sqrt(speedsSquare);
+
+    //DEBUG IMO
+    if (dist < 0.01) {
+        return dist;
+    }
+    else 
+    {
+        return (10.0/sqrtSpds)*dist;
+    }
 
 }
 
@@ -270,5 +268,4 @@ ckbot::EndLocAndAngVelProj::project(const ob::State *state,
     proj[1] = r_end[1];
     proj[2] = r_end[2];
     proj[3] = sqrt(sumSqrVels);
-//DEBUG    std::cout << "Projection is: [" << proj[0] << ", " << proj[1] << ", " << proj[2] << ", " << proj[3] <<"]" << std::endl;
 }

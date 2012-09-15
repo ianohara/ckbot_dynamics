@@ -21,10 +21,12 @@
 #include<fstream>
 #define _USE_MATH_DEFINES
 #include<math.h>
+#include<ctime>
 
 #include<boost/bind.hpp> /* www.boost.org */
 #include<boost/program_options.hpp>
 #include<boost/filesystem.hpp>
+#include<boost/lexical_cast.hpp>
 
 #include<Eigen/Dense> /* http://eigen.tuxfamily.org/ */
 #include<ompl/control/SimpleSetup.h> /* http://ompl.kavrakilab.org/ */
@@ -47,8 +49,14 @@ main(int ac, char* av[])
     std::string chain_path("chain.txt");
     std::string sim_path("sim.txt");
     std::string result_dir("results/");
-    std::string result_path("results.txt");
     std::string world_path("world.txt");
+
+    std::string result_path("results");
+    time_t nowt = time(0);
+    std::string now = boost::lexical_cast<std::string>(nowt);
+    std::string txt_end(".txt");
+    result_path = result_path + now + txt_end;
+    
 
     struct sim_settings sets = _DEFAULT_SETS;
     boost::program_options::variables_map vm;
@@ -79,7 +87,7 @@ main(int ac, char* av[])
     sets.chain_path = sets.sim_dir + sets.chain_path;
     sets.sim_path = sets.sim_dir + sets.sim_path;
     sets.result_dir = sets.sim_dir + sets.result_dir;
-    sets.result_path = sets.result_dir + sets.result_path;
+    sets.result_path = sets.result_dir + result_path;
     sets.world_path = sets.sim_dir + world_path;
 
     if (! boost::filesystem::is_regular_file(sets.desc_path))
