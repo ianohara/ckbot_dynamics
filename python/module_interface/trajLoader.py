@@ -94,7 +94,7 @@ class trajLoader( object ):
         if ind > self.MAX_TRAJ_LEN:
             print "Trajectory longer than MAX_TRAJ_LEN"
             return
-        buf = (m_id, ind )
+        buf = (m_id, ind)
         pkt = '1' + self.mface._encode_data( self.GET_FMT, *buf )
         self.write(pkt)
         t0 = time.time()
@@ -128,17 +128,35 @@ class trajLoader( object ):
 
 if __name__ == "__main__":
     from moduleIface import moduleIface
-    m = moduleIface( '/dev/ttyUSB1' )
+    import sys
+    def usage():
+        print "Usage: %s <trajectory file> [<device>]" % sys.argv[0]
+
+    devStr = '/dev/ttyUSB1' # Default works on Linux (if you're lucky)
+    controlFile = None
     mmap = [4]
-    control_file = 'tests/control_test.txt'
-    tl = trajLoader(m,control_file,mmap)
+    # The device and trajectory file are specified on cmd line
+    if (len(sys.argv) == 3): 
+        devStr = sys.argv[2]
+        controlFile = sys.argv[1]
+    # The trajectory is specified, use default device
+    elif (len(sys.argv) == 2):
+        controlFile = sys.argv[1]
+    # D'oh!
+    else:
+        usage()
+        sys.exit(1)
+
+    try:
+        m = moduleIface(devStr)
+    except Exception as e:
+        print "Error making a module interface using device '%s'" % devStr
+        print e
+        sys.exit(1)
+    try:
+        tl = trajLoader(m, controlFile, mmap)
+    except Exception as e:
+        print "Error making a trajLoader with control file '%s'." % sys.argv[2]
+        print e
+
     tl.write_trajectory()
-
-    '''
-    m_id = 3
-    cmd = (0,0,0)
-    print "m_id: %d, cmd: %s" % (m_id, repr(cmd))
-
-    tl.set_cmd_sync(3, *cmd)
-    '''
-
