@@ -1,5 +1,5 @@
 '''
-A quick class made to load trajectories onto modules in a safe way 
+A quick class made to load trajectories onto modules in a safe way
 '''
 import time
 import struct
@@ -20,7 +20,7 @@ class trajLoader( object ):
 
     def __init__( self, module_iface, control_file, module_map ):
         '''
-        module_map: list { module_id .... } 
+        module_map: list { module_id .... }
         '''
         self.mface = module_iface
         self.mmap = module_map
@@ -31,13 +31,12 @@ class trajLoader( object ):
         cdat = json.load(open(control_file, 'r'))["controls"]
         if len(cdat) == 0:
             print "Warning: control data is empty"
-           
         if len(cdat) > self.MAX_TRAJ_LEN:
             print "Warning: control data longer than MAX_TRAJ_LEN"
         self.trajectory = []
         for ctrl in cdat:
             ts = int(ctrl['end_time']*1000) # Convert to ms
-            ind = ctrl['start_state_index'] 
+            ind = ctrl['start_state_index']
             for m_id, mctrl in zip(self.mmap, ctrl['control']):
                 # Note our torque is the opposite of the sim torque
                 cmd = int(self.TORQUE_TO_VOLTS*mctrl)
@@ -50,7 +49,7 @@ class trajLoader( object ):
     def write_trajectory( self ):
         for ctrl in self.trajectory:
             self.set_cmd_sync( *ctrl )
-        # Perform second pass 
+        # Perform second pass
         for ctrl in self.trajectory:
             cmds = self.get_cmd( *ctrl[:2] )
             if cmds != ctrl:
@@ -68,7 +67,7 @@ class trajLoader( object ):
         '''
         sets a command in a trajectory
         m_id -- module id
-        ind -- index of command 
+        ind -- index of command
         cmd -- command value from -300 to 300
         ts -- timestamp for cmd in ms
         '''
@@ -83,12 +82,12 @@ class trajLoader( object ):
             print "Trajectory longer than MAX_TRAJ_TIME"
             return
         buf = (m_id, ind, cmd, ts )
-        pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf ) 
+        pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf )
         self.write(pkt)
 
     def get_cmd( self, m_id, ind, tout=0.1 ):
         '''
-        get command in trajectory 
+        get command in trajectory
         m_id -- module id
         ind -- index of command
         '''
@@ -103,7 +102,7 @@ class trajLoader( object ):
         while True:
             if time.time()-t0 > tout:
                 print "Read timed out"
-                return 
+                return
             bt = m.ser.read()
             dat += bt
             if bt == '\r':
