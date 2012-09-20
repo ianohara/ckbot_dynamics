@@ -17,18 +17,18 @@ def can_pass( m_id, passthis ):
     m.ser.write(pass_pkt)
 
 def set_voltage( vol ):
-    for i in xrange(10):   
+    for i in xrange(10):
         m.set_voltage(19,vol)
         time.sleep(random()/10.0)
 
 def set_zero():
-    for i in xrange(10):   
+    for i in xrange(10):
         m.set_voltage(19,0)
         time.sleep(random()/10.0)
-    for i in xrange(10):   
+    for i in xrange(10):
         m.set_voltage(38,0)
         time.sleep(random()/10.0)
-    for i in xrange(10):   
+    for i in xrange(10):
         m.set_voltage(37,0)
         time.sleep(random()/10.0)
 
@@ -47,7 +47,7 @@ def run_test( test_name, test_time ):
     #time.sleep(0.5)
     #set_voltage(200)
     #sleep(0.1)
-    #set_zero() # 6 -> 17 
+    #set_zero() # 6 -> 17
 
     time.sleep(test_time+1)
 
@@ -76,7 +76,7 @@ def run_test( test_name, test_time ):
         if pos > 2**15:
             print "ID: %d, Pos greater than 2**15" % m_id
             continue
-        pos_raw = pos 
+        pos_raw = pos
         if pos_raw > 2**14:
             pos_raw = pos_raw - 2**15
         position = pi*pos_raw/float(2**15)

@@ -10,8 +10,8 @@ module_traj_time = {}
 
 module_param = {
                 2: [27664, 11238, 30248],
-                3: [18880, 2350, 27216], 
-                4: [24868, 8530, 250], 
+                3: [18880, 2350, 27216],
+                4: [24868, 8530, 250],
                 5: [23152, 6614, 31600],
                 6: [8886, 25180, 17028]
                }
@@ -53,7 +53,7 @@ for dat_stub in dat:
         continue
     voltage = dat_stub[3]
     if not module_traj.has_key(module_id):
-        module_traj[module_id] = list() 
+        module_traj[module_id] = list()
         module_traj_time[module_id] = list()
     module_traj[module_id].append(pos)
     module_traj_time[module_id].append(time)
