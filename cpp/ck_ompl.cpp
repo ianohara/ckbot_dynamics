@@ -212,15 +212,7 @@ ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
     }
     double sqrtSpds = sqrt(speedsSquare);
 
-    //DEBUG IMO
-    if (dist < 0.01) {
-        return dist;
-    }
-    else 
-    {
-        return (10.0/sqrtSpds)*dist;
-    }
-
+    return dist;
 }
 
 /**** KPIECE Projection classes ****/
