@@ -1,11 +1,11 @@
 '''
-A quick class made to load trajectories onto modules in a safe way 
+A quick class made to load trajectories onto modules in a safe way
 '''
 import time
 import struct
 import json
 
-class trajLoader( object ):
+class TrajLoader( object ):
 
     SET_FMT = '<BBhH'
     GET_FMT = '<BB'
@@ -18,26 +18,35 @@ class trajLoader( object ):
     TORQUE_MAX = 0.452
     TORQUE_TO_VOLTS = 300/TORQUE_MAX
 
-    def __init__( self, module_iface, control_file, module_map ):
+    def __init__(self,
+                 module_iface=None,  # Module interface for communication
+                 control_json=None,  # Json dictionary with "controls" key
+                 module_map=None # List of modules in order from base to tip
+                 ):
         '''
-        module_map: list { module_id .... } 
+        module_map: list ( module_id .... )
         '''
+        if not module_iface:
+            raise Exception("You need to supply a module interface")
         self.mface = module_iface
-        self.mmap = module_map
-        self.trajectory = None
-        self.load_controls( control_file )
 
-    def load_controls( self, control_file ):
-        cdat = json.load(open(control_file, 'r'))["controls"]
+        if not module_map:
+            raise Exception("You need to supply a list of module id (brain board ids) for the modules in order from base to tip")
+        self.mmap = module_map
+
+        self.trajectory = None
+        self.load_controls( control_json ) # Will except out on its own via json
+
+    def load_controls( self, jsondat ):
+        cdat = json["controls"]
         if len(cdat) == 0:
             print "Warning: control data is empty"
-           
         if len(cdat) > self.MAX_TRAJ_LEN:
             print "Warning: control data longer than MAX_TRAJ_LEN"
         self.trajectory = []
         for ctrl in cdat:
             ts = int(ctrl['end_time']*1000) # Convert to ms
-            ind = ctrl['start_state_index'] 
+            ind = ctrl['start_state_index']
             for m_id, mctrl in zip(self.mmap, ctrl['control']):
                 # Note our torque is the opposite of the sim torque
                 cmd = int(self.TORQUE_TO_VOLTS*mctrl)
@@ -50,7 +59,7 @@ class trajLoader( object ):
     def write_trajectory( self ):
         for ctrl in self.trajectory:
             self.set_cmd_sync( *ctrl )
-        # Perform second pass 
+        # Perform second pass
         for ctrl in self.trajectory:
             cmds = self.get_cmd( *ctrl[:2] )
             if cmds != ctrl:
@@ -68,7 +77,7 @@ class trajLoader( object ):
         '''
         sets a command in a trajectory
         m_id -- module id
-        ind -- index of command 
+        ind -- index of command
         cmd -- command value from -300 to 300
         ts -- timestamp for cmd in ms
         '''
@@ -83,19 +92,19 @@ class trajLoader( object ):
             print "Trajectory longer than MAX_TRAJ_TIME"
             return
         buf = (m_id, ind, cmd, ts )
-        pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf ) 
+        pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf )
         self.write(pkt)
 
     def get_cmd( self, m_id, ind, tout=0.1 ):
         '''
-        get command in trajectory 
+        get command in trajectory
         m_id -- module id
         ind -- index of command
         '''
         if ind > self.MAX_TRAJ_LEN:
             print "Trajectory longer than MAX_TRAJ_LEN"
             return
-        buf = (m_id, ind )
+        buf = (m_id, ind)
         pkt = '1' + self.mface._encode_data( self.GET_FMT, *buf )
         self.write(pkt)
         t0 = time.time()
@@ -103,7 +112,7 @@ class trajLoader( object ):
         while True:
             if time.time()-t0 > tout:
                 print "Read timed out"
-                return 
+                return
             bt = m.ser.read()
             dat += bt
             if bt == '\r':
@@ -128,18 +137,36 @@ class trajLoader( object ):
 
 
 if __name__ == "__main__":
-    from moduleIface import moduleIface
-    m = moduleIface( '/dev/ttyUSB1' )
+    from moduleIface import ModuleIface
+    import sys
+    def usage():
+        print "Usage: %s <trajectory file> [<device>]" % sys.argv[0]
+
+    devStr = '/dev/ttyUSB1' # Default works on Linux (if you're lucky)
+    controlFile = None
     mmap = [4]
-    control_file = 'tests/control_test.txt'
-    tl = trajLoader(m,control_file,mmap)
+    # The device and trajectory file are specified on cmd line
+    if (len(sys.argv) == 3):
+        devStr = sys.argv[2]
+        controlFile = sys.argv[1]
+    # The trajectory is specified, use default device
+    elif (len(sys.argv) == 2):
+        controlFile = sys.argv[1]
+    # D'oh!
+    else:
+        usage()
+        sys.exit(1)
+
+    try:
+        m = moduleIface(devStr)
+    except Exception as e:
+        print "Error making a module interface using device '%s'" % devStr
+        print e
+        sys.exit(1)
+    try:
+        tl = trajLoader(m, controlFile, mmap)
+    except Exception as e:
+        print "Error making a trajLoader with control file '%s'." % sys.argv[2]
+        print e
+
     tl.write_trajectory()
-
-    '''
-    m_id = 3
-    cmd = (0,0,0)
-    print "m_id: %d, cmd: %s" % (m_id, repr(cmd))
-
-    tl.set_cmd_sync(3, *cmd)
-    '''
-

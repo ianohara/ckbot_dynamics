@@ -2,13 +2,13 @@
 '''
 A quick interface for controlling the modules, there will be a json parser that
 will read in json files and send commands to the modules, most likely we will
-also have a way to read positions from the modules. 
+also have a way to read positions from the modules.
 
 Long term we may have some synchronization method for the modules, so that we
 can download each modules motor plan and have them execute the plan in sync.
 
 Test packets:
-msg0 = '120' + pack('<h', 0).encode('hex').upper() + '00' 
+msg0 = '120' + pack('<h', 0).encode('hex').upper() + '00'
 msg50 = '120' + pack('<h', 50).encode('hex').upper() + '00
 
 msg_param_autoZero_off = '620' + pack('B', 17).encode('hex').upper() +7*'00'
@@ -45,13 +45,13 @@ class Request( object ):
     def __init__( self, m_id, addr, fmt, tout=0.5 ):
         self.id = m_id
         self.addr = addr
-        self.fmt = fmt 
+        self.fmt = fmt
         self.data = None
         self.timestamp = None
         self.tout = tout
         self.t0 = now()
         self.dead = False
-    
+
     def hasData( self ):
         if self.data is None:
             return False
@@ -72,7 +72,7 @@ class Feedback( object ):
             self.pos = self.pos - 2*pi
         self.timestamp = now()
 
-class moduleIface( object ):
+class ModuleIface( object ):
 
     NETWORK_MANAGEMENT = '000'
     EMERGENCY = '0'
@@ -83,10 +83,10 @@ class moduleIface( object ):
     HB = '7'
 
     PKT_FMT = {
-	FEEDBACK : '<' + 'B' + 4*'h', 
-	REQUEST_RESPONSE : '<' + 5*'B',
-	HB : '<' + 5*'B' + 'h' + 'BB'
-	}
+    FEEDBACK : '<' + 'B' + 4*'h',
+    REQUEST_RESPONSE : '<' + 5*'B',
+    HB : '<' + 5*'B' + 'h' + 'BB'
+    }
 
     def __init__( self, dev='/dev/ttyUSB0' ):
         ser = serial.Serial( dev )
@@ -122,7 +122,7 @@ class moduleIface( object ):
             if b != '\r':
                 self.buf += b
                 continue
-            # Parse the packet 
+            # Parse the packet
             while len(self.buf) > 0:
                 c_ind = find(self.buf, 'c')
                 if c_ind == -1:
@@ -133,12 +133,12 @@ class moduleIface( object ):
                     length = int(self.buf[:2], 16)
                 except:
                     self.buf = ''
-                    break 
+                    break
                 if len(self.buf)-2 == length:
                     pkt = self.buf[2:]
                     self.buf = ''
                     return pkt
-       
+
     def flush( self ):
         '''
         while True:
@@ -158,7 +158,7 @@ class moduleIface( object ):
 
     def discover( self, timeout=2.0 ):
         '''
-        reads data off of interface for timeout time and returns all modules seen 
+        reads data off of interface for timeout time and returns all modules seen
         '''
         modules = set()
         t0 = now()
@@ -171,12 +171,12 @@ class moduleIface( object ):
                 continue
             decoded_pkt = self._decode_data( self.PKT_FMT['7'], pkt[1:] )
             modules.add( decoded_pkt[0] )
-        return modules	
+        return modules
 
     def _parse_pkt( self, pkt ):
         '''
-        Look at first byte of packet to determine msg type then decode 
-        pkt data 
+        Look at first byte of packet to determine msg type then decode
+        pkt data
         '''
         print repr( self.PKT_FMT[ pkt[0] ] )
         data = self._decode_data( self.PKT_FMT[pkt[0]], pkt[1:] )
@@ -209,7 +209,7 @@ class moduleIface( object ):
                             request.timestamp = curtime
                             break
                     self.requests.append( request )
-                    cnt += 1 
+                    cnt += 1
             # Handle feedback
             if pkt[0] == self.FEEDBACK:
                 data = self._decode_data( self.PKT_FMT[self.FEEDBACK], pkt[1:]
@@ -234,7 +234,7 @@ class moduleIface( object ):
 
     def _encode_data( self, fmt, *buf ):
         return pack(fmt, *buf).encode('hex').upper()
-	
+
     def set_param( self, m_id, param, val, perm=False ):
         if not mP.has_key( param ):
             print "paraemeter not in mP"
@@ -259,10 +259,10 @@ class moduleIface( object ):
         request = Request( m_id, addr, fmt )
         self.requests.append( request )
         return request
-	
+
     def set_param_sync( self, m_id, param, val, perm=False, tout=0.5 ):
         '''
-        Set a parameter and then check to make sure that 
+        Set a parameter and then check to make sure that
         the correct value is returned
         '''
         self.set_param( m_id, param, val, perm )
@@ -285,9 +285,9 @@ class moduleIface( object ):
             req = self.request_param( m_id, param )
             sleep(0.1)
         return False
-   
+
     def start( self, m_id ):
-        data = ( m_id, 0, 1 )	
+        data = ( m_id, 0, 1 )
         pkt = self.COMMAND + self._encode_data( '<BhB', *data )
         self.write(pkt)
 
@@ -312,4 +312,4 @@ class moduleIface( object ):
         data = ( m_id, 0, 0, 4 )
         pkt = self.COMMAND + self._encode_data(4*'B', *data )
         self.write(pkt)
-	    
+
