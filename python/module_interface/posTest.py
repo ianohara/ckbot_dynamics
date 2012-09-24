@@ -17,7 +17,7 @@ class PositionLogger(object):
     NONE = 1
 
     def __init__(self,
-                 dev='/dev/ttyUSB1',
+                 modIface=None,   # The module interface on which we communicate
                  modules=None,   # List of modules to listen to
                  jsonout=dict(), # Json dictionary to store results and stup
                  test_name="PositionLogger_" + str(int(time.time())),
@@ -34,13 +34,11 @@ class PositionLogger(object):
                   test to file, so fill it with all of the information needed
                   to recreate it.
         """
-        try:
-            self.m = moduleIface.moduleIface('/dev/ttyUSB1')
-        except Exception as e:
-            print "Cannot establish serial connection with device at '%s'" % dev
-            raise e
-        self.jsonout = jsonout
+        if not modIface:
+            raise Exception("You need to supply a moduleIface class instance")
+        self.m = modIface
 
+        self.jsonout = jsonout
         if (not self.jsonout.get('results')):
             self.jsonout.setdefault('results', dict())
 

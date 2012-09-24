@@ -72,7 +72,7 @@ class Feedback( object ):
             self.pos = self.pos - 2*pi
         self.timestamp = now()
 
-class moduleIface( object ):
+class ModuleIface( object ):
 
     NETWORK_MANAGEMENT = '000'
     EMERGENCY = '0'
