@@ -1,3 +1,1 @@
-Tests for the CKBot dynamics code.  I'm not using a testing framework because
-they all seem like a pain in the ass, and I don't feel like spending
-a week learning to use one properly.
+Tests for the CKBot dynamics code.
