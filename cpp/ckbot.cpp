@@ -34,7 +34,11 @@
 
 #include"ckbot.hpp"
 
-struct ckbot::module_description _ZERO_MODULE = {0.0,
+struct ckbot::module_description _ZERO_MODULE = {
+        0.0,
+        0.0,
+        0.0,
+        0.0,
         Eigen::Vector3d::Zero(),
         Eigen::Vector3d::Zero(),
         Eigen::Vector3d::Zero(),
@@ -99,7 +103,7 @@ ckbot::get_body_trans(Eigen::Vector3d r)
     Eigen::MatrixXd phi(6,6);
 
     phi << Eigen::Matrix3d::Identity(), get_cross_mat(r),
-           Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Identity();
+           Eigen::Matrix3d::Zero(),     Eigen::Matrix3d::Identity();
 
     return phi;
 }
@@ -112,6 +116,9 @@ ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
 {
     ckbot::module_description this_module_desc;
     double damping = json_mod["damping"].asDouble();
+    double rotor_cog_mag = json_mod.get("rotor_cogging", 0.0).asDouble();
+    double stator_cog_mag = json_mod.get("stator_cogging", 0.0).asDouble();
+    double cogging_offset = json_mod.get("cogging_offset", 0.0).asDouble();
     double mass = json_mod["mass"].asDouble();
     double joint_max = json_mod["joint_max"].asDouble();
     double joint_min = json_mod["joint_min"].asDouble();
@@ -149,6 +156,9 @@ ckbot::fill_module(const Json::Value& json_mod, ckbot::module_link* module)
     }
 
     this_module_desc.damping = damping;
+    this_module_desc.rotor_cogging = rotor_cog_mag;
+    this_module_desc.stator_cogging = stator_cog_mag;
+    this_module_desc.cogging_offset = cogging_offset;
     this_module_desc.m = mass;
     this_module_desc.joint_max = joint_max;
     this_module_desc.joint_min = joint_min;
@@ -176,6 +186,9 @@ ckbot::module_link::module_link(void):
     q_(0.0),
     qd_(0.0),
     damping_(0.0),
+    rotor_cogging_(0.0),
+    stator_cogging_(0.0),
+    cogging_offset_(0.0),
     forward_joint_axis_(Eigen::Vector3d::Zero()),
     r_im1_(Eigen::Vector3d::Zero()),
     r_ip1_(Eigen::Vector3d::Zero()),
@@ -190,6 +203,9 @@ ckbot::module_link::module_link(struct module_description m):
     q_(0.0),
     qd_(0.0),
     damping_(m.damping),
+    rotor_cogging_(m.rotor_cogging),
+    stator_cogging_(m.stator_cogging),
+    cogging_offset_(m.cogging_offset),
     forward_joint_axis_(m.forward_joint_axis),
     r_im1_(m.r_im1),
     r_ip1_(m.r_ip1),
@@ -207,6 +223,9 @@ ckbot::module_link::module_link(const module_link& source):
     q_(source.get_q()),
     qd_(source.get_qd()),
     damping_(source.get_damping()),
+    rotor_cogging_(source.get_rotor_cogging()),
+    stator_cogging_(source.get_stator_cogging()),
+    cogging_offset_(source.get_cogging_offset()),
     forward_joint_axis_(source.get_forward_joint_axis()),
     r_im1_(source.get_r_im1()),
     r_ip1_(source.get_r_ip1()),
@@ -224,6 +243,9 @@ ckbot::module_link::module_link&
 ckbot::module_link::operator=(module_link& source)
 {
     damping_ = source.get_damping();
+    rotor_cogging_ = source.get_rotor_cogging();
+    stator_cogging_ = source.get_stator_cogging();
+    cogging_offset_ = source.get_cogging_offset();
     forward_joint_axis_ = source.get_forward_joint_axis();
     r_im1_ = source.get_r_im1();
     r_ip1_ = source.get_r_ip1();
@@ -243,6 +265,9 @@ ckbot::module_link::describe_self(void)
     Json::Value mod(Json::objectValue);
     mod["mass"] = m_;
     mod["damping"] = damping_;
+    mod["rotor_cogging"] = rotor_cogging_;
+    mod["stator_cogging"] = stator_cogging_;
+    mod["cogging_offset"] = cogging_offset_;
     mod["joint_max"] = joint_max_;
     mod["joint_min"] = joint_min_;
     mod["torque_max"] = torque_max_;
@@ -257,6 +282,27 @@ ckbot::module_link::describe_self(void)
 
 ckbot::module_link::~module_link(void)
 {
+}
+
+/* Cogging sine wave magnitude from the rotor */
+inline double
+ckbot::module_link::get_rotor_cogging(void) const
+{
+    return rotor_cogging_;
+}
+
+/* Cogging sine wave magnitude from the stator */
+inline double
+ckbot::module_link::get_stator_cogging(void) const
+{
+    return stator_cogging_;
+}
+
+/* The cogging offset of a body's motor cogging function in [rad] */
+inline double
+ckbot::module_link::get_cogging_offset(void) const
+{
+    return cogging_offset_;
 }
 
 /* Min allowed joint angle [rad] */
@@ -748,6 +794,9 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
     Eigen::VectorXd z(6);
 
     double C = 0.0;
+    double CF = 0.0;
+    double SPOLES = 12.0;
+    double RPOLES = 14.0;
     double epsilon = 0.0;
 
     double mu = 0.0;
@@ -860,6 +909,7 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
          *       and D needs to be made a variable sized Eigen Matrix 
          */
         G = p_cur*H.transpose()*(1.0/D); 
+
         /* Articulated body projection operator through this joint.  This defines
          * which part of the articulated body spatial inertia gets through this joint
          */
@@ -894,15 +944,20 @@ ckbot::chain_rate::tip_base_step(std::vector<double> s, std::vector<double> T)
          */
         C = -cur.get_damping()*qd[i];
 
+        /* Cogging force which is a function of the joint angle and
+         * the motor specifics.
+         */
+        CF = cur.get_rotor_cogging()*sin(RPOLES*(q[i]-cur.get_cogging_offset()))
+             + cur.get_stator_cogging()*sin(SPOLES*(q[i]-cur.get_cogging_offset()));
+
         /* The "Effective" force through the joint that can actually create
          * accelerations.  IE: Forces that are in directions in which the joint
          * can actually move.
-         *
-         * TODO: 6DOF change.  Epsilon will not be 1x1 for a 6DOF joint, so
+         */
+        /* TODO: 6DOF change.  Epsilon will not be 1x1 for a 6DOF joint, so
          *       both T[i] and C used here as they are will break things.
          */
-        epsilon = T[i] + C - H*z;
-        //std::cout << "Module " << i << " applying torque " << T[i] << std::endl;
+        epsilon = T[i] + C + CF - H*z;
 
         mu = (1/D)*epsilon; /* 6DOF change: D will be a matrix, need to invert it */
         zp = z + G*epsilon;

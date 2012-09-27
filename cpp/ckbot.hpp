@@ -35,6 +35,9 @@ namespace ckbot
 {
     struct module_description {
         double damping;
+        double rotor_cogging;
+        double stator_cogging;
+        double cogging_offset;
         Eigen::Vector3d forward_joint_axis;
         Eigen::Vector3d r_im1;
         Eigen::Vector3d r_ip1;
@@ -69,18 +72,17 @@ namespace ckbot
     Eigen::Matrix3d rotZ(double phi);
     Eigen::Matrix3d get_cross_mat(Eigen::Vector3d r);
     Eigen::MatrixXd get_body_trans(Eigen::Vector3d r);
-    
+
     class module_link
     {
         public:
             module_link(void);
             module_link(struct module_description m);
             module_link(const module_link& source);
-            ~module_link(void); 
+            ~module_link(void);
  
             module_link& operator=(module_link& source);
 
-            /*Eigen::MatrixXd get_spatial_inertia_mat(void);*/ /* No longer used */
             Eigen::RowVectorXd get_joint_matrix(void) const;
 
             Json::Value describe_self(void);
@@ -88,7 +90,14 @@ namespace ckbot
             double get_q(void) const;
             double get_qd(void) const;
             double get_damping(void) const;
+            double get_rotor_cogging(void) const;
+            double get_stator_cogging(void) const;
+            double get_cogging_offset(void) const;
             double get_mass(void) const;
+            double get_joint_max(void) const;
+            double get_joint_min(void) const;
+            double get_torque_max(void) const;
+
             void set_q(double q);
             void set_qd(double qd);
             void set_damping(double damping);
@@ -102,14 +111,13 @@ namespace ckbot
 
             Eigen::Matrix3d get_init_rotation(void) const;
 
-            double get_joint_max(void) const;
-            double get_joint_min(void) const;
-            double get_torque_max(void) const;
-
         protected:
             double q_;
             double qd_;
             double damping_;
+            double rotor_cogging_;
+            double stator_cogging_;
+            double cogging_offset_;
             Eigen::Vector3d forward_joint_axis_;
             Eigen::Vector3d r_im1_;
             Eigen::Vector3d r_ip1_;

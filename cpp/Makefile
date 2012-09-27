@@ -13,5 +13,5 @@ all:
 	dynamics
 
 clean:
-	rm *.o run_sim example ompl_ex dynamics_verifier
+	rm *.o run_sim dynamics_verifier
 	rm *.out
