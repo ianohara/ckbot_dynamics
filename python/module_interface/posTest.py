@@ -18,22 +18,24 @@ class PositionLogger(object):
 
     def __init__(self,
                  modIface=None,   # The module interface on which we communicate
-                 modules=None,   # List of modules to listen to
+#                 modules=None,   # List of modules to listen to
+                 test_time=None, # Len in [s] of trajectory
                  jsonout=dict(), # Json dictionary to store results and stup
                  test_name="PositionLogger_" + str(int(time.time())),
-                 test_time=None, # Len in [s] of trajectory
                  debug=False     # Use debug output?
                  ):
         """
         dev     - device string of serial device associated
                   with the module network.
-        modules - list of module IDs in the chain (Brain board IDs)
+#        modules - list of module IDs in the chain (Brain board IDs)
         debug   - Boolean indicating whether debug output should be printed
         jsonout - dictionary to use as the json output object for this test.
                   This could be used to write the result and setup of this
                   test to file, so fill it with all of the information needed
                   to recreate it.
         """
+        self.debug = debug
+
         if not modIface:
             raise Exception("You need to supply a moduleIface class instance")
         self.m = modIface
@@ -41,9 +43,6 @@ class PositionLogger(object):
         self.jsonout = jsonout
         if (not self.jsonout.get('results')):
             self.jsonout.setdefault('results', dict())
-
-        if not modules:
-            raise Exception("PositionLogger: Must specify modules to listen to.")
 
         if not test_name:
             test_name = "PositionLogger_" + str(int(time.time()))
@@ -53,7 +52,7 @@ class PositionLogger(object):
             raise Exception("PositionLogger: Must specify a test length with test_time paramter")
         self.test_time = test_time
 
-        self.modules = modules
+        self.modules = dict()
         self.data = list()
 
     def can_pass( self, m_id, passthis ):
@@ -106,9 +105,11 @@ class PositionLogger(object):
                 continue
             # TODO(IMO): What's the packet format?
             vals = unpack('<BHHB', pkt[3:-1])
+            if self.debug:
+                print "Read values: ", vals
             self.data.append(vals)
             m_id = vals[0]
-            modules[m_id] = m_id
+            self.modules[m_id] = m_id
             pos = vals[1]
             if pos > 2**15:
                 print "ID: %d, Pos greater than 2**15" % m_id
@@ -131,7 +132,7 @@ class PositionLogger(object):
         self.jsonout['results']['modules'] = self.modules
 
         print "Saving test data to: %s" % self.test_name
-        f = open('tests/' + self.test_name, 'w')
+        f = open(self.test_name, 'w')
         json.dump(self.jsonout, f)
         f.close()
         print "Test successfully completed"

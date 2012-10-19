@@ -21,7 +21,8 @@ class TrajLoader( object ):
     def __init__(self,
                  module_iface=None,  # Module interface for communication
                  control_json=None,  # Json dictionary with "controls" key
-                 module_map=None # List of modules in order from base to tip
+                 module_map=None, # List of modules in order from base to tip
+                 debug=False
                  ):
         '''
         module_map: list ( module_id .... )
@@ -31,14 +32,21 @@ class TrajLoader( object ):
         self.mface = module_iface
 
         if not module_map:
+            # Try to get it out of the json
+            module_map = control_json.get("modules", None)
+        if not module_map:
             raise Exception("You need to supply a list of module id (brain board ids) for the modules in order from base to tip")
         self.mmap = module_map
+
+        self.debug = debug
+        if self.debug:
+            print "Module list from base to tip: ", self.mmap
 
         self.trajectory = None
         self.load_controls( control_json ) # Will except out on its own via json
 
     def load_controls( self, jsondat ):
-        cdat = json["controls"]
+        cdat = jsondat["controls"]
         if len(cdat) == 0:
             print "Warning: control data is empty"
         if len(cdat) > self.MAX_TRAJ_LEN:
@@ -65,7 +73,7 @@ class TrajLoader( object ):
             if cmds != ctrl:
                 print "Error in trajectory"
                 return False
-        print "Controls written"
+        print "Controls written and confirmed."
         return True
 
     def write( self, pkt):
@@ -99,7 +107,7 @@ class TrajLoader( object ):
         '''
         get command in trajectory
         m_id -- module id
-        ind -- index of command
+        ind  -- index of command
         '''
         if ind > self.MAX_TRAJ_LEN:
             print "Trajectory longer than MAX_TRAJ_LEN"
@@ -113,7 +121,7 @@ class TrajLoader( object ):
             if time.time()-t0 > tout:
                 print "Read timed out"
                 return
-            bt = m.ser.read()
+            bt = self.mface.ser.read()
             dat += bt
             if bt == '\r':
                 break

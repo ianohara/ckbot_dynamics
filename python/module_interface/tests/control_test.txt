@@ -1,4 +1,5 @@
 {
+"modules" : [2],
 "controls" :
     [
         {
@@ -12,14 +13,24 @@
             "end_state_index": 1
         },
         {
-            "control": [0.18],
+            "control": [0.1],
             "start_state": [0.0,0.0],
             "start_state_index": 1,
             "start_time": 0.5,
-            "end_time": 0.6,
+            "end_time": 0.55,
             "end_state": [0.0, 0.0],
             "dt": 0.1,
             "end_state_index": 2
+        },
+         {
+            "control": [0.0],
+            "start_state": [0.0,0.0],
+            "start_state_index": 2,
+            "start_time": 0.55,
+            "end_time": 0.7,
+            "end_state": [0.0, 0.0],
+            "dt": 0.1,
+            "end_state_index": 3
         }
     ]
 }
