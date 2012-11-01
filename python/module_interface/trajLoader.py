@@ -1,9 +1,13 @@
 '''
-A quick class made to load trajectories onto modules in a safe way
+A class made to load trajectories onto modules in a safe way
 '''
 import time
 import struct
 import json
+
+TORQUE_MAX = 0.452
+TORQUE_TO_VOLTS = 300/TORQUE_MAX
+_DEFAULT_TORQUE_FUNC = lambda T: int(TORQUE_TO_VOLTS*T)
 
 class TrajLoader( object ):
 
@@ -15,18 +19,32 @@ class TrajLoader( object ):
     MAX_TRAJ_TIME = 30
     END_TRAJ = 999
 
-    TORQUE_MAX = 0.452
-    TORQUE_TO_VOLTS = 300/TORQUE_MAX
-
     def __init__(self,
                  module_iface=None,  # Module interface for communication
                  control_json=None,  # Json dictionary with "controls" key
                  module_map=None, # List of modules in order from base to tip
+                 torque_func=_DEFAULT_TORQUE_FUNC,
                  debug=False
                  ):
-        '''
-        module_map: list ( module_id .... )
-        '''
+        """
+        TrajLoader reads in a json file containing a "control" structure (which
+        the c++ planner outputs), and loads the specified torque trajectories
+        onto each of the physical modules in a chain.  The loaded torques are
+        written and then verified.  This does *NOT* run a trajectory, and
+        contains no mechanism for actually doing so.
+
+        ARGUMENTS:
+          module_iface - A module interface object already setup and ready
+                         to talk to modules.
+          control_json - json dictionary containing "control"
+                         entry with trajectory to load
+          module_map - List() - List of modules brain board IDs in
+                                order from base to top
+          torque_func - Function to convert torques to corresponding
+                        pwm commands to write to a motor.  The
+                        default is stupid.  Do not use it.
+          debug - [False] - Turn on debug output
+        """
         if not module_iface:
             raise Exception("You need to supply a module interface")
         self.mface = module_iface
@@ -41,6 +59,9 @@ class TrajLoader( object ):
         self.debug = debug
         if self.debug:
             print "Module list from base to tip: ", self.mmap
+        if torque_func is _DEFAULT_TORQUE_FUNC:
+            print "TrajLoader: Using default torque->pwm conversion function.  BEWARE!  This is probably wrong."
+        self.torque_to_pwm_command = torque_func
 
         self.trajectory = None
         self.load_controls( control_json ) # Will except out on its own via json
@@ -51,18 +72,18 @@ class TrajLoader( object ):
             print "Warning: control data is empty"
         if len(cdat) > self.MAX_TRAJ_LEN:
             print "Warning: control data longer than MAX_TRAJ_LEN"
-        self.trajectory = []
+        self.trajectory = list()
         for ctrl in cdat:
             ts = int(ctrl['end_time']*1000) # Convert to ms
             ind = ctrl['start_state_index']
             for m_id, mctrl in zip(self.mmap, ctrl['control']):
                 # Note our torque is the opposite of the sim torque
-                cmd = int(self.TORQUE_TO_VOLTS*mctrl)
+                cmd = self.torque_to_pwm_command(mctrl)
                 self.trajectory.append( ( m_id, ind, cmd, ts ))
         # Append end trajectory command to trajectory
         for m_id, mctrl in zip(self.mmap, ctrl['control']):
             self.trajectory.append( ( m_id, ind+1, self.END_TRAJ, 0 ))
-        print "Controls successfully set"
+        print "TrajLoader.load_controls(): Controls successfully loaded from json."
 
     def write_trajectory( self ):
         for ctrl in self.trajectory:
@@ -71,7 +92,7 @@ class TrajLoader( object ):
         for ctrl in self.trajectory:
             cmds = self.get_cmd( *ctrl[:2] )
             if cmds != ctrl:
-                print "Error in trajectory"
+                print "TrajLoader.write_trajecotory: Error in trajectory"
                 return False
         print "Controls written and confirmed."
         return True
@@ -105,7 +126,7 @@ class TrajLoader( object ):
 
     def get_cmd( self, m_id, ind, tout=0.1 ):
         '''
-        get command in trajectory
+        get command in trajectory by polling a module
         m_id -- module id
         ind  -- index of command
         '''
@@ -142,7 +163,6 @@ class TrajLoader( object ):
                 if ret_cmd == ( m_id, ind, cmd, ts ):
                     print "success"
                     break
-
 
 if __name__ == "__main__":
     from moduleIface import ModuleIface
