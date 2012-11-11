@@ -4,10 +4,45 @@ A class made to load trajectories onto modules in a safe way
 import time
 import struct
 import json
+from math import pi
 
 TORQUE_MAX = 0.452
 TORQUE_TO_VOLTS = 300/TORQUE_MAX
 _DEFAULT_TORQUE_FUNC = lambda T: int(TORQUE_TO_VOLTS*T)
+
+def exceedRC710TorqueFunc(T,
+                          V_bat=8.0, kv=1022.26, R=0.22,
+                          pwm_max=300, pwm_deadzone=25):
+    """
+    Returns the PWM command (out of 300) to send to Matt's motor controller
+    to obtain the torque T (at stall).
+
+    ARGUMENTS:
+        T - Torque in [Nm] we want to achieve
+        v_bat - Battery voltage (8.0 default is about full charged 2C lipo)
+        kv - K_v of the motor in [V/rpm] (Default is from MotorData.xlsx
+             in repo:
+             personal/picolli/Brushless_Module/Software/Anti_Cogging/ (rev 421))
+        R - Resistance of motor coil (default from same spreadsheet)
+        pwm_max - Maximum Possible PWM value.
+        pwm_deadzone - number of pwm ticks (out of pwm_max) that are dead
+                       on the low end
+
+    RETURNS:
+        Pwm (out of 300) to command to get desired Torque
+    """
+    kv_si = kv*(2*pi)/60 # [(rev/min)/v] -> [(rad/s)/v]
+    ke_si = 1/kv_si # [Nm/A]
+
+    I = T/ke_si
+    V_app = I*R
+    def sign(v):
+        return -1.0 if v < 0.0 else 1.0
+    #print "Current is: %2.2f" % I
+    #print "Supply current is %2.2f" % (I*(V_app/V_bat))
+    #print "kv_si=%f\nke_si=%f" % (kv_si, ke_si)
+
+    return int(sign(V_app)*(pwm_max*(abs(float(V_app))/V_bat)+pwm_deadzone))
 
 class TrajLoader( object ):
 

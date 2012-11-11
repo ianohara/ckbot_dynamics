@@ -1,4 +1,4 @@
-from trajLoader import TrajLoader
+from trajLoader import TrajLoader, exceedRC710TorqueFunc
 from posTest import PositionLogger
 from moduleIface import ModuleIface
 
@@ -21,9 +21,6 @@ trajFile = sys.argv[2]
 with open(trajFile, 'r') as jsfh:
     jsonDat = json.load(jsfh)
 
-
-print "jsonDat is: ", jsonDat
-
 modlist = None
 if len(sys.argv) == 4:
     modlist = json.load(sys.argv[3])
@@ -39,12 +36,14 @@ test_time = max([step["end_time"] for step in jsonDat["controls"]])
 test_time = test_time + 2 # Capture for 2 seconds after end of trajectory
 print "Using test time of: ", test_time
 
-debug=True
+debug=False
 
 mIface = ModuleIface(dev)
+print "WARN: Using Torque->PWM Conversion function fo ExceedRC710KV Motor ONLY!"
 trajL = TrajLoader(module_iface=mIface,
                    control_json=jsonDat,
                    module_map=modlist,
+                   torque_func=exceedRC710TorqueFunc,
                    debug=debug)
 pTest = PositionLogger(modIface=mIface,
                        test_time=test_time,
