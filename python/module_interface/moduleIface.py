@@ -82,6 +82,20 @@ class ModuleIface( object ):
     REQUEST = '6'
     HB = '7'
 
+    # NOTE FROM IMO: These are weird values because there is a bug in our bain
+    # board code (as of 11/27/2012).  When we look at 'w' messages we look at
+    # wrong byte for the data.  So to get a w value of '1' to module id 3 we
+    # need to send:
+    #  'w040310'
+    # instead of:
+    #  'w040301'
+    # like we wanted.
+    # 0x10 = 16 (hence, CAN_NONE)
+    # 0x20 = 32 (hence, CAN_HB)
+    CAN_ALL = 0
+    CAN_HB = 32
+    CAN_NONE = 16
+
     PKT_FMT = {
     FEEDBACK : '<' + 'B' + 4*'h',
     REQUEST_RESPONSE : '<' + 5*'B',
@@ -177,6 +191,17 @@ class ModuleIface( object ):
             decoded_pkt = self._decode_data( self.PKT_FMT['7'], pkt[1:] )
             modules.add( decoded_pkt[0] )
         return modules
+
+    def scan(self, id_range=xrange(1,10)):
+        """
+        Scan a range of brain board ids and see which ones
+        respond.
+
+        ARGUMENTS:
+           id_range - An iterable that returns valid
+                      brain board ids.
+        """
+        raise NotImplemented("Scan not yet implemented")
 
     def _parse_pkt( self, pkt ):
         '''
@@ -317,4 +342,25 @@ class ModuleIface( object ):
         data = ( m_id, 0, 0, 4 )
         pkt = self.COMMAND + self._encode_data(4*'B', *data )
         self.write(pkt)
+
+    def can_pass(self, m_id, passthis):
+        """
+        For brain board id (m_id) set the the filtering function that
+        decides what communication from the motor controller gets passed
+        through the brain board and to our serial port.
+
+        ARGUMENTS:
+          m_id - Numerical brain board ID to set filter on
+          passthis - Either self.NONE, self.HB, or self.ALL where
+                       self.CAN_NONE - Do not pass anything through
+                       self.CAN_HB   - Pass only the heartbeat through
+                       self.CAN_ALL  - Pass Everything through (Feedback!)
+        """
+        if passthis not in (CAN_NONE, CAN_HB, CAN_ALL):
+            raise ValueError("passthis must be one of: self.CAN_NONE, self.CAN_HB, self.CAN_ALL")
+        pass_pkt = 'w' + pack('<BBB', 4, m_id, passthis).encode('hex').upper() + '\r'
+        self.debugOut("can_pass: Setting id=%d to value=%d (packet='%s')"
+                        % (m_id, passthis, pass_pkt))
+        self.ser.write(pass_pkt)
+
 

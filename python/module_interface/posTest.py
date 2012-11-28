@@ -11,14 +11,10 @@ class PositionLogger(object):
     parkourbot modules are reporting their positions.
     This parses that data and stores it as json along with
     as much information about the test as possible.
-    """
-    ALL = 0
-    HB = 2
-    NONE = 1
+    """ 
 
     def __init__(self,
                  modIface=None,   # The module interface on which we communicate
-#                 modules=None,   # List of modules to listen to
                  test_time=None, # Len in [s] of trajectory
                  jsonout=dict(), # Json dictionary to store results and stup
                  test_name="PositionLogger_" + str(int(time.time())),
@@ -58,12 +54,6 @@ class PositionLogger(object):
 
     def debugOut(self, msg):
         if self.debug: print msg
-
-    def can_pass( self, m_id, passthis ):
-        pass_pkt = 'w' + pack('BBB', 4, m_id, passthis).encode('hex').upper() + '\r'
-        self.debugOut("can_pass: Setting id=%d to value=%d (packet='%s')"
-                        % (m_id, passthis, pass_pkt))
-        self.m.ser.write(pass_pkt)
 
     def run_test(self):
         # TODO (IMO): Curse you Uriah!  What the hell are the stop/start
