@@ -36,7 +36,7 @@ test_time = max([step["end_time"] for step in jsonDat["controls"]])
 test_time = test_time + 2 # Capture for 2 seconds after end of trajectory
 print "Using test time of: ", test_time
 
-debug=False
+debug=True
 
 mIface = ModuleIface(dev)
 print "WARN: Using Torque->PWM Conversion function fo ExceedRC710KV Motor ONLY!"
@@ -45,6 +45,7 @@ trajL = TrajLoader(module_iface=mIface,
                    module_map=modlist,
                    torque_func=exceedRC710TorqueFunc,
                    debug=debug)
+
 pTest = PositionLogger(modIface=mIface,
                        test_time=test_time,
                        jsonout=jsonDat,
@@ -57,4 +58,7 @@ if not trajL.write_trajectory():
     sys.exit(1)
 
 raw_input("When ready to run the test, hit enter...")
+# This runs the test and then writes it to the file specified by
+# the test_name argument to the constructor...in this case
+# our "name" variable.
 pTest.run_test()

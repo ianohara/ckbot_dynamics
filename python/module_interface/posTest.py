@@ -27,7 +27,7 @@ class PositionLogger(object):
         """
         dev     - device string of serial device associated
                   with the module network.
-#        modules - list of module IDs in the chain (Brain board IDs)
+        modules - list of module IDs in the chain (Brain board IDs)
         debug   - Boolean indicating whether debug output should be printed
         jsonout - dictionary to use as the json output object for this test.
                   This could be used to write the result and setup of this
@@ -53,30 +53,21 @@ class PositionLogger(object):
         self.test_time = test_time
 
         self.modules = dict()
+        self.converted_data = list()
         self.data = list()
+
+    def debugOut(self, msg):
+        if self.debug: print msg
 
     def can_pass( self, m_id, passthis ):
         pass_pkt = 'w' + pack('BBB', 4, m_id, passthis).encode('hex').upper() + '\r'
-        if self.debug: print repr(pass_pkt)
+        self.debugOut("can_pass: Setting id=%d to value=%d (packet='%s')"
+                        % (m_id, passthis, pass_pkt))
         self.m.ser.write(pass_pkt)
 
-    def set_voltage( self, vol ):
-        for i in xrange(10):
-            self.m.set_voltage(19,vol)
-            time.sleep(random()/10.0)
-
-    def set_zero(self):
-        for i in xrange(10):
-            self.m.set_voltage(19,0)
-            time.sleep(random()/10.0)
-        for i in xrange(10):
-            self.m.set_voltage(38,0)
-            time.sleep(random()/10.0)
-        for i in xrange(10):
-            self.m.set_voltage(37,0)
-            time.sleep(random()/10.0)
-
     def run_test(self):
+        # TODO (IMO): Curse you Uriah!  What the hell are the stop/start
+        #             packet structures?
         pkt = '000'
         stop = 'f' + pack('B', len(pkt)).encode('hex').upper() + '100' + '\r'
         start = 'f' + pack('B', len(pkt)).encode('hex').upper() + '0' + pack('B',
@@ -101,27 +92,28 @@ class PositionLogger(object):
                 msg = ''
         for pkt in pkts:
             if len(pkt) != 10:
-                if self.debug: print "Found a faulty packet..."
+                self.debugOut("  Found a faulty packet: %s" % repr(pkt))
                 continue
             # TODO(IMO): What's the packet format?
             vals = unpack('<BHHB', pkt[3:-1])
-            if self.debug:
-                print "Read values: ", vals
+            self.debugOut("  Read packet: %s" % repr(vals))
             self.data.append(vals)
             m_id = vals[0]
             self.modules[m_id] = m_id
             pos = vals[1]
             if pos > 2**15:
-                print "ID: %d, Pos greater than 2**15" % m_id
+                self.debugOut("  ID: %d, Pos greater than 2**15" % m_id)
                 continue
             pos_raw = pos
             if pos_raw > 2**14:
                 pos_raw = pos_raw - 2**15
-            position = pi*pos_raw/float(2**15)
-            pkt_time = vals[2]/1000.0
+            position = pi*(pos_raw/float(2**15))
+            pkt_time = float(vals[2])/1000.0
             voltage = float(vals[3])/2**5
-            print "ID: %d, pos_raw: %d, Pos: %f, Time: %f, Voltage: %f" % (m_id,
-            pos, position, pkt_time, voltage)
+
+            converted_data = (m_id, position, pkt_time, voltage)
+            self.converted_data.append(converted_data)
+            self.debugOut("  Successful Packet with ID:%d, pos [rad]: %f, Time: %f, Voltage: %f" % converted_data)
 
         time_str = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime())
 
@@ -129,11 +121,11 @@ class PositionLogger(object):
         self.jsonout['results']['name'] = self.test_name
         self.jsonout['results']['time'] = self.test_time
         self.jsonout['results']['data'] = self.data
+        self.jsonout['results']['converted_data'] = self.converted_data
         self.jsonout['results']['modules'] = self.modules
 
         print "Saving test data to: %s" % self.test_name
-        f = open(self.test_name, 'w')
-        json.dump(self.jsonout, f)
-        f.close()
+        with open(self.test_name, 'w') as f:
+            json.dump(self.jsonout, f)
         print "Test successfully completed"
 

@@ -88,7 +88,7 @@ class ModuleIface( object ):
     HB : '<' + 5*'B' + 'h' + 'BB'
     }
 
-    def __init__( self, dev='/dev/ttyUSB0' ):
+    def __init__(self, dev='/dev/ttyUSB0', debug=False):
         ser = serial.Serial( dev )
         ser.setBaudrate( 115200 )
         ser.setTimeout( 0.001 )
@@ -97,8 +97,13 @@ class ModuleIface( object ):
         self.buf = ''
         self.requests = []
         self.feedback = []
+        self.debug = debug
+
+    def debugOut(msg):
+        if self.debug: print "ModuleIface:" + msg
 
     def close( self ):
+        self.debugOut(" close: Closing serial connection.")
         self.ser.close()
 
     def read( self, tout = 0.01 ):
@@ -259,6 +264,8 @@ class ModuleIface( object ):
         request = Request( m_id, addr, fmt )
         self.requests.append( request )
         return request
+
+    def ping(self, m_id):
 
     def set_param_sync( self, m_id, param, val, perm=False, tout=0.5 ):
         '''

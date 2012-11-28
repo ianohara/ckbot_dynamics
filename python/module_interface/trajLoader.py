@@ -134,7 +134,9 @@ class TrajLoader( object ):
 
     def write( self, pkt):
         msg = 't' + self.mface._encode_data('B', len(pkt)) + pkt + '\r'
-        print repr(msg) # DEBUG
+        if self.debug:
+            print repr(msg) # DEBUG
+
         self.mface.ser.write(msg)
 
     def set_cmd( self, m_id, ind, cmd, ts ):
@@ -175,13 +177,14 @@ class TrajLoader( object ):
         dat = ''
         while True:
             if time.time()-t0 > tout:
-                print "Read timed out"
+                self.debugOut("get_cmd: Read timed out (tout=%2.2f)" % tout )
                 return
             bt = self.mface.ser.read()
             dat += bt
             if bt == '\r':
                 break
         ret_cmd = struct.unpack( self.RET_FMT, dat[3:-1] )
+        self.debugOut("get_cmd: Received packet (m_id, ind, cmd, ts) = (%d, %d, %d, %d)" % ret_cmd)
         return ret_cmd
 
     def set_cmd_sync( self, m_id, ind, cmd, ts, retries=3 ):
@@ -189,15 +192,24 @@ class TrajLoader( object ):
         set command and then get it to check that its valid
         retry a number of times, just in case
         '''
+        print "Attempting to write packet (id, index, command, timestamp) = (%d, %d, %d, %d)" % (m_id, ind, cmd, ts)
         for i in xrange(0, retries):
             self.set_cmd( m_id, ind, cmd, ts )
             ret_cmd = self.get_cmd( m_id, ind )
             if ret_cmd is not None:
-                print "cmd: %s" % repr((m_id,ind,cmd,ts))
-                print "ret_cmd: %s" % repr(ret_cmd)
+                print "  Write verify response: %s" % repr(ret_cmd),
                 if ret_cmd == ( m_id, ind, cmd, ts ):
-                    print "success"
+                    print "...success"
                     break
+                else:
+                    print "...failure (attempt %d of %d)" % (i, retries)
+            else:
+                print "  No response when trying to verify write (attempt %d of %d)" % (i, retries)
+    def debugOut(self, msg):
+        """
+        Print a line if debugging is on.
+        """
+        if self.debug: print msg
 
 if __name__ == "__main__":
     from moduleIface import ModuleIface
