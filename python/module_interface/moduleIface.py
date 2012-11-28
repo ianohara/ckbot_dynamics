@@ -265,8 +265,6 @@ class ModuleIface( object ):
         self.requests.append( request )
         return request
 
-    def ping(self, m_id):
-
     def set_param_sync( self, m_id, param, val, perm=False, tout=0.5 ):
         '''
         Set a parameter and then check to make sure that
