@@ -1,0 +1,4 @@
+{
+"description": "5 modules with the 'motor rotor with pointer' body at the base. The goal of this test is to see how the planner+hardware system works without anti-cogging (but with proper torque->pwm conversion. IE: include the pwm deadband).  NOTE: Second to last module in chain has torque limit=0 because it is a dead module"
+
+}
