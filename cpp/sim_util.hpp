@@ -42,7 +42,7 @@ enum planners {
                RRT_ENDLOC,
                KPIECE1,
                KPIECE1_ENDLOCANDVEL,
-               KPIECE1_ENDDISTINVERSE
+               KPIECE1_ENDDIST
               };
 
 struct sim_settings {
@@ -55,6 +55,7 @@ struct sim_settings {
     std::string world_path;
 
     enum planners planner;
+    double cellSize;
 
     unsigned int min_control_steps;
     unsigned int max_control_steps;

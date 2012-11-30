@@ -268,18 +268,15 @@ ckbot::EndLocAndAngVelProj::project(const ob::State *state,
 }
 
 /* EndDistSqrProj uses a 1 dimensional projection where the dimension is the 
- * inverse of the distance of the end effector to the goal position.
- * IE: 1/(distance of chain end to desired chain end position)
+ * square of the distance of the end effector to the origin.
  */
 ckbot::EndDistSqrProj::EndDistSqrProj(const ob::SpaceInformationPtr &si,
         const ob::StateSpacePtr &space,
-        ckbot::chain &chain,
-        Eigen::Vector3d goal) :
+        ckbot::chain &chain) :
     ob::ProjectionEvaluator(space),
     si(si),
     sp(space),
-    ch(chain),
-    goal(goal)
+    ch(chain)
 {
 }
 
@@ -307,8 +304,6 @@ ckbot::EndDistSqrProj::project(const ob::State *state,
 
     Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
     //DEBUG std::cout << "End is at: " << r_end.transpose() << std::endl;
-    double dSq = (r_end[0]-goal[0])*(r_end[0]-goal[0])
-               + (r_end[1]-goal[1])*(r_end[1]-goal[1])
-               + (r_end[2]-goal[2])*(r_end[2]-goal[2]);
-    proj[0] = 1.0/dSq;
+    double dSq = r_end[0]*r_end[0] + r_end[1]*r_end[1] + r_end[2]*r_end[2];
+    proj[0] = dSq;
 }

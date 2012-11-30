@@ -116,8 +116,7 @@ namespace ckbot
         public:
             EndDistSqrProj(const ob::SpaceInformationPtr &si,
                                 const ob::StateSpacePtr &space,
-                                ckbot::chain &chain,
-                                Eigen::Vector3d goal);
+                                ckbot::chain &chain);
             unsigned int getDimension(void) const;
             void project(const ob::State *state, ob::EuclideanProjection &proj) const;
         private:

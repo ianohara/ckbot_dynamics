@@ -50,13 +50,14 @@ struct sim_settings _DEFAULT_SETS = {
         "results.txt",
         "world.txt",
 
-        RRT,
+        RRT,    /* Which planner do we use? */
+        0.001,  /* Default cell size for KPIECE planners */
 
         1,      /* OMPL min control steps */
         1,      /* OMPL max control steps */
         0.01,   /* OMPL timestep resolution */
-        50.0,    /* Max joint vel [rad/s] */
-        -50.0,   /* Min joint vel [rad/s] */
+        50.0,   /* Max joint vel [rad/s] */
+        -50.0,  /* Min joint vel [rad/s] */
         -1.0,   /* Minimum link torque */
         1.0,    /* Max link torque */
         0.01,   /* Goal threshold */
@@ -79,6 +80,7 @@ report_setup(struct sim_settings* ps, std::ostream& o)
     o << "Running simulation with the following settings: " << std::endl <<
          "  Sim Dir: '" << ps->sim_dir << "'" << std::endl <<
          "  Planner: " << ps->planner << std::endl <<
+         "  Cell Size: " << ps->cellSize << " (KPIECE planners only) " << std::endl <<
          "  Min Control Steps: " << ps->min_control_steps << std::endl <<
          "  Max Control Steps: " << ps->max_control_steps << std::endl <<
          "  Goal Threshold: " << ps->threshold << std::endl <<
@@ -297,7 +299,8 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     {
         case RRT_ENDLOC:
             {
-            std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
+            std::cout << "Planner and goal type: Using RRT with the location of the chain" <<
+                         "    tip as the goal metric." << std::endl;
             double goalX = r_end[0];
             double goalY = r_end[1];
             double goalZ = r_end[2];
@@ -317,20 +320,21 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 
         case KPIECE1_ENDLOCANDVEL:
             {
-            std::cout << "NOTE: Using the x,y,z location of the end of the " 
-                      << "chain and the sqrt of the sum of the squares of the " 
-                      << "angular vels of each module as the planning space " 
-                      << " with KPIECE1." << std::endl;
+            std::cout << "Planner and goal type: Using KPIEC1 with the x,y,z location of the end of the " 
+                      << "    chain and the sqrt of the sum of the squares of the " 
+                      << "    angular vels of each module as the planning space " 
+                      << "    with KPIECE1.  Also, using the distance of the tip" 
+                      << "    from the desired tip location as the goal metric. " << std::endl;
             ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
                         ss_p->getSpaceInformation(),
                         ss_p->getStateSpace(),
                         rate_machine_p->get_chain()));
 
             std::vector<double> projCellSizes(prjEvalPtr->getDimension());
-            projCellSizes[0] = 0.005; /* 5 mm */
-            projCellSizes[1] = 0.005; /* 5 mm */
-            projCellSizes[2] = 0.005; /* 5 mm */
-            projCellSizes[3] = 0.005; /* rad/s */
+            projCellSizes[0] = sets.cellSize;
+            projCellSizes[1] = sets.cellSize; 
+            projCellSizes[2] = sets.cellSize;
+            projCellSizes[3] = sets.cellSize;
 
             prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
             planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
@@ -352,20 +356,19 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
             }
             break;
 
-        case KPIECE1_ENDDISTINVERSE:
+        case KPIECE1_ENDDIST:
             {
-            std::cout << "NOTE: Using the inverse of the distance of the tip of the "
-               << "      chain from the goal tip location a 1D projection with "
-               << "      KPIECE1.";
+            std::cout << "Planner and Goal type: Using the the distance squared of the tip of the "
+               << "    chain from the origin as a 1D projection with KPIECE1."
+               << "    Using the goal tip location as the goal metric.";
             ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndDistSqrProj(
                                                       ss_p->getSpaceInformation(),
                                                       ss_p->getStateSpace(),
-                                                      rate_machine_p->get_chain(),
-                                                      r_end)
+                                                      rate_machine_p->get_chain())
                                                  );
 
             std::vector<double> projCellSizes(prjEvalPtr->getDimension());
-            projCellSizes[0] = 0.005; /* 5 mm */
+            projCellSizes[0] = sets.cellSize;
 
             prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
             planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
@@ -388,7 +391,9 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
             break;
 
         case RRT:
+             std::cout << "Planner and Goal type: Default RRT with config space goal metric." << std::endl;
         case KPIECE1:
+             std::cout << "Planner and Goal type: Default KPIECE1 with config space goal metric." << std::endl;
         default:
             ss_p->setGoalState(goal, sets.threshold);
             break;
@@ -413,10 +418,10 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
     if (sets.debug)
     {
         /* Have the chain in our rate machine describe itself */
-        out_file << rate_machine_p->get_chain().describe_self();
+        // out_file << rate_machine_p->get_chain().describe_self();
 
         /* Print the planner start and goal states */
-        out_file << "Planner Start and Goal states: " << std::endl;
+        out_file << std::endl << "Planner Start and Goal states: " << std::endl;
         const ob::ProblemDefinitionPtr pProbDef = planner->getProblemDefinition();
         pProbDef->print(out_file);
 
@@ -424,20 +429,19 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         std::map< std::string, std::string > params;
         planner->params().getParams(params); 
 
-        out_file << "Planner Parameter list: " << std::endl;
+        out_file << std::endl << "Planner Parameter list: " << std::endl;
         std::map< std::string, std::string >::iterator paramIt;
         for (paramIt = params.begin(); paramIt != params.end(); paramIt++)
         {
             out_file << "    " << paramIt->first << ", " << paramIt->second << std::endl;
         }
 
-        out_file << "Goal top location: " << r_end << std::endl;
-            out_file << "Goal distance from origin: " << r_end.norm() << std::endl;
+        out_file << std::endl << "Goal tip location: " << r_end.transpose() << std::endl;
+        out_file << "Goal distance from origin: " << r_end.norm() << std::endl;
 
         std::vector<double> q_zeros(ch.num_links(), 0.0), qd_zeros(ch.num_links(), 0.0);
         ch.propogate_angles_and_rates(q_zeros, qd_zeros);
         Eigen::Vector3d r_ext = ch.get_link_r_tip(ch.num_links()-1);
-        out_file << "When all q=0 tip is at: " << r_ext << std::endl;
         out_file << "Length of extended chain: " << r_ext.norm() << std::endl;
 
 
@@ -447,7 +451,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         std::vector<double> low = bounds.low;
         std::vector<double> high = bounds.high;
 
-        out_file << "Control Space bounds: " << std::endl;
+        out_file << std::endl << "Control Space bounds: " << std::endl;
         for (unsigned int i=0; i<low.size(); i++)
         {
             out_file << "    Link " << i+1
@@ -457,7 +461,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 
         /* Print the configuration space bounds */
         const ob::RealVectorBounds cbounds = space->as<ob::RealVectorStateSpace>()->getBounds();
-        out_file << "The Configuration bounds are: " << std::endl;
+        out_file << std::endl << "The Configuration bounds are: " << std::endl;
         std::vector<double> clow = cbounds.low;
         std::vector<double> chigh = cbounds.high;
         for (unsigned int i=0; i<clow.size(); i++)
@@ -468,7 +472,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         }
 
         /* Print information about how the planner will interface with the dynamics engine */
-        out_file << "The progagationStepSize is: " 
+        out_file << std::endl << "The progagationStepSize is: " 
             << ss_p->getSpaceInformation()->getPropagationStepSize()
             << std::endl << "    The Minimum number of steps is: " 
             << ss_p->getSpaceInformation()->getMinControlDuration() << std::endl 
@@ -520,7 +524,7 @@ get_planner(oc::SpaceInformationPtr si, enum planners plan)
             break;
         case KPIECE1:
         case KPIECE1_ENDLOCANDVEL:
-        case KPIECE1_ENDDISTINVERSE:
+        case KPIECE1_ENDDIST:
             {
             ob::PlannerPtr p_temp(new oc::KPIECE1(si));
             planner = p_temp;
@@ -742,7 +746,7 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
              po::value<double>(&sets.threshold),
              "Set the goal threshold")
 
-            ("no_tree", "Don't the entire planning tree.")
+            ("no_tree", "Don't save the entire planning tree.")
 
             ("planner",
               po::value<unsigned int>(),
@@ -751,7 +755,11 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
               "    1=RRT with End loc distance goal metric,\n"
               "    2=KPIECE1,\n"
               "    3=KPIECE1 with end loc and velocity projection (4D),\n"
-              "    4=KPIECE1 with inverse of end loc distance projection (1D)")
+              "    4=KPIECE1 with end loc distance to origin (1D)")
+
+            ("cell_size",
+             po::value<double>(),
+              "Set the cell size for KPIECE1 planner projections.")
 
             ("collisions",
              "Use simple collision checking.  Requires world.txt in sim dir")
