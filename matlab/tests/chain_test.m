@@ -13,8 +13,8 @@ sets.draw_vels = 1;
 sets.draw_geom_vecs = 1;
 
 chain0 = [
-    new_link('HT_tail_cap', 'q',0,  'qd',0, 'rotate', rotY(pi/2));
-    new_link('HT1', 'q',0, 'qd',0);
+    %new_link('HT_tail_cap', 'q',0,  'qd',0, 'rotate', rotY(pi/2));
+    new_link('HT2', 'q',0, 'qd',0, 'rotate', rotY(pi/2));
     new_link('HT1', 'q', 0,'qd',.4);
     new_link('HT1', 'q',0,  'qd',.1);
     new_link('HT1', 'q', 0,'qd',0.5);
