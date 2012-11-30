@@ -613,16 +613,21 @@ ckbot::chain::get_angular_velocity(int i)
 Eigen::Vector3d
 ckbot::chain::get_link_r_base(int i)
 {
-    Eigen::Vector3d r_base(0,0,0);
     Eigen::Matrix3d R;
-    Eigen::Vector3d r_incr(0,0,0);
+    Eigen::Vector3d r_im1(0,0,0), r_ip1(0,0,0), r_incr(0,0,0), r_base(0,0,0);
 
+    //std::cout << "ckbot::chain::get_link_r_base (" << i << " of " << num_links() << "):" << std::endl; //DEBUG
     for (int cur=0; cur < i; ++cur)
     {
         R = get_current_R(cur);
-        r_incr = R*(-links_[cur].get_r_im1() + links_[cur].get_r_ip1());
+        r_im1 = links_[cur].get_r_im1();
+        r_ip1 = links_[cur].get_r_ip1();
+        
+        r_incr = R*(-r_im1 + r_ip1);
         r_base += r_incr;
+        //std::cout << "  (" << cur << ") (q=" << links_[cur].get_q() << ") r_im1: " << r_im1.transpose() << " r_ip1: " << r_ip1.transpose() << std::endl; //DEBUG
     }
+    //std::cout << "  r_base: " << r_base.transpose() << std::endl; // DEBUG
     return r_base;
 }
 
@@ -641,7 +646,10 @@ Eigen::Vector3d
 ckbot::chain::get_link_r_tip(int i)
 {
     Eigen::Vector3d r_im_ip = -links_[i].get_r_im1()+links_[i].get_r_ip1();
-    return get_link_r_base(i) + get_current_R(i)*(r_im_ip);
+    //std::cout << "ckbot::chain::get_link_r_tip: r_im_ip = " << r_im_ip.transpose() << std::endl; //DEBUG
+    Eigen::Vector3d r_tip = get_link_r_base(i) + get_current_R(i)*(r_im_ip);
+    //std::cout << "  r_tip = " << r_tip.transpose() << std::endl; // DEBUG
+    return r_tip;
 }
 
 /* Used in calculating system energy in the energy conservation tests */
