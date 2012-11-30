@@ -34,8 +34,6 @@
 namespace oc = ompl::control;
 namespace ob = ompl::base;
 
-#include <Eigen/Dense>
-
 #include"ckbot.hpp"
 #include"ck_ompl.hpp"
 
@@ -195,27 +193,34 @@ ckbot::EndLocGoalState::distanceGoal(const ob::State *s) const
     int slen = 2*num_links;
     std::vector<double> q(num_links);
     std::vector<double> qd(num_links);
-    double speedsSquare = 0;
     for (int i = 0; i < num_links; i++)
     {
         q[i] = sVals[i];
         qd[i] = sVals[num_links+i];
-        speedsSquare += pow(qd[i], 2);
     }
     ch.propogate_angles_and_rates(q,qd);
 
     Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
-    double dist = r_end.norm();
+    double dist = sqrt((r_end[0] - x_)*(r_end[0]-x_)
+                      +(r_end[1] - y_)*(r_end[1]-y_)
+                      +(r_end[2] - z_)*(r_end[2]-z_));
     if (dist < minDist) {
         minDist = dist;
-        std::cout << "Found a new min end effector distance: " << minDist << std::endl;
+        std::cout << "Found a new min end effector distance from goal: " << minDist << std::endl;
+        //std::cout << "r_end = " << r_end.transpose() << " (dist_origin = " << r_end.norm() << ")" << std::endl;
+        //std::cout << "Goal = [" << x_ << ", " << y_ << ", " << z_ << "]" << std::endl;
     }
-    double sqrtSpds = sqrt(speedsSquare);
 
     return dist;
 }
 
 /**** KPIECE Projection classes ****/
+
+/* EndLocAndAngVelProj uses a 4 dimensional projection where the first
+ * three dimensions are the x,y,z positions of the end of the chain
+ * and the fourth dimension is the sum of the squares of the angular
+ * velocities of the joints
+ */
 ckbot::EndLocAndAngVelProj::EndLocAndAngVelProj(const ob::SpaceInformationPtr &si,
         const ob::StateSpacePtr &space,
         ckbot::chain &chain) :
@@ -260,4 +265,50 @@ ckbot::EndLocAndAngVelProj::project(const ob::State *state,
     proj[1] = r_end[1];
     proj[2] = r_end[2];
     proj[3] = sqrt(sumSqrVels);
+}
+
+/* EndDistSqrProj uses a 1 dimensional projection where the dimension is the 
+ * inverse of the distance of the end effector to the goal position.
+ * IE: 1/(distance of chain end to desired chain end position)
+ */
+ckbot::EndDistSqrProj::EndDistSqrProj(const ob::SpaceInformationPtr &si,
+        const ob::StateSpacePtr &space,
+        ckbot::chain &chain,
+        Eigen::Vector3d goal) :
+    ob::ProjectionEvaluator(space),
+    si(si),
+    sp(space),
+    ch(chain),
+    goal(goal)
+{
+}
+
+unsigned int
+ckbot::EndDistSqrProj::getDimension(void) const
+{
+    return 1u;
+}
+
+void
+ckbot::EndDistSqrProj::project(const ob::State *state,
+        ob::EuclideanProjection &proj) const
+{
+    const double *sVals = state->as<ob::RealVectorStateSpace::StateType>()->values;
+    const int num_links = ch.num_links();
+    int slen = 2*num_links;
+    std::vector<double> q(num_links);
+    std::vector<double> qd(num_links);
+    for (int i = 0; i < num_links; i++)
+    {
+        q[i] = sVals[i];
+        qd[i] = sVals[num_links+i];
+    }
+    ch.propogate_angles_and_rates(q,qd);
+
+    Eigen::Vector3d r_end = ch.get_link_r_tip(num_links-1);
+    //DEBUG std::cout << "End is at: " << r_end.transpose() << std::endl;
+    double dSq = (r_end[0]-goal[0])*(r_end[0]-goal[0])
+               + (r_end[1]-goal[1])*(r_end[1]-goal[1])
+               + (r_end[2]-goal[2])*(r_end[2]-goal[2]);
+    proj[0] = 1.0/dSq;
 }

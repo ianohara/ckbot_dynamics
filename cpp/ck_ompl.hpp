@@ -27,6 +27,10 @@
 #include<ompl/control/spaces/RealVectorControlSpace.h>
 #include<ompl/control/Control.h>
 
+#include<Eigen/Core>
+#include<Eigen/Dense>
+#include<Eigen/Geometry>
+
 #include"ckbot.hpp"
 #include"world.hpp"
 
@@ -106,6 +110,23 @@ namespace ckbot
             ckbot::chain &ch;
             const ob::StateSpacePtr &sp;
     };
+
+    class EndDistSqrProj : public ob::ProjectionEvaluator
+    {
+        public:
+            EndDistSqrProj(const ob::SpaceInformationPtr &si,
+                                const ob::StateSpacePtr &space,
+                                ckbot::chain &chain,
+                                Eigen::Vector3d goal);
+            unsigned int getDimension(void) const;
+            void project(const ob::State *state, ob::EuclideanProjection &proj) const;
+        private:
+            const ob::SpaceInformationPtr &si;
+            ckbot::chain &ch;
+            const ob::StateSpacePtr &sp;
+            const Eigen::Vector3d goal;
+    };
+
 };
 
 #endif
