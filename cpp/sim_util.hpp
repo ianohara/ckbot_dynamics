@@ -37,7 +37,13 @@ namespace oc = ompl::control;
 
 const char DELIMITER = '/';
 
-enum planners {RRT=0, KPIECE1};
+enum planners {
+               RRT=0,
+               RRT_ENDLOC,
+               KPIECE1,
+               KPIECE1_ENDLOCANDVEL,
+               KPIECE1_ENDDISTINVERSE
+              };
 
 struct sim_settings {
     std::string sim_dir;

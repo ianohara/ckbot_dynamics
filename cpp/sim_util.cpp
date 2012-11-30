@@ -273,45 +273,125 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 
     ss_p->setStartState(start);
 
-    /* BEGIN HACKING NONSENSE FOR GETTIN' THIS DONE */
-    /*if (sets.planner == RRT) {*/ // DEBUG IMO
-        std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
-        double goalX = 0.0; //DEBUG Specific to swing_test_3modules_inplane
-        double goalY = 0.1;//8726; //DEBUG Corresponds to the basebase at 90deg pos
-        double goalZ = 0.0;
-        ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(), rate_machine_p->get_chain(), goalX, goalY, goalZ));
-
-        goalSt->as<ob::GoalState>()->setState(goal);
-        goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
-
-        ss_p->setGoal(goalSt);
-    /*} //DEBUG IMO
-    else {
-        ss_p->setGoalState(goal, sets.threshold);
-    }*/
-
     /* Initialize the correct planner (possibly specified on cmd line) */
     ob::PlannerPtr planner;
     planner = get_planner(ss_p->getSpaceInformation(), sets.planner);
 
-    if (sets.planner == KPIECE1) {
-        std::cout << "NOTE: Using the x,y,z location of the end of the " 
-                  << "chain and the sqrt of the sum of the squares of the " 
-                  << "angular vels of each module as the planning space " 
-                  << " with KPIECE1." << std::endl;
-        ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
-                    ss_p->getSpaceInformation(),
-                    ss_p->getStateSpace(),
-                    rate_machine_p->get_chain()));
+    /* Some of the planners use the end location of the
+     * chain in its goal config as the real goal.
+     */
+    Eigen::Vector3d r_end;
+    {
+        std::vector<double> q_goal(ch.num_links());
+        std::vector<double> qd_goal(ch.num_links());
+        for (int i=0; i < ch.num_links(); i++)
+        {
+            q_goal[i] = goal[i];
+            qd_goal[i] = goal[ch.num_links()+i];
+        }
+        ch.propogate_angles_and_rates(q_goal, qd_goal);
+        r_end = ch.get_link_r_tip(ch.num_links()-1);
+    }
 
-        std::vector<double> projCellSizes(prjEvalPtr->getDimension());
-        projCellSizes[0] = 0.005; /* 5 mm */
-        projCellSizes[1] = 0.005; /* 5 mm */
-        projCellSizes[2] = 0.005; /* 5 mm */
-        projCellSizes[3] = 0.005; /* rad/s */
+    switch (sets.planner)
+    {
+        case RRT_ENDLOC:
+            {
+            std::cout << "NOTE: Using the end location of the chain as the goal metric." << std::endl;
+            double goalX = r_end[0];
+            double goalY = r_end[1];
+            double goalZ = r_end[2];
+            ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(),
+                                                          rate_machine_p->get_chain(),
+                                                          goalX,
+                                                          goalY,
+                                                          goalZ)
+                              );
 
-        prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
-        planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
+            goalSt->as<ob::GoalState>()->setState(goal);
+            goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
+
+            ss_p->setGoal(goalSt);
+            }
+            break;
+
+        case KPIECE1_ENDLOCANDVEL:
+            {
+            std::cout << "NOTE: Using the x,y,z location of the end of the " 
+                      << "chain and the sqrt of the sum of the squares of the " 
+                      << "angular vels of each module as the planning space " 
+                      << " with KPIECE1." << std::endl;
+            ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndLocAndAngVelProj(
+                        ss_p->getSpaceInformation(),
+                        ss_p->getStateSpace(),
+                        rate_machine_p->get_chain()));
+
+            std::vector<double> projCellSizes(prjEvalPtr->getDimension());
+            projCellSizes[0] = 0.005; /* 5 mm */
+            projCellSizes[1] = 0.005; /* 5 mm */
+            projCellSizes[2] = 0.005; /* 5 mm */
+            projCellSizes[3] = 0.005; /* rad/s */
+
+            prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
+            planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
+
+            double goalX = r_end[0];
+            double goalY = r_end[1];
+            double goalZ = r_end[2];
+            ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(),
+                                                          rate_machine_p->get_chain(),
+                                                          goalX,
+                                                          goalY,
+                                                          goalZ)
+                              );
+
+            goalSt->as<ob::GoalState>()->setState(goal);
+            goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
+
+            ss_p->setGoal(goalSt);
+            }
+            break;
+
+        case KPIECE1_ENDDISTINVERSE:
+            {
+            std::cout << "NOTE: Using the inverse of the distance of the tip of the "
+               << "      chain from the goal tip location a 1D projection with "
+               << "      KPIECE1.";
+            ob::ProjectionEvaluatorPtr prjEvalPtr(new ckbot::EndDistSqrProj(
+                                                      ss_p->getSpaceInformation(),
+                                                      ss_p->getStateSpace(),
+                                                      rate_machine_p->get_chain(),
+                                                      r_end)
+                                                 );
+
+            std::vector<double> projCellSizes(prjEvalPtr->getDimension());
+            projCellSizes[0] = 0.005; /* 5 mm */
+
+            prjEvalPtr->setCellSizes(projCellSizes); /* IMPORTANT! */
+            planner->as<oc::KPIECE1>()->setProjectionEvaluator(prjEvalPtr);
+
+            double goalX = r_end[0];
+            double goalY = r_end[1];
+            double goalZ = r_end[2];
+            ob::GoalPtr goalSt(new ckbot::EndLocGoalState(ss_p->getSpaceInformation(),
+                                                          rate_machine_p->get_chain(),
+                                                          goalX,
+                                                          goalY,
+                                                          goalZ)
+                              );
+
+            goalSt->as<ob::GoalState>()->setState(goal);
+            goalSt->as<ob::GoalState>()->setThreshold(sets.threshold);
+
+            ss_p->setGoal(goalSt);
+            }
+            break;
+
+        case RRT:
+        case KPIECE1:
+        default:
+            ss_p->setGoalState(goal, sets.threshold);
+            break;
     }
 
     ss_p->setPlanner(planner);
@@ -344,12 +424,22 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         std::map< std::string, std::string > params;
         planner->params().getParams(params); 
 
-        out_file << "Planner Parameter list: " << std::endl; 
+        out_file << "Planner Parameter list: " << std::endl;
         std::map< std::string, std::string >::iterator paramIt;
         for (paramIt = params.begin(); paramIt != params.end(); paramIt++)
         {
             out_file << "    " << paramIt->first << ", " << paramIt->second << std::endl;
         }
+
+        out_file << "Goal top location: " << r_end << std::endl;
+            out_file << "Goal distance from origin: " << r_end.norm() << std::endl;
+
+        std::vector<double> q_zeros(ch.num_links(), 0.0), qd_zeros(ch.num_links(), 0.0);
+        ch.propogate_angles_and_rates(q_zeros, qd_zeros);
+        Eigen::Vector3d r_ext = ch.get_link_r_tip(ch.num_links()-1);
+        out_file << "When all q=0 tip is at: " << r_ext << std::endl;
+        out_file << "Length of extended chain: " << r_ext.norm() << std::endl;
+
 
         /* Print the control space bounds */
         const oc::ControlSpacePtr pControl = ss_p->getControlSpace();
@@ -357,10 +447,10 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         std::vector<double> low = bounds.low;
         std::vector<double> high = bounds.high;
 
-        out_file << "Control Space bounds: " << std::endl; 
+        out_file << "Control Space bounds: " << std::endl;
         for (unsigned int i=0; i<low.size(); i++)
         {
-            out_file << "    Link " << i+1 
+            out_file << "    Link " << i+1
                 << ": Low: " << low[i]
                 << " High: " << high[i] << std::endl;
         }
@@ -419,15 +509,23 @@ ob::PlannerPtr
 get_planner(oc::SpaceInformationPtr si, enum planners plan)
 {
     ob::PlannerPtr planner;
-    if (plan == RRT)
+    switch (plan)
     {
-        ob::PlannerPtr p_temp(new oc::RRT(si));
-        planner = p_temp;
-    }
-    else if (plan == KPIECE1)
-    {
-        ob::PlannerPtr p_temp(new oc::KPIECE1(si));
-        planner = p_temp;
+        case RRT:
+        case RRT_ENDLOC:
+            {
+            ob::PlannerPtr p_temp(new oc::RRT(si));
+            planner = p_temp;
+            }
+            break;
+        case KPIECE1:
+        case KPIECE1_ENDLOCANDVEL:
+        case KPIECE1_ENDDISTINVERSE:
+            {
+            ob::PlannerPtr p_temp(new oc::KPIECE1(si));
+            planner = p_temp;
+            }
+            break;
     }
 
     return planner;
@@ -648,7 +746,12 @@ parse_options(int ac, char* av[], boost::program_options::variables_map& vm, str
 
             ("planner",
               po::value<unsigned int>(),
-              "Set the planner: (0=RRT, 1=KPIECE)")
+              "Set the planner:\n"
+              "    0=RRT,\n"
+              "    1=RRT with End loc distance goal metric,\n"
+              "    2=KPIECE1,\n"
+              "    3=KPIECE1 with end loc and velocity projection (4D),\n"
+              "    4=KPIECE1 with inverse of end loc distance projection (1D)")
 
             ("collisions",
              "Use simple collision checking.  Requires world.txt in sim dir")
