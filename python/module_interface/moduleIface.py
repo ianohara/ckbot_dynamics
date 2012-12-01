@@ -108,55 +108,94 @@ class ModuleIface( object ):
         ser.setTimeout( 0.001 )
         ser.flush()
         self.ser = ser
-        self.buf = ''
         self.requests = []
         self.feedback = []
         self.debug = debug
 
-    def debugOut(msg):
-        if self.debug: print "ModuleIface:" + msg
+    def debugOut(self, msg):
+        if self.debug: print "mIface:" + msg
 
     def close( self ):
         self.debugOut(" close: Closing serial connection.")
         self.ser.close()
 
-    def read( self, tout = 0.01 ):
+    def read( self, msg_type='c', tout = 0.1 ):
         '''
-        Returns a single valid packet where a packet is defined as:
-            'a-z',c for CANBus| len0 len1 | data .... | '\r'
+        Returns a single valid CANBus packet where a packet is defined as:
+            'a-z', 'c' for CANBus| len0 len1 | data .... | '\r'
+
+        NOTE from IMO: data can contain '\r'!  So we need to use both
+             '\r' and length checking to make sure we have a full packet.
+
         '''
+        b = ''
+        len_buf = ''
+        pkt = ''
+        length = None
+
+        S_NOT_IN_PACKET = 0
+        S_IN_PACK_NO_LEN = 1
+        S_IN_PACK = 2
+        S_HAVE_PACKET = 3
+
+        STATE = S_NOT_IN_PACKET
+            
         t0 = now()
-        while True:
-            # If timeout return
+        self.debugOut("read: Entering state machine with state S_NOT_IN_PACKET.")
+        while STATE != S_HAVE_PACKET:
             if now()-t0 > tout:
+                self.debugOut("read:  Timing out with pkt='%s'" % str(pkt).encode('hex').upper())
                 return None
-            # Read a single byte
             b = self.ser.read()
-            #print repr(b)
-            #print repr(self.buf)
             # If no data then try to read again
             if b == '':
                 continue
-            # If we haven't reached the end of the packet then append
-            if b != '\r':
-                self.buf += b
-                continue
-            # Parse the packet
-            while len(self.buf) > 0:
-                c_ind = find(self.buf, 'c')
-                if c_ind == -1:
-                    self.buf = ''
-                    break
-                self.buf = self.buf[c_ind+1:]
-                try:
-                    length = int(self.buf[:2], 16)
-                except:
-                    self.buf = ''
-                    break
-                if len(self.buf)-2 == length:
-                    pkt = self.buf[2:]
-                    self.buf = ''
-                    return pkt
+
+            if STATE == S_NOT_IN_PACKET:
+                """
+                Wait until we see a 'c' which signifies the possible
+                start of a CANBus packet.
+                """
+                if b == msg_type:
+                    self.debugOut("read:  Transitioning to S_IN_PACK_NO_LEN")
+                    STATE = S_IN_PACK_NO_LEN
+
+            elif STATE == S_IN_PACK_NO_LEN:
+                """
+                We are in the packet, but we don't know what length it is supposed
+                to be.
+                """
+                #self.debugOut("read: len_buf='%s'" % len_buf)
+                len_buf += b
+                if len(len_buf) == 2:
+                    length = int(len_buf, 16) 
+                    self.debugOut("read: Transitioning to S_IN_PACK")
+                    STATE = S_IN_PACK
+
+            elif STATE == S_IN_PACK:
+                """
+                We are in the packet. Look for '\r' which signifies
+                possible ends of packets, and when we find them
+                make sure the packet length matches the length
+                suggested by the packet header.
+                
+                Also, start over if we see more than length bytes
+                without seeing '\r'
+                """
+                if len(pkt) > length:
+                    b = ''
+                    pkt = ''
+                    len_buf = ''
+                    STATE = S_NOT_IN_PACKET
+                elif b == '\r' and len(pkt) == length: # Woot!
+                    self.debugOut("read: Transitioning to S_HAVE_PACKET")
+                    STATE = S_HAVE_PACKET # Exit state
+                else:
+                    #self.debugOut("read: len(pkt)=%d length=%d pkt='%s'" % (len(pkt),
+                    #length, str(pkt).encode('hex')))
+                    pkt += b
+
+        return pkt
 
     def flush( self ):
         '''

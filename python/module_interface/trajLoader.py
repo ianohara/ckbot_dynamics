@@ -6,8 +6,9 @@ import struct
 import json
 from math import pi
 
-TORQUE_MAX = 0.452
-TORQUE_TO_VOLTS = 300/TORQUE_MAX
+DEF_TORQUE_MAX = 0.250
+DEF_PWM_COM_MAX = 250
+TORQUE_TO_VOLTS = 300/DEF_TORQUE_MAX
 _DEFAULT_TORQUE_FUNC = lambda T: int(TORQUE_TO_VOLTS*T)
 
 def exceedRC710TorqueFunc(T,
@@ -42,7 +43,10 @@ def exceedRC710TorqueFunc(T,
     #print "Supply current is %2.2f" % (I*(V_app/V_bat))
     #print "kv_si=%f\nke_si=%f" % (kv_si, ke_si)
 
-    return int(sign(V_app)*(pwm_max*(abs(float(V_app))/V_bat)+pwm_deadzone))
+    pwmCom = int(sign(V_app)*(pwm_max*(abs(float(V_app))/V_bat)+pwm_deadzone))
+    assert pwmCom <= 300, """exceedRC710TorqueFunc: pwmCom shouldn't be greater
+    than 300 (pwmCom=%d)""" % pwmCom
+    return pwmCom
 
 class TrajLoader( object ):
 
@@ -59,6 +63,8 @@ class TrajLoader( object ):
                  control_json=None,  # Json dictionary with "controls" key
                  module_map=None, # List of modules in order from base to tip
                  torque_func=_DEFAULT_TORQUE_FUNC,
+                 torque_max=DEF_TORQUE_MAX,
+                 pwm_max=DEF_PWM_COM_MAX,
                  debug=False
                  ):
         """
@@ -97,6 +103,8 @@ class TrajLoader( object ):
         if torque_func is _DEFAULT_TORQUE_FUNC:
             print "TrajLoader: Using default torque->pwm conversion function.  BEWARE!  This is probably wrong."
         self.torque_to_pwm_command = torque_func
+        self.torque_max = torque_max
+        self.pwm_max = pwm_max
 
         self.trajectory = None
         self.load_controls( control_json ) # Will except out on its own via json
@@ -112,8 +120,16 @@ class TrajLoader( object ):
             ts = int(ctrl['end_time']*1000) # Convert to ms
             ind = ctrl['start_state_index']
             for m_id, mctrl in zip(self.mmap, ctrl['control']):
+
                 # Note our torque is the opposite of the sim torque
+                assert mctrl <= self.torque_max, """Before converting to pwm command, 
+                asking for torque higher than torque max
+                (ask: %2.2f, max: %2.2f)""" % (mctrl, self.torque_max)
                 cmd = self.torque_to_pwm_command(mctrl)
+                assert cmd <= self.pwm_max, """After converting torque to pwm,
+                the resulting pwm is too high. 
+                (conversion: %2.2f [Nm] -> %d/300 [pwm] max: %d [pwm])""" % (mctrl, cmd, self.pwm_max)
+
                 self.trajectory.append( ( m_id, ind, cmd, ts ))
         # Append end trajectory command to trajectory
         for m_id, mctrl in zip(self.mmap, ctrl['control']):
@@ -123,20 +139,22 @@ class TrajLoader( object ):
     def write_trajectory( self ):
         for ctrl in self.trajectory:
             self.set_cmd_sync( *ctrl )
+
         # Perform second pass
         for ctrl in self.trajectory:
+            if ctrl[0] == 3:
+                print "SKIPPING 3"
+                continue
             cmds = self.get_cmd( *ctrl[:2] )
             if cmds != ctrl:
                 print "TrajLoader.write_trajecotory: Error in trajectory"
                 return False
-        print "Controls written and confirmed."
+        self.debugOut("write_trajectory: Controls written and confirmed.")
         return True
 
     def write( self, pkt):
         msg = 't' + self.mface._encode_data('B', len(pkt)) + pkt + '\r'
-        if self.debug:
-            print repr(msg) # DEBUG
-
+        self.debugOut("write: packet -> '%s'" % msg.encode('hex').upper())
         self.mface.ser.write(msg)
 
     def set_cmd( self, m_id, ind, cmd, ts ):
@@ -150,18 +168,19 @@ class TrajLoader( object ):
         if cmd != 999:
             if cmd > 300 or cmd < -300:
                 print "command outside of valid range"
-                return
+                return False
         if ind > self.MAX_TRAJ_LEN:
             print "Trajectory longer than MAX_TRAJ_LEN"
-            return
+            return False
         if ts > self.MAX_TRAJ_TIME*1000:
             print "Trajectory longer than MAX_TRAJ_TIME"
-            return
+            return False
         buf = (m_id, ind, cmd, ts )
         pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf )
         self.write(pkt)
+        return True
 
-    def get_cmd( self, m_id, ind, tout=0.1 ):
+    def get_cmd( self, m_id, ind, tout=0.1, retries=3):
         '''
         get command in trajectory by polling a module
         m_id -- module id
@@ -170,41 +189,48 @@ class TrajLoader( object ):
         if ind > self.MAX_TRAJ_LEN:
             print "Trajectory longer than MAX_TRAJ_LEN"
             return
+        self.debugOut("get_cmd: Asking %d for traj command at index %d" % (m_id, ind))
         buf = (m_id, ind)
         pkt = '1' + self.mface._encode_data( self.GET_FMT, *buf )
         self.write(pkt)
-        t0 = time.time()
-        dat = ''
-        while True:
-            if time.time()-t0 > tout:
-                self.debugOut("get_cmd: Read timed out (tout=%2.2f)" % tout )
-                return
-            bt = self.mface.ser.read()
-            dat += bt
-            if bt == '\r':
-                break
-        ret_cmd = struct.unpack( self.RET_FMT, dat[3:-1] )
-        self.debugOut("get_cmd: Received packet (m_id, ind, cmd, ts) = (%d, %d, %d, %d)" % ret_cmd)
+        ret_pkt = ''
+        tries = 0
+        while not ret_pkt and tries <= retries:
+            ret_pkt = self.mface.read(msg_type='t', tout=tout)
+            tries+=1
+        if not ret_pkt:
+            self.debugOut("get_cmd: Read returned empty failed")
+            return False
+        ret_cmd = struct.unpack( self.RET_FMT, ret_pkt)
+        self.debugOut("get_cmd: Unpacked packet (m_id, ind, cmd, ts) = (%d, %d, %d, %d)" % ret_cmd)
         return ret_cmd
 
-    def set_cmd_sync( self, m_id, ind, cmd, ts, retries=3 ):
+    def set_cmd_sync( self, m_id, ind, cmd, ts, retries=2):
         '''
         set command and then get it to check that its valid
         retry a number of times, just in case
         '''
-        print "Attempting to write packet (id, index, command, timestamp) = (%d, %d, %d, %d)" % (m_id, ind, cmd, ts)
+        self.debugOut(
+            "set_cmd_sync: Attempting to write packet (id, ind, cmd, t_start) = (%d, %d, %d, %d)" % (
+                                                               m_id, ind, cmd, ts)
+                     )
+
         for i in xrange(0, retries):
             self.set_cmd( m_id, ind, cmd, ts )
             ret_cmd = self.get_cmd( m_id, ind )
             if ret_cmd is not None:
-                print "  Write verify response: %s" % repr(ret_cmd),
+                self.debugOut("set_cmd_sync: Write verify response: %s" % repr(ret_cmd))
                 if ret_cmd == ( m_id, ind, cmd, ts ):
-                    print "...success"
-                    break
+                    self.debugOut("set_cmd_sync: ...success")
+                    return True
                 else:
-                    print "...failure (attempt %d of %d)" % (i, retries)
+                    self.debugOut("set_cmd_sync: ...failure (attempt %d of %d)" % (i, retries))
             else:
-                print "  No response when trying to verify write (attempt %d of %d)" % (i, retries)
+                self.debugOut("set_cmd_sync: No response when trying to verify write (attempt %d of %d)" % (
+                                      i, 
+                                      retries))
+        return False
+
     def debugOut(self, msg):
         """
         Print a line if debugging is on.

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from trajLoader import TrajLoader, exceedRC710TorqueFunc
 from posTest import PositionLogger
 from moduleIface import ModuleIface
@@ -38,7 +39,7 @@ print "Using test time of: ", test_time
 
 debug=True
 
-mIface = ModuleIface(dev)
+mIface = ModuleIface(dev, debug=debug)
 print "WARN: Using Torque->PWM Conversion function fo ExceedRC710KV Motor ONLY!"
 trajL = TrajLoader(module_iface=mIface,
                    control_json=jsonDat,
