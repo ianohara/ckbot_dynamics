@@ -31,7 +31,7 @@ if (len(sys.argv) == 4):
 e = ETree(file=sim_result_file)
 damping = e._ETree__results["chain"][0]["damping"]
 
-test_dat = json.load( open( test_name, 'r' ))
+test_dat = json.load(open( test_name, 'r' ))
 dat = test_dat['data']
 test_time = test_dat['time']
 test_name = test_dat['name']
@@ -46,7 +46,7 @@ for dat_stub in dat:
     pos_raw = dat_stub[1]
     if pos_raw > 2**14:
         pos_raw = pos_raw - 2**15
- 
+
     max_tics = module_param[module_id][1]
     min_tics = module_param[module_id][0] - 2**15
     pos = -pi/2 + (pi/2--pi/2)/(max_tics-min_tics)*(pos_raw-min_tics)
@@ -59,7 +59,7 @@ for dat_stub in dat:
 
     voltage = dat_stub[3]
     if not module_traj.has_key(module_id):
-        module_traj[module_id] = [] 
+        module_traj[module_id] = []
     module_traj[module_id].append([time, pos])
 
 plt.hold(True)
@@ -84,10 +84,9 @@ for index in xrange(e.module_count):
 
 plt.legend(legStrs)
 save_file = "images/physical_verification/%s_damping%f_shift%f_epochtime%d.png" % (
-             sim_result_file.replace("..", "").replace("/","-"), 
+             sim_result_file.replace("..", "").replace("/","-"),
              damping, time_shift, int(Time.time())
              )
-
 
 print "Saving this plot to ", save_file
 
