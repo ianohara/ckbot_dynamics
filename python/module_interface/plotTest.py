@@ -16,7 +16,7 @@ module_param = {
                 6: [8886, 25180, 17028]
                }
 
-test_name = 'tests/debug_test'
+test_name ='tests/11-28-2012_trajectories_5mods_4thdead_moduleparams.txt_results'
 
 test_dat = json.load( open( test_name, 'r' ))
 dat = test_dat['data']

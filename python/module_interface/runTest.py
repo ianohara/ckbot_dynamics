@@ -2,21 +2,26 @@
 from trajLoader import TrajLoader, exceedRC710TorqueFunc
 from posTest import PositionLogger
 from moduleIface import ModuleIface
+from os.path import isfile
 
 import json, time, sys
 
-def usage():
+def usage(msg):
     print "Usage: %s <dev> <trajectory file> [<module list>]" % sys.argv[0]
     print "  Where <trajectory file> contains a 'control' json  dictionary entry containing a"
     print "  dictionary specifying the trajectory. If [<module list>] is not specified"
     print "  the json file should also contain a 'modules' key which has a list value of "
     print "  module ids in order from the chain base to chain tip."
+    print "-"*80
+    print msg
+    sys.exit(1)
 
 if len(sys.argv) < 3:
     usage()
-    sys.exit(1)
 
 dev = sys.argv[1]
+if not isfile(dev):
+   usage("Device file does not exist! (%s)" % dev)
 trajFile = sys.argv[2]
 
 with open(trajFile, 'r') as jsfh:
@@ -26,9 +31,7 @@ modlist = None
 if len(sys.argv) == 4:
     modlist = json.load(sys.argv[3])
     if not isinstance(modlist, list):
-        usage()
-        print "The modlist should be a python/json list of module ids."
-        sys.exit(1)
+        usage("The modlist should be a python/json list of module ids.")
 
 name = "%s_%s" % (trajFile, time.strftime("result_%a-%b-%d-%Y_%H-%M-%S"))
 print "Using result file name of: ", name

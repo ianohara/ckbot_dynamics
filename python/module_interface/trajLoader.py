@@ -11,6 +11,9 @@ DEF_PWM_COM_MAX = 250
 TORQUE_TO_VOLTS = 300/DEF_TORQUE_MAX
 _DEFAULT_TORQUE_FUNC = lambda T: int(TORQUE_TO_VOLTS*T)
 
+def sign(v):
+    return -1.0 if v < 0.0 else 1.0
+
 def exceedRC710TorqueFunc(T,
                           V_bat=8.0, kv=1022.26, R=0.22,
                           pwm_max=300, pwm_deadzone=25):
@@ -37,16 +40,38 @@ def exceedRC710TorqueFunc(T,
 
     I = T/ke_si
     V_app = I*R
-    def sign(v):
-        return -1.0 if v < 0.0 else 1.0
-    #print "Current is: %2.2f" % I
-    #print "Supply current is %2.2f" % (I*(V_app/V_bat))
-    #print "kv_si=%f\nke_si=%f" % (kv_si, ke_si)
 
-    pwmCom = int(sign(V_app)*(pwm_max*(abs(float(V_app))/V_bat)+pwm_deadzone))
-    assert pwmCom <= 300, """exceedRC710TorqueFunc: pwmCom shouldn't be greater
-    than 300 (pwmCom=%d)""" % pwmCom
+    pwmCom = int(
+                  sign(V_app)*
+                    (
+                      pwm_max*(abs(float(V_app))/V_bat) + pwm_deadzone
+                    )
+                )
+    assert pwmCom <= pwm_max, """exceedRC710TorqueFunc: pwmCom shouldn't be greater
+    than pwm_max (pwmCom=%d)""" % pwmCom
     return pwmCom
+
+def exceedRC710PwmFunc(pwm,
+                       V_bat=8.0, kv=1022.26, R=0.22,
+                       pwm_max=300, pwm_deadzone=25):
+    """
+    Returns the commanded Torque as a result of commanding pwm to one of Matt's
+    motor controllers controlling an exceed RC 710 motor.
+    """
+    kv_si = kv*(2*pi)/60 # [(rev/min)/v] -> [(rad/s)/v]
+    ke_si = 1/kv_si # [Nm/A]
+    if (abs(pwm) < pwm_deadzone):
+        return 0.0
+    V_app = float(
+                   sign(pwm)*
+                     (
+                       V_bat*(abs(pwm)-pwm_deadzone)/float(pwm_max)
+                     )
+                 )
+    I = V_app/float(R)
+    T = I*ke_si 
+
+    return T 
 
 class TrajLoader( object ):
 
