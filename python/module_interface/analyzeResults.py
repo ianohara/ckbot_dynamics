@@ -29,7 +29,7 @@ class AbstractMotion(object):
             Provides .time, .ang, and .torque attributes which access
             list entry 0, 1, and 2 respectively.
             """
-            super(AbstractMotion.State, self).__init__(*a,**kw)
+            super(AbstractMotion.State, self).__init__(*a, **kw)
             self.time = self[0]
             self.ang = self[1]
             self.torque = self[2]
@@ -54,12 +54,93 @@ class AbstractMotion(object):
         for ti,an,to in zip(self.times,self.angs,self.torques):
             yield AbstractMotion.State([ti, an, to])
 
+class PlannerMotion(AbstractMotion):
+
+    @staticmethod
+    def plannerMotionExtractor(result_json):
+        """
+        Take a full result json structure and create a list of PlannerMotions
+        in order from chain base to chain tip. (This is purely a utility!)
+
+        NOTE:  Not much input checking here, since the 'controls' list of dicts
+               is created by the planner.
+
+        ARGUMENTS:
+            result_json - json (dict) - Should have top level key 'controls'
+                          which is made by our trajector planner.
+        RETURNS:
+            pml - PlannerMotion List [PM_0, PM_1, ..., PM_M-1] for a length M
+                  chain.
+        """
+        assert result_json.has_key('controls'), "Result json must have 'controls' top level key."
+        controls = result_json['controls']
+        M = len(controls[0]['control']) # Number of modules = length of control vector at state 0
+        
+        def getPSL(ctr, mn):
+            """
+            get PlannerStateList [mn, start_time, dt, pos in rad, vel in rad/s, torque]
+            """
+            assert (mn >= 0) and (mn < M),\
+                   "Invalid module number for this control. (min=0, max=%d, it is=%d)" % (M-1, mn)
+            return [
+                    mn, 
+                    ctr['start_time'], ctr['dt'],
+                    ctr['start_state'][mn], ctr['start_state'][M+mn],
+                    ctr['control'][mn]
+                   ]
+
+        pml = list()
+        for i in xrange(M):
+            thisStates = [getPSL(ctr, i) for ctr in controls]
+            lCtr = controls[len(controls)-1]
+            # TODO: Handling the end point like this seems a bit weird.  
+            #       Particularly dt of 0...likely to break stuff down the line.
+            #       Find a better way of making sure to include the last point in motion
+            thisStates.append([i, lCtr['end_time'], 0.0,
+                               lCtr['end_state'][i], lCtr['end_state'][M+i],
+                               lCtr['control'][i]])
+            pml.append(PlannerMotion(thisStates))
+        return pml
+            
+    def __init__(self, control_states):
+        """
+        Create a motion for module number list of control states (lists) for
+        a single module in a chain.
+
+        NOTE: Use the plannerMotionExtractor static method for creating 
+              PlannerMotion instances for each of the modules in a chain
+              from the top level json key ['controls'] in our results
+              json structure.
+
+        ARGUMENTS:
+            control_states - List of lists where each inner list looks like:
+                 [mn, start_time, dt, pos in rad, vel in rad/s, torque applied]
+        """
+        assert len(control_states) > 0, "control_states are empty!"
+        assert all([len(ctr) == 6 for ctr in control_states]), "Each control state should be a length 6 list!" 
+        assert all([ctr[0] == control_states[0][0] for ctr in control_states]),\
+               "Module numbers (0th entry in control state lists) should all be equal"
+        super(PlannerMotion, self).__init__()
+        self._mn = control_states[0][0]
+        self.dts = list()
+        self.vels = list()
+        for ctr in control_states:
+            self.times.append(ctr[1])
+            self.dts.append(ctr[2])
+            self.angs.append(ctr[3])
+            self.vels.append(ctr[4])
+            self.torques.append(ctr[5])
+
+
 class ResultMotion(AbstractMotion):
     def __init__(self, states, calib, pwm_to_torque=DEFAULT_PWM_TO_TORQUE):
         """
         Create a motion object from a list of result states. A result
         state is a length 4 list that looks like:
           [bbid, pos in Q15, time in [ms], pwm out of 300]
+
+        NOTE: State here is not the AbstractMotion.State object we use
+              to pass around states once we convert them into our form.
 
         ARGUMENTS:
             states - list of result states, as descibed above.  Every
@@ -136,7 +217,7 @@ class ResultMotion(AbstractMotion):
         self.torques = [self._pwm2t(pwm) for pwm in self._pwm_300]
 
 class Analyzer(object):
-    def __init__(self, jdata=None):
+    def __init__(self, jdata=None, require_planner_data=True):
         """
         Create an object that knows how to analyze parkourbot result
         files.
@@ -174,6 +255,11 @@ class Analyzer(object):
 
                    2. ['modules'] key that is a list of Brain Board ids (bbid)
                       in order of module numbers (from base to tip)
+          require_planner_data - If true, require that the ['controls'] data
+                                 structure exist in the jdata.
+                                 This comes from the c++ trajectory planner,
+                                 so if you've run a trajectory based on results
+                                 of the planner, you should be good to go.
         """
         assert jdata,\
                "Constructor needs a json data structure with results inside."
@@ -196,14 +282,42 @@ class Analyzer(object):
         # ordered from base to tip
         self._resMotions = list()
         self._fillResultMotions()
+        self._planMotions = list()
+
+        if require_planner_data:
+            assert jdata.has_key('controls'), "require_planner_data=True, so 'controls' must exist in jdata"
+            self._planMotions = PlannerMotion.plannerMotionExtractor(jdata)
 
     def resultMotions(self):
         """
         Yield the result motions in order from
-        base (mn=0) to tip (mn=N)
+        base (mn=0) to tip (mn=N-1)
         """
         for rmot in self._resMotions:
             yield rmot
+
+    def plannerMotions(self):
+        """
+        Yield the motions given by the C++ trajectory planner in
+        order from base (mn=0) to tip (mn=N-1)
+        """
+        for pmot in self._planMotions:
+            yield pmot 
+
+    def getPlannerMotionTimeRange(self):
+        """
+        Return a length 2 tuple of the start and end time of the
+        planner trajectories.
+        """
+        t_min, t_max = None, None
+        for pmot in self.plannerMotions():
+            if min(pmot.times) < t_min or not t_min:
+                t_min = min(pmot.times)
+            if max(pmot.times) > t_max or not t_max:
+                t_max = max(pmot.times)
+            
+        assert t_min != None and t_max != None, "Could not find t_min and t_max which means there are no plannerMotions.  Did your result json data structure have a 'controls' key?"
+        return (t_min, t_max)
 
     def _fillCalibs(self):
         """
@@ -253,6 +367,11 @@ if __name__ == "__main__":
                     dest='t_range',
                     help="Specify the start and end time of region to plot/analyze")
 
+    ap.add_argument('--use_ptime',
+                    action="store_true",
+                    default=False,
+                    help="Use the time range of the planner trajectories for all plots")
+
     def inTimeRange(t, t_st, t_end):
         """
         Return True only if t_st <= t <= t_end
@@ -291,6 +410,14 @@ if __name__ == "__main__":
     # Woot, good to go.  Form the analyzer.
     alz = Analyzer(jdata)
     
+    # Figure out which time range we should use for the plots based on some arguments.
+    # args.t_range might define a time range (--times arg), but --planner_time will
+    # override this.
+    if args.use_ptime:
+        trange = alz.getPlannerMotionTimeRange()
+    else:
+        trange = args.t_range
+
     fig = pp.figure(num=1)
     fig.hold(True)
     pp.grid(True)
@@ -298,10 +425,16 @@ if __name__ == "__main__":
     # PLOT 1: Plot the actual trajectories taken
     legend_strings = list()
     for mn, rmot in enumerate(alz.resultMotions()):
-        inRangeSt = filter(lambda st: inTimeRange(st[0], args.t_range[0], args.t_range[1]), rmot.getStates())
-
+        inRangeSt = filter(lambda st: inTimeRange(st[0], trange[0], trange[1]), rmot.getStates())
         pp.plot([s.time for s in inRangeSt], [s.ang for s in inRangeSt]) 
         legend_strings.append("Module %d (bbid=%d)" % (mn, rmot.bbid))
+
+    # PLOT 2: Plot the planned trajectories
+    pp.subplot(312)
+    for mn, pmot in enumerate(alz.plannerMotions()):
+        inRangeSt = filter(lambda st: inTimeRange(st[0], trange[0], trange[1]), pmot.getStates())
+        pp.plot([s.time for s in inRangeSt], [s.ang for s in inRangeSt], 'o')
+                
         
     pp.legend(legend_strings)
     pp.show()
