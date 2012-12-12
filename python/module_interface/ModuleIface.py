@@ -13,6 +13,7 @@ msg50 = '120' + pack('<h', 50).encode('hex').upper() + '00
 
 msg_param_autoZero_off = '620' + pack('B', 17).encode('hex').upper() +7*'00'
 msg_calibration = '120' + 2*'00' + pack('B',4).encode('hex').upper()
+
 '''
 
 import serial

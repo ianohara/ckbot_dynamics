@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from trajLoader import TrajLoader, exceedRC710TorqueFunc
 from posTest import PositionLogger
-from moduleIface import ModuleIface
+from ModuleIface import ModuleIface
 from os.path import isfile
 
 import json, time, sys

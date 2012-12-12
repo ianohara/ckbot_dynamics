@@ -12,7 +12,7 @@ USAGE:
 print "Importing TrajLoader, PositionLogger, and ModuleIface Classes."
 from trajLoader import TrajLoader, exceedRC710TorqueFunc
 from posTest import PositionLogger
-from moduleIface import ModuleIface
+from ModuleIface import ModuleIface
 import json
 
 dev = raw_input("What serial device should be used [/dev/ttyUSB0]? ")

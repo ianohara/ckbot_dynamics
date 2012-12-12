@@ -3,33 +3,37 @@ from math import pi
 from random import random
 from struct import pack, unpack
 
-import moduleIface
+import ModuleIface
 
 class PositionLogger(object):
-    """
-    Class that listens to a serial line on which
-    parkourbot modules are reporting their positions.
-    This parses that data and stores it as json along with
-    as much information about the test as possible.
-    """ 
-
     def __init__(self,
                  modIface=None,   # The module interface on which we communicate
-                 test_time=None, # Len in [s] of trajectory
-                 jsonout=dict(), # Json dictionary to store results and stup
+                 test_time=None,  # Len in [s] of trajectory
+                 jsonout=dict(),  # Json dictionary to store results and stup
                  test_name="PositionLogger_" + str(int(time.time())),
-                 debug=False     # Use debug output?
+                 debug=False      # Use debug output?
                  ):
         """
-        dev     - device string of serial device associated
-                  with the module network.
-        modules - list of module IDs in the chain (Brain board IDs)
-        debug   - Boolean indicating whether debug output should be printed
-        jsonout - dictionary to use as the json output object for this test.
-                  This could be used to write the result and setup of this
-                  test to file, so fill it with all of the information needed
-                  to recreate it.
-        """
+        Class that listens to a serial line on which
+        parkourbot modules are reporting their positions.
+        This parses that data and stores it as json along with
+        as much information about the test as possible.
+
+
+        ARGUMENTS:
+          modIface - a ModuleIface.ModuleIface interface for talking to 
+                     parkourbot modules.
+          test_time - The length of time to log for
+          jsonout - dictionary to use as the json output object for this test.
+                    This could be used to write the result and setup of this
+                    test to file, so fill it with all of the information needed
+                    to recreate it. (NOTE: dicts are mutable, so when you 
+                    pass one in the caller's dict gets modified)
+          test_name - Name of file to write jsonout to once we have logged for
+                      test_time.  NOTE: This writes all of the caller's jsonout
+                      into the file as well, since jsonout is passed in as a
+                      ref to a mutable dict.
+         """
         self.debug = debug
 
         if not modIface:

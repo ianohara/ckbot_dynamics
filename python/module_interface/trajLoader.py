@@ -263,7 +263,7 @@ class TrajLoader( object ):
         if self.debug: print msg
 
 if __name__ == "__main__":
-    from moduleIface import ModuleIface
+    from ModuleIface import ModuleIface
     import sys
     def usage():
         print "Usage: %s <trajectory file> [<device>]" % sys.argv[0]
