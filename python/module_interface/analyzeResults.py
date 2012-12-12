@@ -1,5 +1,13 @@
+#!/usr/bin/python
 """
 Script for loading the results of running a trajectory with runTest.py.
+
+This also contains the Analyzer and accompanying classes that are really
+useful if you want to do anything with the results of a trajectory.
+
+The script is run in the if __name__ == "__main__" so you can
+just import this file and use the Analyzer class (which you
+construct with a json that looks like the json stored in our results file)
 
 Run with --help option for guidance!
 """
@@ -15,6 +23,17 @@ except ImportError as e:
     DEFAULT_PWM_TO_TORQUE=None
 
 class AbstractMotion(object):
+    class State(list):
+        def __init__(self, *a, **kw):
+            """
+            Provides .time, .ang, and .torque attributes which access
+            list entry 0, 1, and 2 respectively.
+            """
+            super(AbstractMotion.State, self).__init__(*a,**kw)
+            self.time = self[0]
+            self.ang = self[1]
+            self.torque = self[2]
+
     def __init__(self):
         """
         Store a Motion, which consists of M times, corresponding positions,
@@ -24,6 +43,16 @@ class AbstractMotion(object):
         self.times = list()
         self.angs = list()
         self.torques = list()
+
+    def getStates(self):
+        """
+        Yield the states, in order from 0 -> M, as State lists of form:
+           [time, ang, torque]
+        This is useful for iterating over all states and filtering
+        for some.
+        """
+        for ti,an,to in zip(self.times,self.angs,self.torques):
+            yield AbstractMotion.State([ti, an, to])
 
 class ResultMotion(AbstractMotion):
     def __init__(self, states, calib, pwm_to_torque=DEFAULT_PWM_TO_TORQUE):
@@ -69,8 +98,8 @@ class ResultMotion(AbstractMotion):
         self._pwm2t = pwm_to_torque
 
         # Store the result states, but sorted in time order
-        self._res_states = sorted(states, key=lambda s: s[3])
-        self._bbid = self._res_states[0][0] # Safe because of assertion
+        self._res_states = sorted(states, key=lambda s: s[2])
+        self.bbid = self._res_states[0][0] # Safe because of assertion
 
         self._time_ms = [s[2] for s in self._res_states]
         self._pos_Q15 = [s[1] for s in self._res_states]
@@ -124,8 +153,8 @@ class Analyzer(object):
              "mn" is used universally to denote a "module number" in a length
              N chain of modules where:
                mn = 0 -> base module, first module
-               mn = N-1 -> 2nd to last module
-               mn = N -> tip module, last module
+               mn = N-2 -> 2nd to last module
+               mn = N-1 -> tip module, last module
 
              We get rid of the need for the brain board ID numbers immediately,
              so you should not ever need to use them in the context of the
@@ -168,6 +197,14 @@ class Analyzer(object):
         self._resMotions = list()
         self._fillResultMotions()
 
+    def resultMotions(self):
+        """
+        Yield the result motions in order from
+        base (mn=0) to tip (mn=N)
+        """
+        for rmot in self._resMotions:
+            yield rmot
+
     def _fillCalibs(self):
         """
         The int bbid keys are converted to strings by the json
@@ -194,7 +231,12 @@ class Analyzer(object):
             self._resMotions.append(mot)
                 
 if __name__ == "__main__":
-    import argparse, json
+    """
+    Analyze a results file.  run this file with the --help option for details
+    on the arguments you can use.
+    """
+
+    import argparse, json, matplotlib.pyplot as pp, numpy as np
     from os.path import isfile
     from sys import exit
     ap = argparse.ArgumentParser(description="Script for loading and\
@@ -202,6 +244,27 @@ if __name__ == "__main__":
     ap.add_argument('file',
                     type=str,
                     help="Specifies the result (json) file to load")
+
+    ap.add_argument('--times', '-t',
+                    type=float,
+                    nargs=2,
+                    metavar = ('START', 'END'),
+                    default = [None, None],
+                    dest='t_range',
+                    help="Specify the start and end time of region to plot/analyze")
+
+    def inTimeRange(t, t_st, t_end):
+        """
+        Return True only if t_st <= t <= t_end
+          OR
+        if t_st and t_end are None.
+        """
+        if (t_st <= t) and (t <= t_end):
+            return True
+        elif t_st is None and t_end is None:
+            return True
+        else:
+            return False
 
     def usage(msg):
         """
@@ -228,4 +291,17 @@ if __name__ == "__main__":
     # Woot, good to go.  Form the analyzer.
     alz = Analyzer(jdata)
     
+    fig = pp.figure(num=1)
+    fig.hold(True)
+    pp.grid(True)
+    pp.subplot(311)
+    # PLOT 1: Plot the actual trajectories taken
+    legend_strings = list()
+    for mn, rmot in enumerate(alz.resultMotions()):
+        inRangeSt = filter(lambda st: inTimeRange(st[0], args.t_range[0], args.t_range[1]), rmot.getStates())
 
+        pp.plot([s.time for s in inRangeSt], [s.ang for s in inRangeSt]) 
+        legend_strings.append("Module %d (bbid=%d)" % (mn, rmot.bbid))
+        
+    pp.legend(legend_strings)
+    pp.show()
