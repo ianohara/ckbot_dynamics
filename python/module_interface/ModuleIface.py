@@ -74,7 +74,6 @@ class Feedback( object ):
         self.timestamp = now()
 
 class ModuleIface( object ):
-
     NETWORK_MANAGEMENT = '000'
     EMERGENCY = '0'
     COMMAND = '1'
@@ -98,9 +97,9 @@ class ModuleIface( object ):
     CAN_NONE = 16
 
     PKT_FMT = {
-    FEEDBACK : '<' + 'B' + 4*'h',
-    REQUEST_RESPONSE : '<' + 5*'B',
-    HB : '<' + 5*'B' + 'h' + 'BB'
+        FEEDBACK : '<' + 'B' + 4*'h',
+        REQUEST_RESPONSE : '<' + 5*'B',
+        HB : '<' + 5*'B' + 'h' + 'BB'
     }
 
     def __init__(self, dev='/dev/ttyUSB0', debug=False):
@@ -121,14 +120,18 @@ class ModuleIface( object ):
         self.ser.close()
 
     def read( self, msg_type='c', tout = 0.1 ):
-        '''
+        """
         Returns a single valid CANBus packet where a packet is defined as:
             'a-z', 'c' for CANBus| len0 len1 | data .... | '\r'
 
         NOTE from IMO: data can contain '\r'!  So we need to use both
              '\r' and length checking to make sure we have a full packet.
 
-        '''
+        TODO/BUG (IMO): If someone asks to read a 'c' message and there is a
+                  't' message before it in the buffer, the 't' message
+                  will get clobbered and disappear into the ether!
+
+        """
         b = ''
         len_buf = ''
         pkt = ''
@@ -154,8 +157,8 @@ class ModuleIface( object ):
 
             if STATE == S_NOT_IN_PACKET:
                 """
-                Wait until we see a 'c' which signifies the possible
-                start of a CANBus packet.
+                Wait until we see a 'msg_type' which signifies the possible
+                start of a packet we are interested in.
                 """
                 if b == msg_type:
                     self.debugOut("read:  Transitioning to S_IN_PACK_NO_LEN")
@@ -215,9 +218,15 @@ class ModuleIface( object ):
         print repr(msg)
         self.ser.write(msg)
 
-    def discover( self, timeout=2.0 ):
+    def discover(self, timeout=2.0):
         '''
         reads data off of interface for timeout time and returns all modules seen
+
+        NOTE/TODO/WHY OH WHY!?:  This discovers *motor controller* ids.  There
+          is no known way to discover brain board ids....see ping...
+
+        NOTE/TODO: If can_pass(bbid, self.CAN_HB) has not been set for a module,
+              this will not find it!
         '''
         modules = set()
         t0 = now()
@@ -225,12 +234,21 @@ class ModuleIface( object ):
             if now()-t0 > timeout:
                 break
             pkt = self.read()
-
-            if pkt is None or pkt[0] != '7':
+            if pkt is None or pkt[0] != self.HB:
                 continue
-            decoded_pkt = self._decode_data( self.PKT_FMT['7'], pkt[1:] )
+            decoded_pkt = self._decode_data( self.PKT_FMT[self.HB], pkt[1:] )
             modules.add( decoded_pkt[0] )
         return modules
+
+    def ping(self, bbid):
+       """
+       Try to "ping" the brain board with bbid for an ID.
+
+       NOTE: As of 12/12/2012 there's no non-hacky way of doing this, so
+             I just ask for the module's first trajectory segment and
+             see if it responds.
+       """
+       raise NotImplemented("Ping not yet implemented.  Head is shutting down. -IMO")
 
     def scan(self, id_range=xrange(1,10)):
         """
@@ -307,7 +325,7 @@ class ModuleIface( object ):
 
     def set_param( self, m_id, param, val, perm=False ):
         if not mP.has_key( param ):
-            print "paraemeter not in mP"
+            print "Parameter not in mP"
             return
         if perm:
             addr = mP[param].addr
@@ -396,7 +414,7 @@ class ModuleIface( object ):
                        self.CAN_HB   - Pass only the heartbeat through
                        self.CAN_ALL  - Pass Everything through (Feedback!)
         """
-        if passthis not in (CAN_NONE, CAN_HB, CAN_ALL):
+        if passthis not in (self.CAN_NONE, self.CAN_HB, self.CAN_ALL):
             raise ValueError("passthis must be one of: self.CAN_NONE, self.CAN_HB, self.CAN_ALL")
         pass_pkt = 'w' + pack('<BBB', 4, m_id, passthis).encode('hex').upper() + '\r'
         self.debugOut("can_pass: Setting id=%d to value=%d (packet='%s')"
