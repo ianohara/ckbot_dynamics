@@ -199,11 +199,16 @@ class ResultMotion(AbstractMotion):
         # TODO: Check if this is right, I jacked it from posTest
         #       I know Uriah and I botched it like 40 times, so
         #       we should check again.
+        tmpmin, tmpmax, tempp = mint, maxt, p 
         if maxt < mint:
             mint = mint-(maxt+1)
             p = p - (maxt+1)
             p = p % 2**15
             maxt = 2**15
+        print "toRadians Summary:"
+        print "  min: %d -> %d" % (tmpmin, mint)
+        print "  max: %d -> %d" % (tmpmax, maxt)
+        print "   -   %d -> %d" % (tmpmax-tmpmin, maxt-mint)
         return -pi/2 + (pi/2-(-pi/2))/(maxt - mint)*(p-mint)
 
 

@@ -23,7 +23,7 @@ class PositionLogger(object):
         ARGUMENTS:
           modIface - a ModuleIface.ModuleIface interface for talking to 
                      parkourbot modules.
-          test_time - The length of time to log for
+          test_time - The length of time to log for [in seconds] NOTE: NOT MILLISECONDS
           jsonout - dictionary to use as the json output object for this test.
                     This could be used to write the result and setup of this
                     test to file, so fill it with all of the information needed

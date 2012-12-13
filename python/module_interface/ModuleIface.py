@@ -68,19 +68,34 @@ class Feedback( object ):
         self.pwm = pwm
         self.current = current
         self.pos_raw = pos
-        self.pos = 2.0*pi*pos/2**15
-        if self.pos > pi:
-            self.pos = self.pos - 2*pi
         self.timestamp = now()
 
+    def __str__(self):
+        return " ".join([str(p) for p in ["Feedback(m_id=",self.m_id,"speed=",self.speed,"pwm=",self.pwm,"current=",self.current,"pos=",self.pos_raw,")"]])
+
 class ModuleIface( object ):
-    NETWORK_MANAGEMENT = '000'
-    EMERGENCY = '0'
-    COMMAND = '1'
-    FEEDBACK = '2'
-    REQUEST_RESPONSE = '5'
-    REQUEST = '6'
-    HB = '7'
+    # Message types known by brain board as of 12/13/2012
+    MSG_TYPES = set(['c', # CAN message
+                     't', # For setting/getting stored traj from brain board 
+                     'f', # "flow control" -> For starting and stopping trajectory 
+                     'w'  # "wireless settings" -> used to set CAN forwarding from motro controller
+                    ])
+
+    SET_FMT = '<BBhH'
+    GET_FMT = '<BB'
+    RET_FMT = '<BBhH'
+
+    MAX_TRAJ_LEN = 100
+    MAX_TRAJ_TIME = 30
+    END_TRAJ = 999
+
+    # For MSG_TYPE 't'
+    TRAJ_SET_CMD = '0'
+    TRAJ_GET_CMD = '1'
+
+    # For MSG_TYPE 'f'
+    TRAJ_START = '0'
+    TRAJ_STOP  = '100'
 
     # NOTE FROM IMO: These are weird values because there is a bug in our bain
     # board code (as of 11/27/2012).  When we look at 'w' messages we look at
@@ -95,6 +110,16 @@ class ModuleIface( object ):
     CAN_ALL = 0
     CAN_HB = 32
     CAN_NONE = 16
+
+    """
+      CAN commands that can get passed through to a motor controller
+      with the 'c' MSG_TYPE
+    """
+    COMMAND = '1'
+    FEEDBACK = '2'
+    REQUEST_RESPONSE = '5'
+    REQUEST = '6'
+    HB = '7'
 
     PKT_FMT = {
         FEEDBACK : '<' + 'B' + 4*'h',
@@ -132,6 +157,8 @@ class ModuleIface( object ):
                   will get clobbered and disappear into the ether!
 
         """
+        if not msg_type in self.MSG_TYPES:
+            print "ModuleIface: WARNING: Trying to read unknown message type '%s' (known: %s)" % (msg_type, str(self.MSG_TYPES))
         b = ''
         len_buf = ''
         pkt = ''
@@ -198,25 +225,116 @@ class ModuleIface( object ):
                     #self.debugOut("read: len(pkt)=%d length=%d pkt='%s'" % (len(pkt),
                     #length, str(pkt).encode('hex')))
                     pkt += b
-
         return pkt
 
     def flush( self ):
-        '''
-        while True:
-            dat = self.read()
-            if dat is None:
-            return
-        '''
+        """
+        Flush the serial buffer.
+
+        NOTE: This is broken on OS X 10.6.8 with the FTDI driver we
+              all use (errr...sorry, cannot remember the name of it.
+              It's the first result on google for OS X serial driver)
+        """
         self.ser.flushInput()
         self.feedback = []
         self.requests = []
 
-    def write( self, pkt ):
-        print repr(pkt)
-        msg = 'c' + pack('B',len(pkt)).encode('hex').upper() + pkt + '\r'
-        print repr(msg)
+    def _decode_data( self, fmt, buf ):
+        return unpack( fmt, buf.lower().decode('hex'))
+
+    def _encode_data( self, fmt, *buf ):
+        return pack(fmt, *buf).encode('hex').upper()
+
+    def write(self, msg_type, pkt):
+        assert msg_type in self.MSG_TYPES,\
+               "Unknown message type '%s'.  Choices are: %s" % (msg_type, str(self.MSG_TYPES))
+        msg = msg_type + pack('B',len(pkt)).encode('hex').upper() + pkt + '\r'
         self.ser.write(msg)
+        return msg # For the caller's debugging purposes
+
+    def set_cmd( self, bbid, ind, cmd, ts ):
+        '''
+        sets a command in a trajectory
+
+        ARGUMENTS:
+            bbid -- brain board module id
+            ind -- index of command in trajectory
+            cmd -- command value from -300 to 300, 999 to "End trajectory"
+                   NOTE: I cannot see any reason in the brain board code why 999 is 
+                         different than 0! (IMO, 12/13/2012)
+            ts -- timestamp for cmd in ms
+        '''
+        if cmd != 999:
+            if cmd > 300 or cmd < -300:
+                print "command outside of valid range"
+                return False
+        if ind > self.MAX_TRAJ_LEN:
+            print "Trajectory index longer than MAX_TRAJ_LEN"
+            return False
+        if ts > self.MAX_TRAJ_TIME*1000:
+            print "Trajectory time longer than MAX_TRAJ_TIME"
+            return False
+        buf = (bbid, ind, cmd, ts )
+        pkt = self.TRAJ_SET_CMD + self._encode_data( self.SET_FMT, *buf )
+        self.write('t', pkt)
+        return True
+
+    def get_cmd( self, bbid, ind, tout=0.1, retries=3):
+        '''
+        get command in trajectory by polling a module
+
+        ARGUMENTS:
+            bbid - brain board module id
+            ind  - index of command in trajectory
+            tout[=0.1] - Time for a single get to timeout
+            retries[=3] - Number of times to retry if we get no response
+        RETURNS:
+            On success, a packet (bbid, ind, cmd, t_start [ms])
+        '''
+        if ind > self.MAX_TRAJ_LEN:
+            print "get_cmd: Cannot get trajectory index longer than %d (tried to set %d).  Skipping." % (self.MAX_TRAJ_LEN, id)
+            return
+        self.debugOut("get_cmd: Asking %d for traj command at index %d" % (bbid, ind))
+        buf = (bbid, ind)
+        pkt = self.TRAJ_GET_CMD + self._encode_data( self.GET_FMT, *buf )
+        self.write('t', pkt)
+        ret_pkt = ''
+        tries = 0
+        while not ret_pkt and tries <= retries:
+            ret_pkt = self.read(msg_type='t', tout=tout)
+            tries+=1
+        if not ret_pkt:
+            self.debugOut("get_cmd: Read returned empty failed")
+            return False
+        ret_cmd = unpack( self.RET_FMT, ret_pkt)
+        self.debugOut("get_cmd: Unpacked packet (bbid, ind, cmd, ts) = (%d, %d, %d, %d)" % ret_cmd)
+        return ret_cmd
+
+    def set_cmd_sync( self, bbid, ind, cmd, ts, retries=2):
+        '''
+        Set command and then get it to check that its valid
+        retry a number of times, just in case
+        '''
+        self.debugOut(
+            "set_cmd_sync: Attempting to write packet (bbid, ind, cmd, t_start) = (%d, %d, %d, %d)" % (
+                                                               bbid, ind, cmd, ts)
+                     )
+
+        for i in xrange(0, retries):
+            self.set_cmd( bbid, ind, cmd, ts )
+            ret_cmd = self.get_cmd( bbid, ind )
+            if ret_cmd is not None:
+                self.debugOut("set_cmd_sync: Write verify response: %s" % repr(ret_cmd))
+                if ret_cmd == ( bbid, ind, cmd, ts ):
+                    self.debugOut("set_cmd_sync: ...success")
+                    return True
+                else:
+                    self.debugOut("set_cmd_sync: ...failure (attempt %d of %d)" % (i, retries))
+            else:
+                self.debugOut("set_cmd_sync: No response when trying to verify write (attempt %d of %d)" % (
+                                      i, 
+                                      retries))
+        return False
 
     def discover(self, timeout=2.0):
         '''
@@ -240,28 +358,50 @@ class ModuleIface( object ):
             modules.add( decoded_pkt[0] )
         return modules
 
-    def ping(self, bbid):
+    def ping(self, bbid, tout=1.0):
        """
-       Try to "ping" the brain board with bbid for an ID.
+       Try to "ping" the brain board with bbid for an ID.  This is
+       an existence ping, so it doesn't return any timing info.
 
        NOTE: As of 12/12/2012 there's no non-hacky way of doing this, so
              I just ask for the module's first trajectory segment and
              see if it responds.
-       """
-       raise NotImplemented("Ping not yet implemented.  Head is shutting down. -IMO")
 
-    def scan(self, id_range=xrange(1,10)):
+       ARGUMENTS:
+           bbid - Brain board ID to ping
+       RETURNS:
+           True if the board responds
+           False otherwise
+       """
+       if self.get_cmd(bbid, 0,tout=tout, retries=0):
+           return True
+       else:
+           return False
+
+    def scan(self, id_iter=xrange(1,10), tout=0.5):
         """
         Scan a range of brain board ids and see which ones
         respond.
 
-        ARGUMENTS:
-           id_range - An iterable that returns valid
-                      brain board ids.
-        """
-        raise NotImplemented("Scan not yet implemented")
+        NOTE: This can take a long time (ie: if len(id_range) == 10
+              and tout=1.0 and none of the bbids exist, then this
+              will take 10 seconds)
 
-    def _parse_pkt( self, pkt ):
+        ARGUMENTS:
+           id_iter - An iterable that returns valid
+                      brain board ids.
+           tout[=0.5] - Timetout for each bbid (in seconds)
+
+        RETURN:
+           bbids - a Set of brain board ids that we saw in the range
+        """
+        bbids = set()
+        for bbid in id_iter:
+            if self.ping(bbid, tout=tout):
+                bbids.add(bbid)
+        return bbids
+
+    def _parse_pkt(self, pkt):
         '''
         Look at first byte of packet to determine msg type then decode
         pkt data
@@ -271,6 +411,18 @@ class ModuleIface( object ):
         return Message( pkt[0], data )
 
     def update( self, tout=0.05 ):
+        """
+        Read for CAN messages from the motor controller and deal with them.
+
+        NOTE from IMO: What happens to requests here when they are fulfilled?
+                       Is it assumed that whoever made the request has a
+                       reference to it and will check for data?
+
+        NOTE: This uses read() which as of 12/13/2012 squashes messages of
+              the wrong type until the buffer runs out, or we find a message
+              of the correct type (in this case, the 'c' message for CAN)
+              So, be careful!
+        """
         t0 = now()
         while True:
             curtime = now()
@@ -316,12 +468,6 @@ class ModuleIface( object ):
                     continue
                 self.requests.append( request )
                 cnt += 1
-
-    def _decode_data( self, fmt, buf ):
-        return unpack( fmt, buf.lower().decode('hex'))
-
-    def _encode_data( self, fmt, *buf ):
-        return pack(fmt, *buf).encode('hex').upper()
 
     def set_param( self, m_id, param, val, perm=False ):
         if not mP.has_key( param ):
@@ -374,16 +520,6 @@ class ModuleIface( object ):
             sleep(0.1)
         return False
 
-    def start( self, m_id ):
-        data = ( m_id, 0, 1 )
-        pkt = self.COMMAND + self._encode_data( '<BhB', *data )
-        self.write(pkt)
-
-    def stop( self, m_id ):
-        data = ( m_id, 0, 2 )
-        pkt = self.COMMAND + self._encode_data( '<BhB', *data )
-        self.write(pkt)
-
     def set_voltage( self, m_id, val ):
         data = ( m_id, val, 0 )
         pkt = self.COMMAND + self._encode_data( '<BhB', *data )
@@ -395,6 +531,28 @@ class ModuleIface( object ):
         data = ( m_id, val, 3 )
         pkt = self.COMMAND + self._encode_data( '<BhB', *data )
         self.write(pkt)
+
+    def start_traj(self, test_time):
+        """
+        Send out the message that tells modules to start a trajectory
+        and report feedback for a certain length of time.
+
+        ARGUMENTS:
+            test_time - Time in [s] to report feedback for (with
+                        the staggered reporting of 5 modules tactic)
+        """
+        test_time = int(test_time)
+        if test_time > 255:
+            print "mIface.start_traj: Warning, test time in [s] must fit in a Byte (it is %d).  Using 255" % test_time
+            test_time = 255
+        self.write('f', self.TRAJ_START + self._encode_data('B', test_time))
+
+    def stop_traj(self):
+        """
+        Send the broadcast message that tells everyone to stop their trajectory.
+        This stops both feedback and trajectory running.
+        """
+        self.write('f', self.TRAJ_STOP)
 
     def calibrate( self, m_id ):
         data = ( m_id, 0, 0, 4 )
@@ -420,5 +578,3 @@ class ModuleIface( object ):
         self.debugOut("can_pass: Setting id=%d to value=%d (packet='%s')"
                         % (m_id, passthis, pass_pkt))
         self.ser.write(pass_pkt)
-
-

@@ -74,15 +74,6 @@ def exceedRC710PwmFunc(pwm,
     return T 
 
 class TrajLoader( object ):
-
-    SET_FMT = '<BBhH'
-    GET_FMT = '<BB'
-    RET_FMT = '<BBhH'
-
-    MAX_TRAJ_LEN = 100
-    MAX_TRAJ_TIME = 30
-    END_TRAJ = 999
-
     def __init__(self,
                  module_iface=None,  # Module interface for communication
                  control_json=None,  # Json dictionary with "controls" key
@@ -138,15 +129,17 @@ class TrajLoader( object ):
         cdat = jsondat["controls"]
         if len(cdat) == 0:
             print "Warning: control data is empty"
-        if len(cdat) > self.MAX_TRAJ_LEN:
+        if len(cdat) > self.mface.MAX_TRAJ_LEN:
             print "Warning: control data longer than MAX_TRAJ_LEN"
         self.trajectory = list()
         for ctrl in cdat:
             ts = int(ctrl['end_time']*1000) # Convert to ms
             ind = ctrl['start_state_index']
+            # self.mmap -> list of brain board ids from base to tip
+            # ctrl['control'] => list of torques to apply from base to tip
             for m_id, mctrl in zip(self.mmap, ctrl['control']):
-
                 # Note our torque is the opposite of the sim torque
+                # TODO (IMO 12/13/2012): VERIFY THIS!  I cannot remember...
                 assert mctrl <= self.torque_max, """Before converting to pwm command, 
                 asking for torque higher than torque max
                 (ask: %2.2f, max: %2.2f)""" % (mctrl, self.torque_max)
@@ -157,20 +150,22 @@ class TrajLoader( object ):
 
                 self.trajectory.append( ( m_id, ind, cmd, ts ))
         # Append end trajectory command to trajectory
+        # IMO: Why is this needed?  Isn't the whole trajectory initialized to 0 on 
+        #      the micro?  Looking in ModuleBrain.c I can't see how 999 does anything
+        #      more than set pwm command to 0 (ie: it doesn't stop the trajectory
+        #      or anything.)
         for m_id, mctrl in zip(self.mmap, ctrl['control']):
-            self.trajectory.append( ( m_id, ind+1, self.END_TRAJ, 0 ))
+            self.trajectory.append( ( m_id, ind+1, self.mface.END_TRAJ, 0 ))
         print "TrajLoader.load_controls(): Controls successfully loaded from json."
 
     def write_trajectory( self ):
         for ctrl in self.trajectory:
-            self.set_cmd_sync( *ctrl )
+            self.mface.set_cmd_sync( *ctrl )
 
-        # Perform second pass
+        # Perform second pass of verification
+        # TODO (IMO): Why do we need this?  Doesn't set_cmd_sync get and confirm?
         for ctrl in self.trajectory:
-            if ctrl[0] == 3:
-                print "SKIPPING 3"
-                continue
-            cmds = self.get_cmd( *ctrl[:2] )
+            cmds = self.mface.get_cmd( *ctrl[:2] )
             if cmds != ctrl:
                 print "TrajLoader.write_trajecotory: Error in trajectory"
                 return False
@@ -178,83 +173,8 @@ class TrajLoader( object ):
         return True
 
     def write( self, pkt):
-        msg = 't' + self.mface._encode_data('B', len(pkt)) + pkt + '\r'
-        self.debugOut("write: packet -> '%s'" % msg.encode('hex').upper())
-        self.mface.ser.write(msg)
-
-    def set_cmd( self, m_id, ind, cmd, ts ):
-        '''
-        sets a command in a trajectory
-        m_id -- module id
-        ind -- index of command
-        cmd -- command value from -300 to 300
-        ts -- timestamp for cmd in ms
-        '''
-        if cmd != 999:
-            if cmd > 300 or cmd < -300:
-                print "command outside of valid range"
-                return False
-        if ind > self.MAX_TRAJ_LEN:
-            print "Trajectory longer than MAX_TRAJ_LEN"
-            return False
-        if ts > self.MAX_TRAJ_TIME*1000:
-            print "Trajectory longer than MAX_TRAJ_TIME"
-            return False
-        buf = (m_id, ind, cmd, ts )
-        pkt = '0' + self.mface._encode_data( self.SET_FMT, *buf )
-        self.write(pkt)
-        return True
-
-    def get_cmd( self, m_id, ind, tout=0.1, retries=3):
-        '''
-        get command in trajectory by polling a module
-        m_id -- module id
-        ind  -- index of command
-        '''
-        if ind > self.MAX_TRAJ_LEN:
-            print "Trajectory longer than MAX_TRAJ_LEN"
-            return
-        self.debugOut("get_cmd: Asking %d for traj command at index %d" % (m_id, ind))
-        buf = (m_id, ind)
-        pkt = '1' + self.mface._encode_data( self.GET_FMT, *buf )
-        self.write(pkt)
-        ret_pkt = ''
-        tries = 0
-        while not ret_pkt and tries <= retries:
-            ret_pkt = self.mface.read(msg_type='t', tout=tout)
-            tries+=1
-        if not ret_pkt:
-            self.debugOut("get_cmd: Read returned empty failed")
-            return False
-        ret_cmd = struct.unpack( self.RET_FMT, ret_pkt)
-        self.debugOut("get_cmd: Unpacked packet (m_id, ind, cmd, ts) = (%d, %d, %d, %d)" % ret_cmd)
-        return ret_cmd
-
-    def set_cmd_sync( self, m_id, ind, cmd, ts, retries=2):
-        '''
-        set command and then get it to check that its valid
-        retry a number of times, just in case
-        '''
-        self.debugOut(
-            "set_cmd_sync: Attempting to write packet (id, ind, cmd, t_start) = (%d, %d, %d, %d)" % (
-                                                               m_id, ind, cmd, ts)
-                     )
-
-        for i in xrange(0, retries):
-            self.set_cmd( m_id, ind, cmd, ts )
-            ret_cmd = self.get_cmd( m_id, ind )
-            if ret_cmd is not None:
-                self.debugOut("set_cmd_sync: Write verify response: %s" % repr(ret_cmd))
-                if ret_cmd == ( m_id, ind, cmd, ts ):
-                    self.debugOut("set_cmd_sync: ...success")
-                    return True
-                else:
-                    self.debugOut("set_cmd_sync: ...failure (attempt %d of %d)" % (i, retries))
-            else:
-                self.debugOut("set_cmd_sync: No response when trying to verify write (attempt %d of %d)" % (
-                                      i, 
-                                      retries))
-        return False
+        msg =  self.mface.write('t', pkt)
+        self.debugOut("write: packet -> '%s'" % msg)
 
     def debugOut(self, msg):
         """
