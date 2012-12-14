@@ -47,6 +47,7 @@ def exceedRC710TorqueFunc(T,
                       pwm_max*(abs(float(V_app))/V_bat) + pwm_deadzone
                     )
                 )
+    print "TORQUE CONVERT: ", T, " -> ", pwmCom
     assert pwmCom <= pwm_max, """exceedRC710TorqueFunc: pwmCom shouldn't be greater
     than pwm_max (pwmCom=%d)""" % pwmCom
     return pwmCom

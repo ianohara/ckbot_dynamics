@@ -17,11 +17,13 @@ def usage(msg):
     sys.exit(1)
 
 if len(sys.argv) < 3:
-    usage()
+    usage("Need at least 2 arguments!")
 
 dev = sys.argv[1]
+"""
 if not isfile(dev):
    usage("Device file does not exist! (%s)" % dev)
+"""
 trajFile = sys.argv[2]
 
 with open(trajFile, 'r') as jsfh:
