@@ -22,17 +22,46 @@ except ImportError as e:
     print "                         You must supply your own to the ResultMotion constructor."
     DEFAULT_PWM_TO_TORQUE=None
 
-class AbstractMotion(object):
+class Motion(object):
     class State(list):
         def __init__(self, *a, **kw):
             """
             Provides .time, .ang, and .torque attributes which access
             list entry 0, 1, and 2 respectively.
             """
-            super(AbstractMotion.State, self).__init__(*a, **kw)
+            super(Motion.State, self).__init__(*a, **kw)
             self.time = self[0]
             self.ang = self[1]
             self.torque = self[2]
+
+    @staticmethod
+    def findClosest(st, candidates):
+        """
+        For each state in the list of states st, find the closest (time-wise)
+        state in candidate.
+
+        ARGUMENTS:
+          st - length N list of State objects for which we want to find closest states
+          candidates - none empty list of State objects to use as potential "closest states"
+                       for each state in st
+
+        RETURNS:
+          close - length N list of State objects in candidates that are closest to
+                  each of the states in st.  NOTE: these are not necessarily unique.
+        """
+        assert len(candidates) > 0, "The candidates list cannot be empty"
+        close = list()
+        for s in st:
+            mint = -1.0
+            minst = None
+            for c in candidates:
+                tdiff = abs(s.time - c.time)
+                if tdiff < mint or mint < 0:
+                    mint = tdiff
+                    minst = c
+            close.append(minst)
+        assert len(close) == len(st), "Length of output close list and input st list should be equal!"
+        return close
 
     def __init__(self):
         """
@@ -52,9 +81,9 @@ class AbstractMotion(object):
         for some.
         """
         for ti,an,to in zip(self.times,self.angs,self.torques):
-            yield AbstractMotion.State([ti, an, to])
+            yield Motion.State([ti, an, to])
 
-class PlannerMotion(AbstractMotion):
+class PlannerMotion(Motion):
 
     @staticmethod
     def plannerMotionExtractor(result_json):
@@ -132,14 +161,14 @@ class PlannerMotion(AbstractMotion):
             self.torques.append(ctr[5])
 
 
-class ResultMotion(AbstractMotion):
+class ResultMotion(Motion):
     def __init__(self, states, calib, pwm_to_torque=DEFAULT_PWM_TO_TORQUE):
         """
         Create a motion object from a list of result states. A result
         state is a length 4 list that looks like:
           [bbid, pos in Q15, time in [ms], pwm out of 300]
 
-        NOTE: State here is not the AbstractMotion.State object we use
+        NOTE: State here is not the Motion.State object we use
               to pass around states once we convert them into our form.
 
         ARGUMENTS:
@@ -199,17 +228,29 @@ class ResultMotion(AbstractMotion):
         # TODO: Check if this is right, I jacked it from posTest
         #       I know Uriah and I botched it like 40 times, so
         #       we should check again.
-        tmpmin, tmpmax, tempp = mint, maxt, p 
+        tmpmin, tmpmax, tmpp = mint, maxt, p 
         if maxt < mint:
             mint = mint-(maxt+1)
             p = p - (maxt+1)
             p = p % 2**15
             maxt = 2**15
-        print "toRadians Summary:"
-        print "  min: %d -> %d" % (tmpmin, mint)
-        print "  max: %d -> %d" % (tmpmax, maxt)
-        print "   -   %d -> %d" % (tmpmax-tmpmin, maxt-mint)
-        return -pi/2 + (pi/2-(-pi/2))/(maxt - mint)*(p-mint)
+        #print "toRadians Summary:"
+        #print "  min: %d -> %d" % (tmpmin, mint)
+        #print "  max: %d -> %d" % (tmpmax, maxt)
+        #print "   -   %d -> %d" % (tmpmax-tmpmin, maxt-mint)
+        p_rad = -pi/2 + (pi/2-(-pi/2))/(maxt - mint)*(p-mint)
+        if not (p_rad > -pi/2 and p_rad < pi/2):
+            print "Converting raw angle (%d) to radians (%2.2f) failed (out of range) [mint=%d, maxt=%d]" % (tmpp, p_rad, tmpmin, tmpmax)
+            """
+            while p_rad < -pi/2:
+                p_rad += pi
+            while p_rad > pi/2:
+                p_rad += -pi
+            print "  New p_rad: ", p_rad
+            """
+        return p_rad
+
+        
 
 
     def _calcTimes(self):
@@ -425,21 +466,38 @@ if __name__ == "__main__":
 
     fig = pp.figure(num=1)
     fig.hold(True)
-    pp.grid(True)
-    pp.subplot(311)
     # PLOT 1: Plot the actual trajectories taken
+    pp.subplot(311)
+    pp.grid(True)
+    pp.ylabel('Actual Angle [deg]')
     legend_strings = list()
     for mn, rmot in enumerate(alz.resultMotions()):
         inRangeSt = filter(lambda st: inTimeRange(st[0], trange[0], trange[1]), rmot.getStates())
         pp.plot([s.time for s in inRangeSt], [s.ang for s in inRangeSt]) 
         legend_strings.append("Module %d (bbid=%d)" % (mn, rmot.bbid))
+    pp.legend(legend_strings)
 
     # PLOT 2: Plot the planned trajectories
     pp.subplot(312)
+    pp.grid(True)
+    pp.ylabel('Planner Predicted Angle [deg]')
     for mn, pmot in enumerate(alz.plannerMotions()):
         inRangeSt = filter(lambda st: inTimeRange(st[0], trange[0], trange[1]), pmot.getStates())
         pp.plot([s.time for s in inRangeSt], [s.ang for s in inRangeSt], 'o')
-                
+    pp.legend(legend_strings)
+
+    # PLOT 3: Error between the two (at each planner trajectory point we have)
+    pp.subplot(313)
+    pp.grid(True)
+    pp.xlabel('Time [s]')
+    pp.ylabel('Error [deg]')
+    for pmot, rmot in zip(alz.plannerMotions(), alz.resultMotions()):
+        inRangeSt = filter(lambda st: inTimeRange(st[0], trange[0], trange[1]), pmot.getStates())
+        # Need len() so resStates can't just be the generator
+        resStates = [s for s in rmot.getStates()]
+        closeResStates = Motion.findClosest(inRangeSt, resStates)
+        error_angs = [re.ang-pl.ang for (re,pl) in zip(closeResStates, inRangeSt)]
+        pp.plot([s.time for s in closeResStates], error_angs,'o')
         
     pp.legend(legend_strings)
     pp.show()

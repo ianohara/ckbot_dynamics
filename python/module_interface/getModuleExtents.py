@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Tool for walking a user through getting all of the module extents
 for a chain of modules.  It also helps by writing the "module_params"
