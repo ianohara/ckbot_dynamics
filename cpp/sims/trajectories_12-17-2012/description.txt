@@ -1,0 +1,4 @@
+{
+"description": "3 modules with the 'motor rotor with pointer' body at the base. The goal of this test is to see how the planner+hardware system works without anti-cogging (but with proper torque->pwm conversion. IE: include the pwm deadband).  NOTES: Angle limits set to +/- 60 deg instead of +/- 90 deg, also torque limits set low to 0.1"
+
+}

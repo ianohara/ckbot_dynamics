@@ -1,0 +1,4 @@
+{
+"description": "3 modules with a full 90-deg rigid body as the base.  NOTE: This is probably NOT WHAT YOU WANT.  Use trajectories_12-17-201 for 3 module with the pointer on the end. The goal of this test is to see how the planner+hardware system works without anti-cogging (but with proper torque->pwm conversion. IE: include the pwm deadband).  NOTE: Second to last module in chain has torque limit=0 because it is a dead module"
+
+}
