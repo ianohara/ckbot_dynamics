@@ -53,7 +53,6 @@ class PositionLogger(object):
         self.test_time = test_time
 
         self.modules = dict()
-        self.converted_data = list()
         self.data = list()
 
     def debugOut(self, msg):
@@ -98,16 +97,10 @@ class PositionLogger(object):
             if pos > 2**15:
                 self.debugOut("  ID: %d, Pos greater than 2**15" % m_id)
                 continue
-            pos_raw = pos
-            if pos_raw > 2**14:
-                pos_raw = pos_raw - 2**15
-            position = pi*(pos_raw/float(2**15))
             pkt_time = float(vals[2])/1000.0
             voltage = float(vals[3])/2**5
 
-            converted_data = (m_id, position, pkt_time, voltage)
-            self.converted_data.append(converted_data)
-            self.debugOut("  Successful Packet with ID:%d, pos [rad]: %f, Time: %f, Voltage: %f" % converted_data)
+            self.debugOut("  Feedback pkt w/ ID:%d, pos [Q15]: %d, t: %2.3f[s], V_app: %f" % (m_id, pos_raw, pkt_time, voltage))
 
         time_str = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime())
 
@@ -115,7 +108,6 @@ class PositionLogger(object):
         self.jsonout['results']['name'] = self.test_name
         self.jsonout['results']['time'] = self.test_time
         self.jsonout['results']['data'] = self.data
-        self.jsonout['results']['converted_data'] = self.converted_data
         self.jsonout['results']['modules'] = self.modules
 
         print "Saving test data to: %s" % self.test_name
