@@ -250,6 +250,7 @@ class ModuleIface( object ):
                "Unknown message type '%s'.  Choices are: %s" % (msg_type, str(self.MSG_TYPES))
         msg = msg_type + pack('B',len(pkt)).encode('hex').upper() + pkt + '\r'
         self.ser.write(msg)
+        self.debugOut("mIface.write: msg='%s'" % msg.replace('\r', '\\r'))
         return msg # For the caller's debugging purposes
 
     def set_cmd( self, bbid, ind, cmd, ts ):
@@ -311,10 +312,10 @@ class ModuleIface( object ):
         return ret_cmd
 
     def set_cmd_sync( self, bbid, ind, cmd, ts, retries=2):
-        '''
+        """
         Set command and then get it to check that its valid
         retry a number of times, just in case
-        '''
+        """
         self.debugOut(
             "set_cmd_sync: Attempting to write packet (bbid, ind, cmd, t_start) = (%d, %d, %d, %d)" % (
                                                                bbid, ind, cmd, ts)
