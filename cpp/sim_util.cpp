@@ -209,6 +209,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
         goal_node.append(s_fin[i]);
     }
     res_root["goal"] = goal_node;
+
     /*****
      * Setup OMPL
      *****/
@@ -244,11 +245,10 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 
     /*
      * Use OMPL's built in setup mechanism instead of allocating
-     * state space information and problem defintion pointers on my own
+     * state space information and problem defintions on my own
      */
     boost::shared_ptr<oc::SimpleSetup> ss_p(new oc::SimpleSetup(cspace));
 
-    // TODO: Write an actual state validity checker!
     ss_p->setStateValidityChecker(boost::bind(&ckbot::CK_ompl::stateValidityChecker,
                                                  &(*rate_machine_p),
                                                  ss_p->getSpaceInformation(),
@@ -332,7 +332,7 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
 
             std::vector<double> projCellSizes(prjEvalPtr->getDimension());
             projCellSizes[0] = sets.cellSize;
-            projCellSizes[1] = sets.cellSize; 
+            projCellSizes[1] = sets.cellSize;
             projCellSizes[2] = sets.cellSize;
             projCellSizes[3] = sets.cellSize;
 
@@ -391,9 +391,8 @@ load_and_run_simulation(boost::shared_ptr<ckbot::CK_ompl> rate_machine_p,
             break;
 
         case RRT:
-             std::cout << "Planner and Goal type: Default RRT with config space goal metric." << std::endl;
         case KPIECE1:
-             std::cout << "Planner and Goal type: Default KPIECE1 with config space goal metric." << std::endl;
+             std::cout << "Planner and Goal type: Default KPIECE1 or RRT with config space goal metric." << std::endl;
         default:
             ss_p->setGoalState(goal, sets.threshold);
             break;

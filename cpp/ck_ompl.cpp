@@ -92,8 +92,8 @@ ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob
 
     if (world)
     {
-        const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
         /* World exists, use collision checking */
+        const double MOD_SPHERE_RADIUS = 0.05; /* [m] */
         const double *sVals = s->as<ob::RealVectorStateSpace::StateType>()->values;
         int num_links = c.num_links();
         int slen = 2*num_links;
@@ -117,7 +117,7 @@ ckbot::CK_ompl::stateValidityChecker(const ob::SpaceInformationPtr &si, const ob
         }
     }
     /* No collisions or No collision world, in which case
-     * all states are valid 
+     * all states are valid.
      */
     return true;
 }
