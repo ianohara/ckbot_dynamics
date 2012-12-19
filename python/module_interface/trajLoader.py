@@ -47,7 +47,6 @@ def exceedRC710TorqueFunc(T,
                       pwm_max*(abs(float(V_app))/V_bat) + pwm_deadzone
                     )
                 )
-    print "TORQUE CONVERT: ", T, " -> ", pwmCom
     assert pwmCom <= pwm_max, """exceedRC710TorqueFunc: pwmCom shouldn't be greater
     than pwm_max (pwmCom=%d)""" % pwmCom
     return pwmCom
@@ -138,7 +137,7 @@ class TrajLoader( object ):
             ind = ctrl['start_state_index']
             # self.mmap -> list of brain board ids from base to tip
             # ctrl['control'] => list of torques to apply from base to tip
-            for m_id, mctrl in zip(self.mmap, ctrl['control']):
+            for bbid, mctrl in zip(self.mmap, ctrl['control']):
                 # Note our torque is the opposite of the sim torque
                 # TODO (IMO 12/13/2012): VERIFY THIS!  I cannot remember...
                 assert mctrl <= self.torque_max, """Before converting to pwm command, 
@@ -149,14 +148,15 @@ class TrajLoader( object ):
                 the resulting pwm is too high. 
                 (conversion: %2.2f [Nm] -> %d/300 [pwm] max: %d [pwm])""" % (mctrl, cmd, self.pwm_max)
 
-                self.trajectory.append( ( m_id, ind, cmd, ts ))
+                self.debugOut("load_controls: seg %d, bbid=%d lasts %d [ms] w/Torque %2.2f [Nm] -> %d [pwm out of 300]" % (ind, bbid, ts, mctrl, cmd))
+                self.trajectory.append( ( bbid, ind, cmd, ts ))
         # Append end trajectory command to trajectory
         # IMO: Why is this needed?  Isn't the whole trajectory initialized to 0 on 
         #      the micro?  Looking in ModuleBrain.c I can't see how 999 does anything
         #      more than set pwm command to 0 (ie: it doesn't stop the trajectory
         #      or anything.)
-        for m_id, mctrl in zip(self.mmap, ctrl['control']):
-            self.trajectory.append( ( m_id, ind+1, self.mface.END_TRAJ, 0 ))
+        for bbid, mctrl in zip(self.mmap, ctrl['control']):
+            self.trajectory.append( ( bbid, ind+1, self.mface.END_TRAJ, 0 ))
         print "TrajLoader.load_controls(): Controls successfully loaded from json."
 
     def write_trajectory( self ):
@@ -181,7 +181,7 @@ class TrajLoader( object ):
         """
         Print a line if debugging is on.
         """
-        if self.debug: print msg
+        if self.debug: print "trajLoader."+msg
 
 if __name__ == "__main__":
     from ModuleIface import ModuleIface
